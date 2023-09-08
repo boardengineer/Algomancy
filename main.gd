@@ -31,6 +31,8 @@ var first_turn = true
 const STARTING_DRAFT_PACK_SIZE = 16
 
 onready var game_log = $GameLog
+onready var draft_container = $AspectRatioContainer/HBoxContainer/DraftContainer
+onready var player_list = $Players
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -43,7 +45,9 @@ func init():
 	
 	# init players
 	for _n in NUM_PLAYERS:
-		players.push_back(Player.new(self))
+		var new_player = Player.new(self)
+		player_list.add_child(new_player)
+		players.push_back(new_player)
 	
 	# init deck, this will probably be a resource file
 	for n in 50:
@@ -92,8 +96,8 @@ func do_draft_phase():
 	
 	phase = GamePhase.DRAFT
 	
-	for player in players:
-		player.draft()
+	# done in parallel across machines, just show one for now 
+	players[0].draft()
 		
 #	do_mana_ti_phase()
 
