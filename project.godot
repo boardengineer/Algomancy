@@ -10,12 +10,30 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Node",
+"class": "Card",
+"language": "GDScript",
+"path": "res://card.gd"
+}, {
+"base": "Node",
+"class": "Effect",
+"language": "GDScript",
+"path": "res://effect.gd"
+}, {
+"base": "Node",
 "class": "Player",
 "language": "GDScript",
 "path": "res://player.gd"
+}, {
+"base": "Node",
+"class": "permanent",
+"language": "GDScript",
+"path": "res://permanent.gd"
 } ]
 _global_script_class_icons={
-"Player": ""
+"Card": "",
+"Effect": "",
+"Player": "",
+"permanent": ""
 }
 
 [application]
