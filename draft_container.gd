@@ -5,6 +5,9 @@ signal draft_selection_complete(selected_cards)
 onready var card_container = $CardContainer
 onready var accept_button = $AcceptButton
 
+func _ready():
+	hide()
+
 func display_draft_pack(draft_pack) -> void:
 	remove_all_cards()
 	

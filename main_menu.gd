@@ -16,4 +16,12 @@ func _on_ShowLobbies_pressed():
 	print_debug("pressed show lobbies")
 	
 func _on_Lobby_Created(connect: int, lobby_id: int) -> void:
-	SteamController.lobby_id = lobby_id
+	if connect == 1:
+		SteamController.lobby_id = lobby_id
+		
+		var _unused = Steam.setLobbyJoinable(lobby_id, true)
+		
+		_unused = Steam.setLobbyData(lobby_id, "game", "Algomancy")
+		_unused = Steam.setLobbyData(lobby_id, "host", Steam.getPersonaName())
+		
+		var _scene_change_error = get_tree().change_scene("res://multiplayer_lobby.tscn")

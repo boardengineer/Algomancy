@@ -24,6 +24,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://effect.gd"
 }, {
+"base": "ColorRect",
+"class": "HandCard",
+"language": "GDScript",
+"path": "res://hand_card.gd"
+}, {
 "base": "Node",
 "class": "Player",
 "language": "GDScript",
@@ -38,6 +43,7 @@ _global_script_class_icons={
 "Card": "",
 "DraftCard": "",
 "Effect": "",
+"HandCard": "",
 "Player": "",
 "permanent": ""
 }

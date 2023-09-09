@@ -1,3 +1,31 @@
 [gd_scene format=2]
 
-[node name="Node2D" type="Node2D"]
+[node name="MultiplayerLobby" type="Node2D"]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_left = 671.0
+margin_top = 175.0
+margin_right = 888.0
+margin_bottom = 378.0
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+margin_right = 217.0
+margin_bottom = 14.0
+text = "User 1"
+
+[node name="Label2" type="Label" parent="VBoxContainer"]
+margin_top = 18.0
+margin_right = 217.0
+margin_bottom = 32.0
+text = "User 2"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="."]
+margin_left = 206.0
+margin_top = 176.0
+margin_right = 320.0
+margin_bottom = 289.0
+
+[node name="StartGame" type="Button" parent="VBoxContainer2"]
+margin_right = 114.0
+margin_bottom = 20.0
+text = "Start Game"

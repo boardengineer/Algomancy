@@ -31,8 +31,13 @@ var first_turn = true
 const STARTING_DRAFT_PACK_SIZE = 16
 
 onready var game_log = $GameLog
-onready var draft_container = $AspectRatioContainer/HBoxContainer/DraftContainer
+onready var draft_container = $DraftContainerPopup/DraftContainer
 onready var player_list = $Players
+
+onready var opponent_field = $GameFields/OpponentField
+onready var player_field = $GameFields/PlayerField
+onready var hand_container = $GameFields/HandContainer
+onready var stack_container = $Stack
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -183,3 +188,18 @@ func log_message(message):
 	to_add.text = message
 	
 	game_log.add_child(to_add)
+
+# For transmitting and for saves
+func serialize():
+	var state_dict := {}
+	
+	var state_players = []
+	for player in players:
+		state_players.push_back(player.serliaze())
+		
+	state_dict.players = state_players
+	
+	state_dict.first_turn = first_turn
+	state_dict.phase = phase
+	
+	return str(state_dict)

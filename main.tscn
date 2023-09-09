@@ -4,10 +4,8 @@
 [ext_resource path="res://draft_container.gd" type="Script" id=2]
 
 [node name="Main" type="HBoxContainer"]
-margin_left = -4.0
-margin_top = -2.0
-margin_right = 1020.0
-margin_bottom = 594.0
+margin_right = 1024.0
+margin_bottom = 601.0
 rect_pivot_offset = Vector2( 577, -9 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -16,69 +14,169 @@ script = ExtResource( 1 )
 [node name="Players" type="Node" parent="."]
 
 [node name="GameLog" type="VBoxContainer" parent="."]
-margin_right = 87.0
-margin_bottom = 596.0
+margin_right = 100.0
+margin_bottom = 601.0
+grow_horizontal = 2
+rect_min_size = Vector2( 100, 0 )
 rect_pivot_offset = Vector2( -1071, 87 )
+size_flags_horizontal = 0
 
-[node name="Label" type="Label" parent="GameLog"]
-margin_right = 87.0
+[node name="Label3" type="Label" parent="GameLog"]
+margin_right = 100.0
+margin_bottom = 100.0
+rect_min_size = Vector2( 100, 100 )
+rect_clip_content = true
+size_flags_horizontal = 3
+size_flags_vertical = 0
+text = "Logtext1234asdfasdfasdfasdffghfghfghfghfghfghfghfghfghfghfgh"
+autowrap = true
+clip_text = true
+
+[node name="GameFields" type="VBoxContainer" parent="."]
+margin_left = 104.0
+margin_right = 920.0
+margin_bottom = 601.0
+rect_min_size = Vector2( 800, 0 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="OpponentField" type="GridContainer" parent="GameFields"]
+margin_right = 816.0
+margin_bottom = 200.0
+rect_min_size = Vector2( 0, 200 )
+columns = 10
+
+[node name="ColorRect" type="ColorRect" parent="GameFields/OpponentField"]
+margin_right = 50.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 50, 70 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+color = Color( 0.12549, 0.2, 0.803922, 1 )
+
+[node name="ColorRect2" type="ColorRect" parent="GameFields/OpponentField"]
+margin_left = 54.0
+margin_right = 104.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 50, 70 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+color = Color( 0.12549, 0.2, 0.803922, 1 )
+
+[node name="PlayerField" type="GridContainer" parent="GameFields"]
+margin_top = 204.0
+margin_right = 816.0
+margin_bottom = 404.0
+rect_min_size = Vector2( 0, 200 )
+columns = 10
+
+[node name="ColorRect" type="ColorRect" parent="GameFields/PlayerField"]
+margin_right = 50.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 50, 70 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+color = Color( 0.12549, 0.2, 0.803922, 1 )
+
+[node name="Label" type="Label" parent="GameFields/PlayerField/ColorRect"]
+margin_right = 40.0
 margin_bottom = 14.0
-text = "Log text 1234"
+rect_min_size = Vector2( 50, 70 )
+text = "50"
+align = 1
+valign = 1
 
-[node name="AspectRatioContainer" type="AspectRatioContainer" parent="."]
-margin_left = 91.0
-margin_right = 203.0
-margin_bottom = 596.0
+[node name="ColorRect2" type="ColorRect" parent="GameFields/PlayerField"]
+margin_left = 54.0
+margin_right = 104.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 50, 70 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+color = Color( 0.12549, 0.2, 0.803922, 1 )
 
-[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer"]
-margin_top = 242.0
-margin_right = 112.0
-margin_bottom = 354.0
+[node name="HandContainer" type="HBoxContainer" parent="GameFields"]
+margin_top = 408.0
+margin_right = 816.0
+margin_bottom = 557.0
+rect_min_size = Vector2( 0, 149 )
+size_flags_horizontal = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="AspectRatioContainer/HBoxContainer"]
-margin_bottom = 112.0
-alignment = 1
+[node name="ColorRect" type="ColorRect" parent="GameFields/HandContainer"]
+margin_right = 50.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 50, 70 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+color = Color( 0.12549, 0.2, 0.803922, 1 )
 
-[node name="DraftContainer" type="VBoxContainer" parent="AspectRatioContainer/HBoxContainer"]
-margin_left = 4.0
-margin_right = 112.0
-margin_bottom = 112.0
+[node name="Stack" type="VBoxContainer" parent="."]
+margin_left = 924.0
+margin_right = 1024.0
+margin_bottom = 601.0
+grow_horizontal = 2
+rect_min_size = Vector2( 100, 0 )
+rect_pivot_offset = Vector2( -1071, 87 )
+size_flags_horizontal = 0
+
+[node name="ColorRect3" type="ColorRect" parent="Stack"]
+margin_right = 50.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 50, 70 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+color = Color( 0.12549, 0.2, 0.803922, 1 )
+
+[node name="ColorRect2" type="ColorRect" parent="Stack"]
+margin_top = 74.0
+margin_right = 50.0
+margin_bottom = 144.0
+rect_min_size = Vector2( 50, 70 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+color = Color( 0.12549, 0.2, 0.803922, 1 )
+
+[node name="ColorRect" type="ColorRect" parent="Stack"]
+margin_top = 148.0
+margin_right = 50.0
+margin_bottom = 218.0
+rect_min_size = Vector2( 50, 70 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+color = Color( 0.12549, 0.2, 0.803922, 1 )
+
+[node name="DraftContainerPopup" type="Node2D" parent="."]
+
+[node name="DraftContainer" type="VBoxContainer" parent="DraftContainerPopup"]
+margin_left = 205.0
+margin_top = 48.0
+margin_right = 772.0
+margin_bottom = 495.0
+rect_clip_content = true
 script = ExtResource( 2 )
 
-[node name="AcceptButton" type="Button" parent="AspectRatioContainer/HBoxContainer/DraftContainer"]
-margin_right = 108.0
+[node name="AcceptButton" type="Button" parent="DraftContainerPopup/DraftContainer"]
+margin_right = 567.0
 margin_bottom = 20.0
 text = "Accept"
 
-[node name="CardContainer" type="GridContainer" parent="AspectRatioContainer/HBoxContainer/DraftContainer"]
+[node name="CardContainer" type="GridContainer" parent="DraftContainerPopup/DraftContainer"]
 margin_top = 24.0
-margin_right = 108.0
-margin_bottom = 98.0
+margin_right = 567.0
+margin_bottom = 94.0
 columns = 3
 
-[node name="ColorRect" type="ColorRect" parent="AspectRatioContainer/HBoxContainer/DraftContainer/CardContainer"]
+[node name="ColorRect" type="ColorRect" parent="DraftContainerPopup/DraftContainer/CardContainer"]
 margin_right = 50.0
 margin_bottom = 70.0
 rect_min_size = Vector2( 50, 70 )
 color = Color( 0.12549, 0.2, 0.803922, 1 )
 
-[node name="ColorRect2" type="ColorRect" parent="AspectRatioContainer/HBoxContainer/DraftContainer/CardContainer"]
+[node name="ColorRect2" type="ColorRect" parent="DraftContainerPopup/DraftContainer/CardContainer"]
 margin_left = 54.0
 margin_right = 104.0
 margin_bottom = 70.0
 rect_min_size = Vector2( 50, 70 )
 color = Color( 0.12549, 0.2, 0.803922, 1 )
 
-[node name="Node4" type="Control" parent="AspectRatioContainer/HBoxContainer/DraftContainer/CardContainer"]
-margin_left = 108.0
-margin_right = 108.0
-margin_bottom = 70.0
-rect_pivot_offset = Vector2( -410, -166 )
-
-[node name="Node3" type="Control" parent="AspectRatioContainer/HBoxContainer/DraftContainer/CardContainer"]
-margin_top = 74.0
-margin_right = 50.0
-margin_bottom = 74.0
-rect_pivot_offset = Vector2( -410, -166 )
-
-[connection signal="pressed" from="AspectRatioContainer/HBoxContainer/DraftContainer/AcceptButton" to="AspectRatioContainer/HBoxContainer/DraftContainer" method="_on_AcceptButton_pressed"]
+[connection signal="pressed" from="DraftContainerPopup/DraftContainer/AcceptButton" to="DraftContainerPopup/DraftContainer" method="_on_AcceptButton_pressed"]

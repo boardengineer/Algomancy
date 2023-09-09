@@ -35,6 +35,7 @@ func draw(amount = 1):
 func draft():
 	draft_pack.append_array(hand)
 	hand.clear()
+	clear_hand_container()
 	
 	# This is where we yield and something will populated draft_selected_cards
 	main.draft_container.display_draft_pack(draft_pack)
@@ -44,8 +45,13 @@ func draft():
 	for card in draft_selected_cards:
 		draft_pack.erase(card)
 		hand.push_back(card)
+		main.hand_container.add_child(HandCard.new(card))
 
 	draft_selected_cards.clear()
+
+# Simulate a draft by picking random cards for dev and debug
+func dummy_draft():
+	pass
 
 func do_mana_phase():
 	pass
@@ -61,3 +67,10 @@ func _on_draft_selection_complete(selected_cards):
 	draft_selected_cards = selected_cards
 	
 	emit_signal("draft_complete")
+	
+func clear_hand_container():
+	for child in main.hand_container.get_children():
+		main.hand_container.remove_child(child)
+
+func serialize():
+	return ""

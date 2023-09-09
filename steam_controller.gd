@@ -6,6 +6,6 @@ var lobby_id = 0
 func _ready():
 	var _init_status = Steam.steamInit()
 
-func _process(delta):
+func _process(_delta):
 	Steam.run_callbacks()
 
