@@ -31,6 +31,7 @@ func _on_AcceptButton_pressed():
 			selected.push_back(draft_card.card)
 	
 	emit_signal("draft_selection_complete", selected)
+	hide()
 
 func on_card_toggled():
 	check_accept_button()

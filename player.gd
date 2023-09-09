@@ -58,7 +58,6 @@ func take_action_or_pass() -> bool:
 	return false
 	
 func _on_draft_selection_complete(selected_cards):
-	print_debug(selected_cards)
 	draft_selected_cards = selected_cards
 	
 	emit_signal("draft_complete")
