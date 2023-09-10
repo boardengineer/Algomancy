@@ -15,3 +15,6 @@ func get_valid_targets(_current_targets = []) -> Array:
 	
 func resolve() -> void:
 	pass
+
+func can_trigger() -> bool:
+	return true

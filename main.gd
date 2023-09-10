@@ -5,26 +5,6 @@ var deck := []
 
 var ability_stack := []
 
-var phase = GamePhase.UNTAP
-enum GamePhase {
-	UNTAP,
-	DRAW,
-	DRAFT,
-	MANA_TI,
-	MANA_NTI,
-	ATTACK_TI,
-	BLOCK_TI,
-	DAMAGE_TI,
-	POST_COMBAT_TI,
-	ATTACK_NTI,
-	BLOCK_NTI,
-	DAMAGE_NTI,
-	POST_COMBAT_NTI,
-	REGROUP,
-	MAIN_TI,
-	MAIN_NTI
-	}
-
 const NUM_PLAYERS := 2
 const ResourceContainer = preload("res://resource_container.tscn")
 
@@ -107,6 +87,9 @@ func set_up_stack() -> void:
 	for child in stack_container.get_children():
 		stack_container.remove_child(child)
 
+func recycle_card(card) -> void:
+	deck.push_back(card)
+
 func set_up_basic_resource_container() -> void:
 	for child in basic_resource_container.get_children():
 		basic_resource_container.remove_child(child)
@@ -126,7 +109,7 @@ func set_up_basic_resource_container() -> void:
 func do_untap_phase():
 	log_message("starting untap phase")
 	
-	phase = GamePhase.UNTAP
+	GameController.phase = GameController.GamePhase.UNTAP
 	for player in players:
 		for battlefield_players in player.battlefields:
 			for permanent in player.battlefields[battlefield_players]:
@@ -137,7 +120,7 @@ func do_untap_phase():
 func do_draw_phase():
 	log_message("starting draw phase")
 	
-	phase = GamePhase.DRAW
+	GameController.phase = GameController.GamePhase.DRAW
 	
 	if not first_turn:
 		for player in players:
@@ -150,7 +133,7 @@ func do_draw_phase():
 func do_draft_phase():
 	log_message("starting draft phase")
 	
-	phase = GamePhase.DRAFT
+	GameController.phase = GameController.GamePhase.DRAFT
 	
 	# done in parallel across machines, just show one at a time for now  
 	for player in players:
@@ -163,7 +146,7 @@ func do_draft_phase():
 func do_mana_ti_phase():
 	log_message("starting mana phase")
 	
-	phase = GamePhase.MANA_TI
+	GameController.phase = GameController.GamePhase.MANA_TI
 	current_player_passed = false
 	
 	while not current_player_passed:
@@ -178,14 +161,14 @@ func do_mana_ti_phase():
 	players[0].do_mana_phase()
 
 func do_mana_nti_phase():
-	phase = GamePhase.MANA_NTI
+	GameController.phase = GameController.GamePhase.MANA_NTI
 	
 	players[1].do_mana_phase()
 	
 	do_attack_ti_phase()
 
 func do_attack_ti_phase():
-	phase = GamePhase.ATTACK_TI
+	GameController.phase = GameController.GamePhase.ATTACK_TI
 	
 	players[0].declare_ti_attackers()
 	interaction_phase()
@@ -193,7 +176,7 @@ func do_attack_ti_phase():
 	do_block_ti_phase()
 
 func do_block_ti_phase():
-	phase = GamePhase.BLOCK_TI
+	GameController.phase = GameController.GamePhase.BLOCK_TI
 	
 	players[1].declare_ti_blockers()
 	interaction_phase()
@@ -201,14 +184,14 @@ func do_block_ti_phase():
 	do_damage_ti_phase()
 
 func do_damage_ti_phase():
-	phase = GamePhase.DAMAGE_TI
+	GameController.phase = GameController.GamePhase.DAMAGE_TI
 	
 	# Damage calculations go here
 	
 	do_post_combat_ti()
 
 func do_post_combat_ti():
-	phase = GamePhase.POST_COMBAT_TI
+	GameController.phase = GameController.GamePhase.POST_COMBAT_TI
 	
 	# Triggers should go here
 	interaction_phase()
@@ -264,7 +247,7 @@ func serialize():
 	state_dict.players = state_players
 	
 	state_dict.first_turn = first_turn
-	state_dict.phase = phase
+	state_dict.phase = GameController.phase
 	
 	return str(state_dict)
 

@@ -36,7 +36,7 @@ func draw(amount = 1):
 	for _n in amount:
 		if not main.deck.empty():
 			hand.push_back(main.deck.pop_front())
-			
+
 func draft():
 	if player_id != SteamController.self_peer_id:
 		dummy_draft()
@@ -70,10 +70,14 @@ func take_action_or_pass() -> bool:
 func _on_draft_selection_complete(selected_cards):
 	for card in selected_cards:
 		draft_pack.erase(card)
-		hand.push_back(card)
-		main.hand_container.add_child(HandCard.new(card))
+		add_to_hand(card) 
 	
 	emit_signal("draft_complete")
+	
+func add_to_hand(card) -> void:
+	print_debug("adding card ", card.card_name)
+	hand.push_back(card)
+	main.hand_container.add_child(HandCard.new(card, self))
 	
 func clear_hand_container():
 	for child in main.hand_container.get_children():
@@ -105,3 +109,17 @@ func add_permanent(permanent_to_add) -> void:
 	
 	field.add_child(permanent_to_add)
 	permanent_to_add.tree_container = main.player_field
+
+func remove_from_hand(card) -> void:
+	print_debug("removing card ", card.card_name)
+	for hand_card in main.hand_container.get_children():
+		print_debug("looking for match? ", hand_card.card.card_name)
+		if hand_card.card == card:
+			print_debug("found match?")
+			main.hand_container.remove_child(hand_card)
+	
+	hand.erase(card)
+
+func recycle_card_from_hand(card) -> void:
+	remove_from_hand(card)
+	main.recycle_card(card)

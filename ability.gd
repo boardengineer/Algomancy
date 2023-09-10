@@ -26,6 +26,9 @@ func can_trigger() -> bool:
 
 # Getting targets, putting this on the stack
 func activate() -> bool:
+	if not can_trigger():
+		return false
+	
 	var cancelled = false
 	
 	for effect in effects:

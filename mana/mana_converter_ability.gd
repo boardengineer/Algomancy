@@ -7,4 +7,3 @@ func _init(f_player_owner).(f_player_owner):
 func pay_cost() -> bool:
 	source.erase()
 	return true
-

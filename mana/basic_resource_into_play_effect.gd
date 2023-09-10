@@ -4,6 +4,9 @@ class_name BasicResourceIntoPlayEffect
 func _init(f_player_owner).(f_player_owner):
 	pass
 
+func can_trigger() -> bool:
+	return GameController.is_in_mana_phase()
+
 func needs_more_targets(current_targets = []) -> bool:
 	return current_targets.empty()
 

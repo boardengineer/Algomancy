@@ -30,6 +30,11 @@ func on_target_selected(target) -> void:
 		selected_targets.push_back(target)
 		emit_signal("target_added")
 
+func get_player_self():
+	for player in main.players:
+		if player.id == SteamController.self_peer_id:
+			return player
+
 func on_cancelled() -> void:
 	if GameController.targeting:
 		selected_targets = null
