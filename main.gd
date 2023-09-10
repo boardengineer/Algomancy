@@ -26,6 +26,8 @@ enum GamePhase {
 	}
 
 const NUM_PLAYERS := 2
+const ResourceContainer = preload("res://resource_container.tscn")
+
 var first_turn = true
 
 const STARTING_DRAFT_PACK_SIZE = 16
@@ -38,14 +40,19 @@ onready var opponent_field = $GameFields/OpponentField
 onready var player_field = $GameFields/PlayerField
 onready var hand_container = $GameFields/HandContainer
 onready var stack_container = $Stack
+onready var basic_resource_container = $BasicResourcePopup/ResourceContainer/HBoxContainer
+onready var basic_resource_dialog = $BasicResourcePopup/ResourceContainer
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	TargetHelper.set_up_references(self)
 	randomize()
 	init()
 	
 # Do init stuff in this function for easier modding
 func init():
+	set_up_basic_resource_container()
+	
 	players = []
 	
 	# init players
@@ -76,6 +83,20 @@ func init():
 	print_debug(players[0].player_id)
 	
 	do_untap_phase()
+	
+func set_up_basic_resource_container() -> void:
+	for child in basic_resource_container.get_children():
+		basic_resource_container.remove_child(child)
+	
+	var fire_container = ResourceContainer.instance()
+	fire_container.text = "fire"
+	fire_container.set_name("Fire")
+	basic_resource_container.add_child(fire_container)
+	
+	var wood_container = ResourceContainer.instance()
+	wood_container.text = "wood"
+	wood_container.set_name("Wood")
+	basic_resource_container.add_child(wood_container)
 	
 func do_untap_phase():
 	log_message("starting untap phase")

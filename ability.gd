@@ -6,6 +6,8 @@ var effects = []
 var card
 var main
 
+var source
+
 func pay_cost() -> bool:
 	return true
 

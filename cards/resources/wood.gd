@@ -1,4 +1,5 @@
 extends Card
+class_name Wood
 
 
 # Declare member variables here. Examples:

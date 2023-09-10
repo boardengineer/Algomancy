@@ -6,6 +6,7 @@ signal targeted
 var abilities = []
 
 var tapped = false
+var container
 
 # null for tokens
 var card
@@ -24,3 +25,6 @@ func on_card_input(event):
 		else:
 			if abilities.size() == 1:
 				abilities[0].activate()
+
+func erase() -> void:
+	container.erase(self)

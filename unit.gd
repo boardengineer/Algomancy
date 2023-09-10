@@ -1,4 +1,5 @@
-extends Node
+extends Permanent
+class_name Unit
 
 
 # Declare member variables here. Examples:

@@ -29,10 +29,25 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://effect.gd"
 }, {
+"base": "Card",
+"class": "Fire",
+"language": "GDScript",
+"path": "res://cards/resources/fire.gd"
+}, {
 "base": "ColorRect",
 "class": "HandCard",
 "language": "GDScript",
 "path": "res://hand_card.gd"
+}, {
+"base": "Ability",
+"class": "ManaConverterAbility",
+"language": "GDScript",
+"path": "res://mana_converter/mana_converter_ability.gd"
+}, {
+"base": "Permanent",
+"class": "ManaConverterPermanent",
+"language": "GDScript",
+"path": "res://mana_converter/mana_converter_permanent.gd"
 }, {
 "base": "ColorRect",
 "class": "Permanent",
@@ -43,15 +58,30 @@ _global_script_classes=[ {
 "class": "Player",
 "language": "GDScript",
 "path": "res://player.gd"
+}, {
+"base": "Permanent",
+"class": "Unit",
+"language": "GDScript",
+"path": "res://unit.gd"
+}, {
+"base": "Card",
+"class": "Wood",
+"language": "GDScript",
+"path": "res://cards/resources/wood.gd"
 } ]
 _global_script_class_icons={
 "Ability": "",
 "Card": "",
 "DraftCard": "",
 "Effect": "",
+"Fire": "",
 "HandCard": "",
+"ManaConverterAbility": "",
+"ManaConverterPermanent": "",
 "Permanent": "",
-"Player": ""
+"Player": "",
+"Unit": "",
+"Wood": ""
 }
 
 [application]

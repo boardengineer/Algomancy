@@ -1,4 +1,5 @@
 extends Card
+class_name Fire
 
 
 # Declare member variables here. Examples:
