@@ -14,6 +14,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://ability.gd"
 }, {
+"base": "Effect",
+"class": "BasicResourceIntoPlayEffect",
+"language": "GDScript",
+"path": "res://mana_converter/basic_resource_into_play_effect.gd"
+}, {
 "base": "Node",
 "class": "Card",
 "language": "GDScript",
@@ -44,6 +49,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://mana_converter/mana_converter_ability.gd"
 }, {
+"base": "Card",
+"class": "ManaConverterCard",
+"language": "GDScript",
+"path": "res://mana_converter/mana_converter_card.gd"
+}, {
 "base": "Permanent",
 "class": "ManaConverterPermanent",
 "language": "GDScript",
@@ -59,6 +69,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://player.gd"
 }, {
+"base": "ColorRect",
+"class": "StackAbilityContainer",
+"language": "GDScript",
+"path": "res://stack_ability_container.gd"
+}, {
 "base": "Permanent",
 "class": "Unit",
 "language": "GDScript",
@@ -71,15 +86,18 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "Ability": "",
+"BasicResourceIntoPlayEffect": "",
 "Card": "",
 "DraftCard": "",
 "Effect": "",
 "Fire": "",
 "HandCard": "",
 "ManaConverterAbility": "",
+"ManaConverterCard": "",
 "ManaConverterPermanent": "",
 "Permanent": "",
 "Player": "",
+"StackAbilityContainer": "",
 "Unit": "",
 "Wood": ""
 }
@@ -92,9 +110,9 @@ config/icon="res://icon.png"
 
 [autoload]
 
-SteamController="*res://steam_controller.gd"
-GameController="*res://game_controller.gd"
-TargetHelper="*res://target_helper.gd"
+SteamController="*res://globals/steam_controller.gd"
+GameController="*res://globals/game_controller.gd"
+TargetHelper="*res://globals/target_helper.gd"
 
 [gui]
 

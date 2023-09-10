@@ -28,12 +28,14 @@ enum GamePhase {
 const NUM_PLAYERS := 2
 const ResourceContainer = preload("res://resource_container.tscn")
 
+signal activated_or_passed
+
 var first_turn = true
 
 const STARTING_DRAFT_PACK_SIZE = 16
 
 onready var game_log = $GameLog
-onready var draft_container = $DraftContainerPopup/DraftContainer
+onready var draft_container = $DraftContainerPopup/PanelContainer/DraftContainer
 onready var player_list = $Players
 
 onready var opponent_field = $GameFields/OpponentField
@@ -42,10 +44,16 @@ onready var hand_container = $GameFields/HandContainer
 onready var stack_container = $Stack
 onready var basic_resource_container = $BasicResourcePopup/ResourceContainer/HBoxContainer
 onready var basic_resource_dialog = $BasicResourcePopup/ResourceContainer
+onready var pass_button = $Controls/PassButton
+
+var current_player_passed
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	TargetHelper.set_up_references(self)
+	
+	GameController.connect("activated_ability_or_passed", self, "on_activated_ability_or_passed")
+	
 	randomize()
 	init()
 	
@@ -53,13 +61,24 @@ func _ready():
 func init():
 	set_up_basic_resource_container()
 	
+	set_up_stack()
+	set_up_battlefields()
+	
 	players = []
 	
 	# init players
-	for _n in NUM_PLAYERS:
-		var new_player = Player.new(self)
-		player_list.add_child(new_player)
+	for n in NUM_PLAYERS:
+		var new_player
+		if n == 0:
+			new_player = Player.new(self, SteamController.self_peer_id)
+		else:
+			new_player = Player.new(self)
+		
 		players.push_back(new_player)
+		
+	for player in players:
+		player_list.add_child(player)
+		player.call_deferred("add_starting_mana_converters")
 	
 	# init deck, this will probably be a resource file
 	for n in 50:
@@ -83,7 +102,11 @@ func init():
 	print_debug(players[0].player_id)
 	
 	do_untap_phase()
-	
+
+func set_up_stack() -> void:
+	for child in stack_container.get_children():
+		stack_container.remove_child(child)
+
 func set_up_basic_resource_container() -> void:
 	for child in basic_resource_container.get_children():
 		basic_resource_container.remove_child(child)
@@ -91,11 +114,13 @@ func set_up_basic_resource_container() -> void:
 	var fire_container = ResourceContainer.instance()
 	fire_container.text = "fire"
 	fire_container.set_name("Fire")
+	fire_container.resource_card = Fire.new()
 	basic_resource_container.add_child(fire_container)
 	
 	var wood_container = ResourceContainer.instance()
 	wood_container.text = "wood"
 	wood_container.set_name("Wood")
+	wood_container.resource_card = Wood.new()
 	basic_resource_container.add_child(wood_container)
 	
 func do_untap_phase():
@@ -130,6 +155,8 @@ func do_draft_phase():
 	# done in parallel across machines, just show one at a time for now  
 	for player in players:
 		player.draft()
+		if player.player_id == SteamController.self_peer_id:
+			yield(player, "draft_complete")
 		
 	do_mana_ti_phase()
 
@@ -137,10 +164,15 @@ func do_mana_ti_phase():
 	log_message("starting mana phase")
 	
 	phase = GamePhase.MANA_TI
+	current_player_passed = false
+	
+	while not current_player_passed:
+		yield(self, "activated_or_passed")
+		
+		if not ability_stack.empty():
+			ability_stack.pop_front().resolve()
 	
 	players[0].do_mana_phase()
-	
-#	do_mana_nti_phase()
 
 func do_mana_nti_phase():
 	phase = GamePhase.MANA_NTI
@@ -232,3 +264,23 @@ func serialize():
 	state_dict.phase = phase
 	
 	return str(state_dict)
+
+func add_to_ability_stack(ability) -> void:
+	ability_stack.push_front(ability)
+	
+	stack_container.add_child(StackAbilityContainer.new(ability))
+#	stack_container.pu
+
+func on_activated_ability_or_passed(has_passed):
+	current_player_passed = has_passed
+	emit_signal("activated_or_passed")
+
+func _on_PassButton_pressed():
+	GameController.emit_signal("activated_ability_or_passed", true)
+
+func set_up_battlefields():
+	for child in player_field.get_children():
+		player_field.remove_child(child)
+	
+	for child in opponent_field.get_children():
+		opponent_field.remove_child(child)

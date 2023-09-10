@@ -2,6 +2,7 @@ extends Node
 class_name Player
 
 signal draft_complete
+signal took_action_or_passed
 
 var life_remaining
 var main
@@ -27,7 +28,8 @@ func _ready():
 		
 	# connect the signal but only for the host we'll deal with client players
 	# layer
-	main.draft_container.connect("draft_selection_complete", self, "_on_draft_selection_complete")
+	if player_id == SteamController.self_peer_id:
+		main.draft_container.connect("draft_selection_complete", self, "_on_draft_selection_complete")
 	
 
 func draw(amount = 1):
@@ -46,15 +48,6 @@ func draft():
 	
 	# This is where we yield and something will populated draft_selected_cards
 	main.draft_container.display_draft_pack(draft_pack)
-	
-	yield(self, "draft_complete")
-	
-	for card in draft_selected_cards:
-		draft_pack.erase(card)
-		hand.push_back(card)
-		main.hand_container.add_child(HandCard.new(card))
-
-	draft_selected_cards.clear()
 
 # Intended to simulate "other player" doing stuff
 func dummy_draft():
@@ -75,7 +68,10 @@ func take_action_or_pass() -> bool:
 	return false
 	
 func _on_draft_selection_complete(selected_cards):
-	draft_selected_cards = selected_cards
+	for card in selected_cards:
+		draft_pack.erase(card)
+		hand.push_back(card)
+		main.hand_container.add_child(HandCard.new(card))
 	
 	emit_signal("draft_complete")
 	
@@ -85,3 +81,27 @@ func clear_hand_container():
 
 func serialize():
 	return ""
+
+func add_starting_mana_converters():
+	var mc_one = ManaConverterPermanent.new(self)
+	mc_one.main = main
+	add_permanent(mc_one)
+	
+	var mc_two = ManaConverterPermanent.new(self)
+	mc_two.main = main
+	add_permanent(mc_two)
+
+# Default add case
+func add_permanent(permanent_to_add) -> void:
+	battlefields[self].push_back(permanent_to_add)
+	permanent_to_add.logic_container = battlefields[self]
+	
+	var field
+	
+	if player_id == SteamController.self_peer_id:
+		field = main.player_field
+	else:
+		field = main.opponent_field
+	
+	field.add_child(permanent_to_add)
+	permanent_to_add.tree_container = main.player_field

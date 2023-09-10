@@ -37,7 +37,7 @@ clip_text = true
 margin_left = 104.0
 margin_right = 920.0
 margin_bottom = 601.0
-rect_min_size = Vector2( 800, 0 )
+rect_min_size = Vector2( 673, 0 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
@@ -149,33 +149,38 @@ color = Color( 0.12549, 0.2, 0.803922, 1 )
 
 [node name="DraftContainerPopup" type="Node2D" parent="."]
 
-[node name="DraftContainer" type="VBoxContainer" parent="DraftContainerPopup"]
-visible = false
-margin_left = 205.0
-margin_top = 48.0
-margin_right = 772.0
-margin_bottom = 495.0
+[node name="PanelContainer" type="PanelContainer" parent="DraftContainerPopup"]
+margin_left = 203.0
+margin_top = 73.0
+margin_right = 763.0
+margin_bottom = 448.0
+
+[node name="DraftContainer" type="VBoxContainer" parent="DraftContainerPopup/PanelContainer"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 553.0
+margin_bottom = 368.0
 rect_clip_content = true
 script = ExtResource( 2 )
 
-[node name="AcceptButton" type="Button" parent="DraftContainerPopup/DraftContainer"]
-margin_right = 567.0
+[node name="AcceptButton" type="Button" parent="DraftContainerPopup/PanelContainer/DraftContainer"]
+margin_right = 546.0
 margin_bottom = 20.0
 text = "Accept"
 
-[node name="CardContainer" type="GridContainer" parent="DraftContainerPopup/DraftContainer"]
+[node name="CardContainer" type="GridContainer" parent="DraftContainerPopup/PanelContainer/DraftContainer"]
 margin_top = 24.0
-margin_right = 567.0
+margin_right = 546.0
 margin_bottom = 94.0
 columns = 3
 
-[node name="ColorRect" type="ColorRect" parent="DraftContainerPopup/DraftContainer/CardContainer"]
+[node name="ColorRect" type="ColorRect" parent="DraftContainerPopup/PanelContainer/DraftContainer/CardContainer"]
 margin_right = 50.0
 margin_bottom = 70.0
 rect_min_size = Vector2( 50, 70 )
 color = Color( 0.12549, 0.2, 0.803922, 1 )
 
-[node name="ColorRect2" type="ColorRect" parent="DraftContainerPopup/DraftContainer/CardContainer"]
+[node name="ColorRect2" type="ColorRect" parent="DraftContainerPopup/PanelContainer/DraftContainer/CardContainer"]
 margin_left = 54.0
 margin_right = 104.0
 margin_bottom = 70.0
@@ -230,4 +235,5 @@ margin_right = 1023.0
 margin_bottom = 598.0
 text = "Pass"
 
-[connection signal="pressed" from="DraftContainerPopup/DraftContainer/AcceptButton" to="DraftContainerPopup/DraftContainer" method="_on_AcceptButton_pressed"]
+[connection signal="pressed" from="DraftContainerPopup/PanelContainer/DraftContainer/AcceptButton" to="DraftContainerPopup/PanelContainer/DraftContainer" method="_on_AcceptButton_pressed"]
+[connection signal="pressed" from="Controls/PassButton" to="." method="_on_PassButton_pressed"]

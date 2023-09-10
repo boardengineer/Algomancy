@@ -1,34 +1,29 @@
 extends ColorRect
-class_name Permanent
+class_name StackAbilityContainer
 
 signal targeted
 
-var abilities = []
-
-var tapped = false
 
 var logic_container
 var tree_container
 
 # null for tokens
-var card
-var main
+var ability
 
-var player_owner
-
-func _init(f_player_owner):
+func _init(for_ability):
 	rect_min_size.x = 50
 	rect_min_size.y = 70
 	
-	player_owner = f_player_owner
+	ability = for_ability
 
 func _ready():
-	var _unused = connect("gui_input", self, "on_card_input")
+	var _unused = connect("gui_input", self, "on_input")
 	_unused = connect("targeted", TargetHelper, "on_target_selected")
 	
 	var name_label = Label.new()
 	
-	name_label.text = card.card_name
+	if ability.card:
+		name_label.text = ability.card.card_name
 
 	name_label.rect_min_size.x = 50
 	name_label.rect_min_size.y = 70
@@ -40,16 +35,13 @@ func _ready():
 	
 	call_deferred("add_child", name_label)
 
-func on_card_input(event):
+func on_input(event):
 	if event.is_pressed():
 		if not SteamController.has_priority:
 			return
 		
 		if GameController.is_targeting:
 			emit_signal("targeted", self)
-		else:
-			if abilities.size() == 1:
-				abilities[0].activate()
 
 func erase() -> void:
 	logic_container.erase(self)

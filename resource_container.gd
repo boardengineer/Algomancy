@@ -3,12 +3,13 @@ extends Control
 signal targeted
 
 onready var text_label = $MarginContainer/CardImage/Label
+onready var clickable_container = $MarginContainer/CardImage
 
 var text = ""
 var resource_card
 
 func _ready():
-	var _unused = connect("gui_input", self, "on_gui_input")
+	var _unused = clickable_container.connect("gui_input", self, "on_gui_input")
 	_unused = connect("targeted", TargetHelper, "on_target_selected")
 	
 	var my_style = StyleBoxFlat.new()
@@ -21,5 +22,5 @@ func on_gui_input(event):
 		if not SteamController.has_priority:
 			return
 		
-		if GameController.is_tageting:
+		if GameController.is_targeting:
 			emit_signal("targeted", self)

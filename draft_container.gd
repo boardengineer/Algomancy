@@ -7,6 +7,16 @@ onready var accept_button = $AcceptButton
 
 func _ready():
 	hide()
+	
+	var my_style = StyleBoxFlat.new()
+	my_style.set_bg_color(Color(0,1,1,1))
+	
+	var stylebox = get_stylebox("normal").duplicate()
+	stylebox.set_modulate(Color(1,1,1,1))
+	
+#	print_debug(get_stylebox(("normal")))
+	
+	add_stylebox_override("normal", stylebox)
 
 func display_draft_pack(draft_pack) -> void:
 	remove_all_cards()
@@ -33,6 +43,7 @@ func _on_AcceptButton_pressed():
 		if draft_card.selected:
 			selected.push_back(draft_card.card)
 	
+	print_debug("accept button pressed")
 	emit_signal("draft_selection_complete", selected)
 	hide()
 
@@ -51,3 +62,9 @@ func check_accept_button():
 	else:
 		accept_button.disabled = true
 		
+
+func hide() -> void:
+	get_parent().hide()
+	
+func show() -> void:
+	get_parent().show()

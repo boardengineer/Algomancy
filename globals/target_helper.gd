@@ -8,7 +8,8 @@ var selected_targets = []
 
 var main = null
 
-func get_targets_for_effect(effect) -> Array:
+func get_targets_for_effect(effect) -> void:
+	GameController.is_targeting = true
 	selected_targets = []
 	
 	while selected_targets != null and effect.needs_more_targets(selected_targets):
@@ -18,8 +19,10 @@ func get_targets_for_effect(effect) -> Array:
 			main.basic_resource_dialog.show()
 		
 		yield(self, "target_added")
-	
-	return selected_targets
+		
+		main.basic_resource_dialog.hide()
+
+	emit_signal("targeting_complete")
 
 func on_target_selected(target) -> void:
 	if GameController.is_targeting and valid_targets.has(target):
