@@ -10,14 +10,19 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Node",
+"class": "Ability",
+"language": "GDScript",
+"path": "res://ability.gd"
+}, {
+"base": "Node",
 "class": "Card",
 "language": "GDScript",
-"path": "res://card.gd"
+"path": "res://cards/card.gd"
 }, {
 "base": "ColorRect",
 "class": "DraftCard",
 "language": "GDScript",
-"path": "res://draft_card.gd"
+"path": "res://cards/draft_card.gd"
 }, {
 "base": "Node",
 "class": "Effect",
@@ -29,23 +34,24 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://hand_card.gd"
 }, {
+"base": "ColorRect",
+"class": "Permanent",
+"language": "GDScript",
+"path": "res://permanent.gd"
+}, {
 "base": "Node",
 "class": "Player",
 "language": "GDScript",
 "path": "res://player.gd"
-}, {
-"base": "Node",
-"class": "permanent",
-"language": "GDScript",
-"path": "res://permanent.gd"
 } ]
 _global_script_class_icons={
+"Ability": "",
 "Card": "",
 "DraftCard": "",
 "Effect": "",
 "HandCard": "",
-"Player": "",
-"permanent": ""
+"Permanent": "",
+"Player": ""
 }
 
 [application]
@@ -57,6 +63,8 @@ config/icon="res://icon.png"
 [autoload]
 
 SteamController="*res://steam_controller.gd"
+GameController="*res://game_controller.gd"
+TargetHelper="*res://target_helper.gd"
 
 [gui]
 

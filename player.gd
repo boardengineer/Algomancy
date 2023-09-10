@@ -6,6 +6,8 @@ signal draft_complete
 var life_remaining
 var main
 
+var player_id
+
 var hand := []
 var discard := []
 var exile := []
@@ -15,7 +17,8 @@ var battlefields := {}
 
 var draft_selected_cards := []
 
-func _init(game_main):
+func _init(game_main, assigned_player_id = -1):
+	player_id = assigned_player_id
 	main = game_main
 
 func _ready():
@@ -33,6 +36,10 @@ func draw(amount = 1):
 			hand.push_back(main.deck.pop_front())
 			
 func draft():
+	if player_id != SteamController.self_peer_id:
+		dummy_draft()
+		return
+	
 	draft_pack.append_array(hand)
 	hand.clear()
 	clear_hand_container()
@@ -49,9 +56,13 @@ func draft():
 
 	draft_selected_cards.clear()
 
-# Simulate a draft by picking random cards for dev and debug
+# Intended to simulate "other player" doing stuff
 func dummy_draft():
-	pass
+	draft_pack.append_array(hand)
+	hand.clear()
+	
+	while draft_pack.size() > 10:
+		hand.push_back(draft_pack.pop_front())
 
 func do_mana_phase():
 	pass

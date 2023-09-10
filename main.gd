@@ -3,7 +3,7 @@ extends HBoxContainer
 var players := []
 var deck := []
 
-var effect_stack := []
+var ability_stack := []
 
 var phase = GamePhase.UNTAP
 enum GamePhase {
@@ -70,6 +70,11 @@ func init():
 	
 	first_turn = true
 	
+	# TODO remove when not debugging
+	players[0].player_id = SteamController.self_peer_id
+	
+	print_debug(players[0].player_id)
+	
 	do_untap_phase()
 	
 func do_untap_phase():
@@ -101,17 +106,20 @@ func do_draft_phase():
 	
 	phase = GamePhase.DRAFT
 	
-	# done in parallel across machines, just show one for now 
-	players[0].draft()
+	# done in parallel across machines, just show one at a time for now  
+	for player in players:
+		player.draft()
 		
-#	do_mana_ti_phase()
+	do_mana_ti_phase()
 
 func do_mana_ti_phase():
+	log_message("starting mana phase")
+	
 	phase = GamePhase.MANA_TI
 	
 	players[0].do_mana_phase()
 	
-	do_mana_nti_phase()
+#	do_mana_nti_phase()
 
 func do_mana_nti_phase():
 	phase = GamePhase.MANA_NTI
@@ -172,10 +180,10 @@ func do_main_nti():
 
 func interaction_phase():
 	var all_passed = false
-	while (not effect_stack.empty()) or (not all_passed):
+	while (not ability_stack.empty()) or (not all_passed):
 		if all_passed:
-			var effect = effect_stack.pop_back()
-			effect.execute()
+			var ability = ability_stack.pop_back()
+			ability.resolve()
 		
 		all_passed = true 
 		for player in players:

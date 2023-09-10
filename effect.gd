@@ -1,17 +1,13 @@
 extends Node
 class_name Effect
 
-func can_be_targeted(selected_targets:Array = []) -> bool:
-	return true
+var targets = []
 
-func requires_more_targets(selected_targets:Array = []) -> bool:
+func needs_more_targets(current_targets = []) -> bool:
 	return false
 
-func get_valid_targets(selected_targets:Array = []) -> Array:
-	return []
-
-func validate_targets(selected_targets:Array) -> bool:
-	return true
+func get_valid_targets(current_targets = []) -> bool:
+	return false
 	
-func execute(selected_targets:Array) -> void:
+func resolve() -> void:
 	pass

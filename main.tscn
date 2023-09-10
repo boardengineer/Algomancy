@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://main.gd" type="Script" id=1]
 [ext_resource path="res://draft_container.gd" type="Script" id=2]
+[ext_resource path="res://resource_container.tscn" type="PackedScene" id=3]
 
 [node name="Main" type="HBoxContainer"]
 margin_right = 1024.0
@@ -79,9 +80,10 @@ size_flags_vertical = 0
 color = Color( 0.12549, 0.2, 0.803922, 1 )
 
 [node name="Label" type="Label" parent="GameFields/PlayerField/ColorRect"]
-margin_right = 40.0
-margin_bottom = 14.0
+margin_right = 50.0
+margin_bottom = 70.0
 rect_min_size = Vector2( 50, 70 )
+rect_pivot_offset = Vector2( -754, -95 )
 text = "50"
 align = 1
 valign = 1
@@ -148,6 +150,7 @@ color = Color( 0.12549, 0.2, 0.803922, 1 )
 [node name="DraftContainerPopup" type="Node2D" parent="."]
 
 [node name="DraftContainer" type="VBoxContainer" parent="DraftContainerPopup"]
+visible = false
 margin_left = 205.0
 margin_top = 48.0
 margin_right = 772.0
@@ -178,5 +181,48 @@ margin_right = 104.0
 margin_bottom = 70.0
 rect_min_size = Vector2( 50, 70 )
 color = Color( 0.12549, 0.2, 0.803922, 1 )
+
+[node name="BasicResourcePopup" type="Node2D" parent="."]
+
+[node name="ResourceContainer" type="VBoxContainer" parent="BasicResourcePopup"]
+visible = false
+margin_left = 318.0
+margin_top = 55.0
+margin_right = 640.0
+margin_bottom = 210.0
+rect_clip_content = true
+
+[node name="Controls" type="HBoxContainer" parent="BasicResourcePopup/ResourceContainer"]
+margin_right = 322.0
+margin_bottom = 20.0
+alignment = 1
+
+[node name="AcceptButton" type="Button" parent="BasicResourcePopup/ResourceContainer/Controls"]
+margin_left = 104.0
+margin_right = 160.0
+margin_bottom = 20.0
+text = "Accept"
+
+[node name="CancelButton" type="Button" parent="BasicResourcePopup/ResourceContainer/Controls"]
+margin_left = 164.0
+margin_right = 218.0
+margin_bottom = 20.0
+text = "Cancel"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="BasicResourcePopup/ResourceContainer"]
+margin_top = 24.0
+margin_right = 322.0
+margin_bottom = 24.0
+
+[node name="Control" parent="BasicResourcePopup/ResourceContainer/HBoxContainer" instance=ExtResource( 3 )]
+
+[node name="Controls" type="Node" parent="."]
+
+[node name="PassButton" type="Button" parent="Controls"]
+margin_left = 863.0
+margin_top = 539.0
+margin_right = 1023.0
+margin_bottom = 598.0
+text = "Pass"
 
 [connection signal="pressed" from="DraftContainerPopup/DraftContainer/AcceptButton" to="DraftContainerPopup/DraftContainer" method="_on_AcceptButton_pressed"]
