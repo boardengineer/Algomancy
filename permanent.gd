@@ -44,6 +44,9 @@ func on_card_input(event):
 	if event.is_pressed():
 		if not SteamController.has_priority:
 			return
+			
+		if player_owner.player_id != SteamController.self_peer_id:
+			return
 		
 		if GameController.is_targeting:
 			emit_signal("targeted", self)

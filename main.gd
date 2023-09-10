@@ -167,10 +167,13 @@ func do_mana_ti_phase():
 	current_player_passed = false
 	
 	while not current_player_passed:
+		print_debug("waiting for mana effect...")
 		yield(self, "activated_or_passed")
 		
 		if not ability_stack.empty():
-			ability_stack.pop_front().resolve()
+			var ability = ability_stack.pop_front()
+			ability.resolve()
+			remove_ability_from_stack_gui(ability)
 	
 	players[0].do_mana_phase()
 
@@ -270,6 +273,12 @@ func add_to_ability_stack(ability) -> void:
 	
 	stack_container.add_child(StackAbilityContainer.new(ability))
 #	stack_container.pu
+
+func remove_ability_from_stack_gui(ability) -> void:
+	for stack_ability in stack_container.get_children():
+		if stack_ability.ability == ability:
+			stack_container.remove_child(stack_ability)
+			break
 
 func on_activated_ability_or_passed(has_passed):
 	current_player_passed = has_passed

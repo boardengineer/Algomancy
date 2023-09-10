@@ -21,7 +21,8 @@ func get_targets_for_effect(effect) -> void:
 		yield(self, "target_added")
 		
 		main.basic_resource_dialog.hide()
-
+		
+	GameController.is_targeting = false
 	emit_signal("targeting_complete")
 
 func on_target_selected(target) -> void:
