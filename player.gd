@@ -2,8 +2,8 @@ extends Node
 class_name Player
 
 signal draft_complete
-signal took_action_or_passed
 
+var resource_plays_remaining 
 var life_remaining
 var main
 
@@ -75,7 +75,6 @@ func _on_draft_selection_complete(selected_cards):
 	emit_signal("draft_complete")
 	
 func add_to_hand(card) -> void:
-	print_debug("adding card ", card.card_name)
 	hand.push_back(card)
 	main.hand_container.add_child(HandCard.new(card, self))
 	
@@ -111,11 +110,8 @@ func add_permanent(permanent_to_add) -> void:
 	permanent_to_add.tree_container = main.player_field
 
 func remove_from_hand(card) -> void:
-	print_debug("removing card ", card.card_name)
 	for hand_card in main.hand_container.get_children():
-		print_debug("looking for match? ", hand_card.card.card_name)
 		if hand_card.card == card:
-			print_debug("found match?")
 			main.hand_container.remove_child(hand_card)
 	
 	hand.erase(card)
@@ -123,3 +119,35 @@ func remove_from_hand(card) -> void:
 func recycle_card_from_hand(card) -> void:
 	remove_from_hand(card)
 	main.recycle_card(card)
+
+func get_available_mana() -> int:
+	var untapped_mana = 0
+	
+	for permanent in battlefields[self]:
+		if not permanent.tapped and permanent.card.types.has(Card.CardType.RESOURCE):
+			untapped_mana += 1
+	
+	return untapped_mana
+
+func pay_mana(cost) -> bool:
+	var need_to_pay = cost
+	
+	for permanent in battlefields[self]:
+		if need_to_pay == 0:
+			break
+		
+		if not permanent.tapped and permanent.card.types.has(Card.CardType.RESOURCE):
+			permanent.tap()
+			need_to_pay -= 1
+	
+	return need_to_pay == 0
+
+func get_threshold() -> Array:
+	var result = [0,0,0,0,0]
+	
+	for permanent in battlefields[self]:
+		if permanent.card:
+			for i in result.size():
+				result[i] += permanent.card.affinity_provided[i]
+	
+	return result

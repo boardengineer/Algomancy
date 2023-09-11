@@ -1,16 +1,24 @@
-extends Node
+extends Effect
+class_name CardPermanentIntoPlayEffect
 
+var card
 
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
+func _init(f_card, f_player_owner).(f_player_owner):
+	card = f_card
 
+func can_trigger() -> bool:
+	return GameController.is_in_mana_phase()
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
+func needs_more_targets(current_targets = []) -> bool:
+	return false
 
+func get_valid_targets(_current_targets = []) -> Array:
+	return []
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+func resolve() -> void:
+	var permanent = Permanent.new(player_owner)
+	
+	permanent.abilities = card.permanent_abilities.duplicate()
+	
+	permanent.card = card
+	player_owner.add_permanent(permanent)

@@ -14,8 +14,6 @@ func _ready():
 	var stylebox = get_stylebox("normal").duplicate()
 	stylebox.set_modulate(Color(1,1,1,1))
 	
-#	print_debug(get_stylebox(("normal")))
-	
 	add_stylebox_override("normal", stylebox)
 
 func display_draft_pack(draft_pack) -> void:
@@ -43,7 +41,6 @@ func _on_AcceptButton_pressed():
 		if draft_card.selected:
 			selected.push_back(draft_card.card)
 	
-	print_debug("accept button pressed")
 	emit_signal("draft_selection_complete", selected)
 	hide()
 

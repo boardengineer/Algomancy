@@ -11,7 +11,6 @@ var main = null
 func get_targets_for_effect(effect) -> void:
 	GameController.is_targeting = true
 	selected_targets = []
-	
 	while selected_targets != null and effect.needs_more_targets(selected_targets):
 		valid_targets = effect.get_valid_targets(selected_targets)
 		
@@ -21,7 +20,7 @@ func get_targets_for_effect(effect) -> void:
 		yield(self, "target_added")
 		
 		main.basic_resource_dialog.hide()
-		
+	
 	GameController.is_targeting = false
 	emit_signal("targeting_complete")
 

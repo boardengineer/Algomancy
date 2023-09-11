@@ -15,6 +15,7 @@ var card
 var main
 
 var player_owner
+var name_label
 
 func _init(f_player_owner):
 	rect_min_size.x = 50
@@ -26,7 +27,7 @@ func _ready():
 	var _unused = connect("gui_input", self, "on_card_input")
 	_unused = connect("targeted", TargetHelper, "on_target_selected")
 	
-	var name_label = Label.new()
+	name_label = Label.new()
 	
 	name_label.text = card.card_name
 
@@ -57,3 +58,11 @@ func on_card_input(event):
 func erase() -> void:
 	logic_container.erase(self)
 	tree_container.remove_child(self)
+	
+func tap() -> void:
+	tapped = true
+	name_label.text = card.card_name + "T"
+	
+func untap() -> void:
+	tapped = false
+	name_label.text = card.card_name

@@ -25,4 +25,7 @@ enum GamePhase {
 	}
 
 func is_in_mana_phase() -> bool:
-	return phase == GamePhase.MAIN_TI or phase == GamePhase.MANA_NTI
+	return phase == GamePhase.MANA_TI or phase == GamePhase.MANA_NTI
+	
+func is_in_main_phase() -> bool:
+	return phase == GamePhase.MAIN_TI or phase == GamePhase.MAIN_NTI

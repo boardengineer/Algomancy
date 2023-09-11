@@ -44,13 +44,18 @@ func on_card_input(event):
 				is_resource = true
 				
 		if is_resource:
-#			TODO play the resource here
-			pass
+			if GameController.is_in_mana_phase():
+				var ability = ResourceFromHandAbility.new(card, player_owner)
+				ability.source = card
+				ability.main = player_owner.main
+				ability.card = card
+				if ability.can_trigger():
+					ability.activate()
 		else:
-#			TODO check phases, this is only mana
-			var ability = ManaTradeAbility.new(player_owner)
-			ability.source = card
-			ability.main = player_owner.main
-			ability.card = card
-			if ability.can_trigger():
-				ability.activate()
+			if GameController.is_in_mana_phase():
+				var ability = ManaTradeAbility.new(player_owner)
+				ability.source = card
+				ability.main = player_owner.main
+				ability.card = card
+				if ability.can_trigger():
+					ability.activate()

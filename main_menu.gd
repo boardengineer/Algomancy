@@ -2,7 +2,6 @@ extends Node2D
 
 
 func _ready():
-	print_debug("connected?")
 	var _unused = Steam.connect("lobby_created", self, "_on_Lobby_Created")
 
 func _on_Button_pressed():
@@ -13,7 +12,7 @@ func _on_CreateLobby_pressed():
 		Steam.createLobby(SteamController.LobbyAvailability.PUBLIC, 2)
 
 func _on_ShowLobbies_pressed():
-	print_debug("pressed show lobbies")
+	pass
 	
 func _on_Lobby_Created(connect: int, lobby_id: int) -> void:
 	if connect == 1:

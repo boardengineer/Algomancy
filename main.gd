@@ -13,6 +13,7 @@ signal activated_or_passed
 var first_turn = true
 
 const STARTING_DRAFT_PACK_SIZE = 16
+const RESOURCE_PLAYS_PER_TURN = 2
 
 onready var game_log = $GameLog
 onready var draft_container = $DraftContainerPopup/PanelContainer/DraftContainer
@@ -32,7 +33,7 @@ var current_player_passed
 func _ready():
 	TargetHelper.set_up_references(self)
 	
-	GameController.connect("activated_ability_or_passed", self, "on_activated_ability_or_passed")
+	var _unused = GameController.connect("activated_ability_or_passed", self, "on_activated_ability_or_passed")
 	
 	randomize()
 	init()
@@ -78,8 +79,6 @@ func init():
 	
 	# TODO remove when not debugging
 	players[0].player_id = SteamController.self_peer_id
-	
-	print_debug(players[0].player_id)
 	
 	do_untap_phase()
 
@@ -146,11 +145,12 @@ func do_draft_phase():
 func do_mana_ti_phase():
 	log_message("starting mana phase")
 	
+	players[0].resource_plays_remaining = RESOURCE_PLAYS_PER_TURN
+	
 	GameController.phase = GameController.GamePhase.MANA_TI
 	current_player_passed = false
 	
 	while not current_player_passed:
-		print_debug("waiting for mana effect...")
 		yield(self, "activated_or_passed")
 		
 		if not ability_stack.empty():
