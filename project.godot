@@ -14,6 +14,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://ability.gd"
 }, {
+"base": "Card",
+"class": "ArcLightningCard",
+"language": "GDScript",
+"path": "res://cards/red/arc_lightning.gd"
+}, {
 "base": "Effect",
 "class": "BasicResourceIntoHandEffect",
 "language": "GDScript",
@@ -34,11 +39,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://effects/card_permanent_into_play_effect.gd"
 }, {
-"base": "Ability",
-"class": "CreatureCardAbility",
-"language": "GDScript",
-"path": "res://abilities/creature_card_ability.gd"
-}, {
 "base": "ColorRect",
 "class": "DraftCard",
 "language": "GDScript",
@@ -47,27 +47,32 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "Effect",
 "language": "GDScript",
-"path": "res://effect.gd"
+"path": "res://effects/effect.gd"
+}, {
+"base": "Effect",
+"class": "ElectricDamageEffect",
+"language": "GDScript",
+"path": "res://effects/electric_damage_effect.gd"
 }, {
 "base": "Card",
 "class": "Fire",
 "language": "GDScript",
 "path": "res://cards/resources/fire.gd"
 }, {
+"base": "Ability",
+"class": "FlyingAbility",
+"language": "GDScript",
+"path": "res://abilities/fyling_ability.gd"
+}, {
 "base": "ColorRect",
 "class": "HandCard",
 "language": "GDScript",
 "path": "res://cards/hand_card.gd"
 }, {
-"base": "Ability",
-"class": "LuminaryScoutAbility",
-"language": "GDScript",
-"path": "res://cards/red/luminary_scout/luminary_scout_ability.gd"
-}, {
-"base": "Card",
+"base": "UnitCard",
 "class": "LuminaryScoutCard",
 "language": "GDScript",
-"path": "res://cards/red/luminary_scout/luminary_scout_card.gd"
+"path": "res://cards/red/luminary_scout.gd"
 }, {
 "base": "Ability",
 "class": "ManaConverterAbility",
@@ -115,22 +120,33 @@ _global_script_classes=[ {
 "path": "res://unit.gd"
 }, {
 "base": "Card",
+"class": "UnitCard",
+"language": "GDScript",
+"path": "res://cards/unit_card.gd"
+}, {
+"base": "Ability",
+"class": "UnitCardAbility",
+"language": "GDScript",
+"path": "res://abilities/unit_card_ability.gd"
+}, {
+"base": "Card",
 "class": "Wood",
 "language": "GDScript",
 "path": "res://cards/resources/wood.gd"
 } ]
 _global_script_class_icons={
 "Ability": "",
+"ArcLightningCard": "",
 "BasicResourceIntoHandEffect": "",
 "BasicResourceIntoPlayEffect": "",
 "Card": "",
 "CardPermanentIntoPlayEffect": "",
-"CreatureCardAbility": "",
 "DraftCard": "",
 "Effect": "",
+"ElectricDamageEffect": "",
 "Fire": "",
+"FlyingAbility": "",
 "HandCard": "",
-"LuminaryScoutAbility": "",
 "LuminaryScoutCard": "",
 "ManaConverterAbility": "",
 "ManaConverterCard": "",
@@ -141,6 +157,8 @@ _global_script_class_icons={
 "ResourceFromHandAbility": "",
 "StackAbilityContainer": "",
 "Unit": "",
+"UnitCard": "",
+"UnitCardAbility": "",
 "Wood": ""
 }
 
@@ -155,6 +173,7 @@ config/icon="res://icon.png"
 SteamController="*res://globals/steam_controller.gd"
 GameController="*res://globals/game_controller.gd"
 TargetHelper="*res://globals/target_helper.gd"
+ThresholdHelper="*res://globals/threshold_helper.gd"
 
 [gui]
 

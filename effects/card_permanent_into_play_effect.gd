@@ -21,4 +21,8 @@ func resolve() -> void:
 	permanent.abilities = card.permanent_abilities.duplicate()
 	
 	permanent.card = card
+	if card.types.has(Card.CardType.UNIT):
+		permanent.power = card.power
+		permanent.toughness = card.toughness
+	
 	player_owner.add_permanent(permanent)

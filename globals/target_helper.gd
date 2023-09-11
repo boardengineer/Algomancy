@@ -55,3 +55,16 @@ func get_basic_wood_target():
 	
 func get_basic_fire_target():
 	return main.basic_resource_container.get_node("Fire")
+	
+func get_all_targets() -> Array:
+	var all_targets = []
+	
+	for player in main.players:
+		all_targets.push_back(player)
+		
+	for battlefield in GameController.current_battlefields:
+		for unit in battlefield:
+			if unit.toughness > -1:
+				all_targets.push_back(unit)
+				
+	return all_targets

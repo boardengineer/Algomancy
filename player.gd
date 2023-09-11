@@ -151,3 +151,15 @@ func get_threshold() -> Array:
 				result[i] += permanent.card.affinity_provided[i]
 	
 	return result
+
+func meets_mana_cost(card) -> bool:
+	return get_available_mana() >= card.cost and meets_card_threshold(card)
+
+func meets_card_threshold(card) -> bool:
+	var my_threshold = get_threshold()
+	
+	for n in card.threshold_requirement.size():
+		if card.threshold_requirement[n] > my_threshold[n]:
+			return false
+	
+	return true

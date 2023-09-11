@@ -17,6 +17,10 @@ var main
 var player_owner
 var name_label
 
+var power
+var toughness
+var damage 
+
 func _init(f_player_owner):
 	rect_min_size.x = 50
 	rect_min_size.y = 70

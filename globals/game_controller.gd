@@ -5,6 +5,7 @@ signal activated_ability_or_passed
 var is_targeting = false
 
 var phase = GamePhase.UNTAP
+var current_battlefields = []
 enum GamePhase {
 	UNTAP,
 	DRAW,
