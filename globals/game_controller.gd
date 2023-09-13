@@ -2,8 +2,13 @@ extends Node
 
 signal activated_ability_or_passed
 
+# All yields should also yield to this to allow the game to be properly disconnected
+signal cancel
+
+
 var is_targeting = false
 var main
+var action_cancelled = false
 
 var phase = GamePhase.UNTAP
 var current_battlefields = []
@@ -43,10 +48,16 @@ func save_game():
 	save_file.close()
 	
 func load_game():
+	cancel_all_yields()
 	var load_file := File.new()
 	
 	load_file.open("user://algomancy_save.save", File.READ)
 	var content = load_file.get_as_text()
 	load_file.close()
 	
+	action_cancelled = false
 	main.deserialize_and_load(content)
+
+func cancel_all_yields() -> void:
+	action_cancelled = true
+	emit_signal("cancel")

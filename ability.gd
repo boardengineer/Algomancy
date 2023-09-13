@@ -47,6 +47,7 @@ func activate() -> bool:
 		else:
 			cancelled = true
 	
+	
 	var result
 	if not cancelled and pay_cost():
 		main.add_to_ability_stack(self)

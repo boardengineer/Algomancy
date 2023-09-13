@@ -35,12 +35,9 @@ func _ready():
 	GameController.set_up_references(self)
 	
 	var _unused = GameController.connect("activated_ability_or_passed", self, "on_activated_ability_or_passed")
-	GameController.save_game()
 	
 	var card_type = ArcLightningCard
 	var card_instance = card_type.new()
-	
-	print_debug(card_type)
 	
 	randomize()
 	init()
@@ -70,9 +67,8 @@ func init():
 		player.call_deferred("add_starting_mana_converters")
 	
 	# init deck, this will probably be a resource file
-	for n in 50:
-		var card = Card.new()
-		card.card_name = str(n)
+	for card_script in CardLibrary.all_card_scripts:
+		var card = card_script.new()
 		deck.push_back(card)
 		
 	deck.shuffle()
@@ -142,13 +138,14 @@ func do_draft_phase():
 	
 	GameController.phase = GameController.GamePhase.DRAFT
 	
-	# done in parallel across machines, just show one at a time for now  
+	# Done in parallel across machines, just show one at a time for now  
 	for player in players:
 		player.draft()
 		if player.player_id == SteamController.self_peer_id:
-			yield(player, "draft_complete")
+			yield(player, "draft_complete_or_cancelled")
 		
-	do_mana_ti_phase()
+	if not GameController.action_cancelled:
+		do_mana_ti_phase()
 
 func do_mana_ti_phase():
 	log_message("starting mana phase")
@@ -296,7 +293,20 @@ func deserialize_and_load(serialized_state):
 	# If the game is in draft phase all players are drafting
 	if GameController.phase == GameController.GamePhase.DRAFT:
 		SteamController.network_players_by_id[str(SteamController.self_peer_id)].draft()
-	
+		
+	resume_phase()
+
+func resume_phase() -> void:
+	if GameController.phase == GameController.GamePhase.DRAFT:
+		do_draft_phase()
+		return
+		
+	if GameController.phase == GameController.GamePhase.MANA_TI:
+		do_mana_ti_phase()
+		return
+		
+	pass
+
 
 func add_to_ability_stack(ability) -> void:
 	ability_stack.push_front(ability)

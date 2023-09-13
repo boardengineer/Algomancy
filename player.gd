@@ -1,7 +1,7 @@
 extends Node
 class_name Player
 
-signal draft_complete
+signal draft_complete_or_cancelled
 
 var resource_plays_remaining 
 var life_remaining
@@ -32,7 +32,7 @@ func _ready():
 	# layer
 	if player_id == SteamController.self_peer_id:
 		main.draft_container.connect("draft_selection_complete", self, "_on_draft_selection_complete")
-	
+		GameController.connect("cancel", self, "_on_cancelled")
 
 func draw(amount = 1):
 	for _n in amount:
@@ -48,11 +48,6 @@ func draft():
 	
 	hand.clear()
 	clear_hand_container()
-	
-	print_debug("draft pack size ", draft_pack.size())
-	
-	for card in draft_pack:
-		print_debug("drafting including ", card.card_name)
 	
 	# This is where we yield and something will populated draft_selected_cards
 	main.draft_container.display_draft_pack(draft_pack)
@@ -74,17 +69,21 @@ func declare_ti_attackers():
 # false for pass
 func take_action_or_pass() -> bool:
 	return false
-	
+
+func _on_cancelled():
+	emit_signal("draft_complete_or_cancelled")
+
 func _on_draft_selection_complete(selected_cards):
 	for card in selected_cards:
 		draft_pack.erase(card)
 		add_to_hand(card) 
 	
-	emit_signal("draft_complete")
+	emit_signal("draft_complete_or_cancelled")
 	
 func add_to_hand(card) -> void:
 	hand.push_back(card)
-	main.hand_container.add_child(HandCard.new(card, self))
+	if player_id == SteamController.self_peer_id:
+		main.hand_container.add_child(HandCard.new(card, self))
 	
 func clear_hand_container():
 	main.clear_hand_container()
@@ -114,6 +113,10 @@ func serialize():
 func load_data(player_dict) -> void:
 	# player_id is populated on _init
 	hand = deserialized_card_array_json(player_dict.hand)
+	if player_id == SteamController.self_peer_id:
+		for card in hand:
+			main.hand_container.add_child(HandCard.new(card, self))
+	
 	discard = deserialized_card_array_json(player_dict.discard)
 	exile = deserialized_card_array_json(player_dict.exile)
 	

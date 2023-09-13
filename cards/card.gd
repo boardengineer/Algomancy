@@ -11,7 +11,7 @@ enum CardType {UNIT, SPELL, RESOURCE}
 var affinity_provided = [0,0,0,0,0]
 var threshold_requirement = [0,0,0,0,0]
 
-var permanent_abilities = []
+var permanent_ability_scripts = []
 
 var power = -1
 var toughness = -1
@@ -26,15 +26,15 @@ func _init(f_network_id = -1):
 	SteamController.network_items_by_id[network_id] = self
 
 func activate(for_player) -> void:
-	for ability in activation_abilities(for_player):
-		ability.activate()
+	for ability_script in permanent_ability_scripts:
+		ability_script.new(for_player).activate()
 	
 func can_activate(for_player) -> bool:
 	if not for_player.meets_mana_cost(self):
 		return false
 	
-	for ability in activation_abilities(for_player):
-		if not ability.can_trigger():
+	for ability_script in permanent_ability_scripts:
+		if not ability_script.new(for_player).can_trigger():
 			return false
 	
 	return true

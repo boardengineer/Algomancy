@@ -55,22 +55,16 @@ func _ready():
 
 func on_gui_input(event):
 	if event.is_pressed():
-		print_debug("gui pressed")
 		if not SteamController.has_priority:
-			print_debug("gui pressed stop 1")
 			return
 			
 		if player_owner.player_id != SteamController.self_peer_id:
-			print_debug("gui pressed stop 2")
 			return
 		
 		if GameController.is_targeting:
-			print_debug("gui pressed stop 3")
 			emit_signal("targeted", self)
 		else:
-			print_debug("gui pressed stop 4")
 			if abilities.size() == 1:
-				print_debug("gui pressed stop 5")
 				abilities[0].activate()
 
 func erase() -> void:
@@ -96,10 +90,11 @@ func serialize() -> Dictionary:
 	return result_dict
 
 func load_data(permanent_data) -> void:
-	# network id is set by the constructor
+	card = CardLibrary.card_script_by_id[permanent_data.card.card_id].new(permanent_data.card.network_id)
 	
-	var card_from_data = Card.new(permanent_data.card.network_id)
-	card_from_data.load_data(permanent_data.card)
-	card = card_from_data
-	
+	for ability_script in card.permanent_ability_scripts:
+		var ability_instance = ability_script.new(player_owner)
+		ability_instance.source = self
+		ability_instance.main = player_owner.main
+		abilities.push_back(ability_instance)
 	damage = permanent_data.damage
