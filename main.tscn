@@ -230,10 +230,26 @@ margin_right = 124.0
 
 [node name="PassButton" type="Button" parent="Controls"]
 margin_left = 863.0
-margin_top = 539.0
+margin_top = 398.0
 margin_right = 1023.0
-margin_bottom = 598.0
+margin_bottom = 457.0
 text = "Pass"
+
+[node name="SaveButton" type="Button" parent="Controls"]
+margin_left = 861.0
+margin_top = 469.0
+margin_right = 1021.0
+margin_bottom = 528.0
+text = "Save"
+
+[node name="LoadButton" type="Button" parent="Controls"]
+margin_left = 861.0
+margin_top = 538.0
+margin_right = 1021.0
+margin_bottom = 597.0
+text = "Load"
 
 [connection signal="pressed" from="DraftContainerPopup/PanelContainer/DraftContainer/AcceptButton" to="DraftContainerPopup/PanelContainer/DraftContainer" method="_on_AcceptButton_pressed"]
 [connection signal="pressed" from="Controls/PassButton" to="." method="_on_PassButton_pressed"]
+[connection signal="pressed" from="Controls/SaveButton" to="." method="_on_SaveButton_pressed"]
+[connection signal="pressed" from="Controls/LoadButton" to="." method="_on_LoadButton_pressed"]

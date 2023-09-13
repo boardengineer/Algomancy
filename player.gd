@@ -21,11 +21,13 @@ var draft_selected_cards := []
 func _init(game_main, assigned_player_id = -1):
 	player_id = assigned_player_id
 	main = game_main
+	SteamController.network_players_by_id[str(player_id)] = self
 
-func _ready():
+func init_after_player_creation():
 	for player in main.players:
 		battlefields[player] = []
-		
+
+func _ready():
 	# connect the signal but only for the host we'll deal with client players
 	# layer
 	if player_id == SteamController.self_peer_id:
@@ -43,8 +45,14 @@ func draft():
 		return
 	
 	draft_pack.append_array(hand)
+	
 	hand.clear()
 	clear_hand_container()
+	
+	print_debug("draft pack size ", draft_pack.size())
+	
+	for card in draft_pack:
+		print_debug("drafting including ", card.card_name)
 	
 	# This is where we yield and something will populated draft_selected_cards
 	main.draft_container.display_draft_pack(draft_pack)
@@ -79,11 +87,64 @@ func add_to_hand(card) -> void:
 	main.hand_container.add_child(HandCard.new(card, self))
 	
 func clear_hand_container():
-	for child in main.hand_container.get_children():
-		main.hand_container.remove_child(child)
+	main.clear_hand_container()
 
 func serialize():
-	return ""
+	var result_dict = {}
+	
+	result_dict.player_id = str(player_id)
+	
+	result_dict.hand = serialize_card_array(hand)
+	result_dict.discard = serialize_card_array(discard)
+	result_dict.exile = serialize_card_array(exile)
+	result_dict.draft_pack = serialize_card_array(draft_pack)
+	
+	var serialized_battlefields = {}
+	for other_player in battlefields:
+		var serialized_field = []
+		
+		for permanent in battlefields[other_player]:
+			serialized_field.push_back(permanent.serialize())
+		
+		serialized_battlefields[other_player.player_id] = serialized_field
+	result_dict.battlefields = serialized_battlefields
+	
+	return result_dict
+
+func load_data(player_dict) -> void:
+	# player_id is populated on _init
+	hand = deserialized_card_array_json(player_dict.hand)
+	discard = deserialized_card_array_json(player_dict.discard)
+	exile = deserialized_card_array_json(player_dict.exile)
+	
+	draft_pack = deserialized_card_array_json(player_dict.draft_pack)
+	
+	for battlefield_player_id in player_dict.battlefields:
+		var battlefield = []
+		for permanent_json in player_dict.battlefields[battlefield_player_id]:
+			var permanent_to_add = Permanent.new(self, permanent_json.network_id)
+			permanent_to_add.load_data(permanent_json)
+			
+			add_permanent(permanent_to_add)
+#			battlefield.push_back(permanent_to_add)
+		battlefields[SteamController.network_players_by_id[str(battlefield_player_id)]] = battlefield
+
+static func serialize_card_array(card_array):
+	var result = []
+	for card in card_array:
+		result.push_back(card.serialize())
+	return result
+
+static func deserialized_card_array_json(card_array_json):
+	var result = []
+	
+	for card_json in card_array_json:
+		var card_to_add = CardLibrary.card_script_by_id[card_json.card_id].new(card_json.network_id)
+#		var card_to_add = Card.new(card_json.network_id)
+#		card_to_add.load_data(card_json)
+		result.push_back(card_to_add)
+	
+	return result
 
 func add_starting_mana_converters():
 	var mc_one = ManaConverterPermanent.new(self)

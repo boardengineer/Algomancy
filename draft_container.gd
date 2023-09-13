@@ -47,6 +47,9 @@ func _on_AcceptButton_pressed():
 func on_card_toggled():
 	check_accept_button()
 
+func hide():
+	get_parent().hide()
+	
 func check_accept_button():
 	var num_not_selected = 0
 	
@@ -58,10 +61,6 @@ func check_accept_button():
 		accept_button.disabled = false
 	else:
 		accept_button.disabled = true
-		
-
-func hide() -> void:
-	get_parent().hide()
 	
 func show() -> void:
 	get_parent().show()

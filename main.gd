@@ -32,8 +32,15 @@ var current_player_passed
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	TargetHelper.set_up_references(self)
+	GameController.set_up_references(self)
 	
 	var _unused = GameController.connect("activated_ability_or_passed", self, "on_activated_ability_or_passed")
+	GameController.save_game()
+	
+	var card_type = ArcLightningCard
+	var card_instance = card_type.new()
+	
+	print_debug(card_type)
 	
 	randomize()
 	init()
@@ -42,7 +49,7 @@ func _ready():
 func init():
 	set_up_basic_resource_container()
 	
-	set_up_stack()
+	clear_stack_container()
 	set_up_battlefields()
 	
 	players = []
@@ -58,6 +65,7 @@ func init():
 		players.push_back(new_player)
 		
 	for player in players:
+		player.init_after_player_creation()
 		player_list.add_child(player)
 		player.call_deferred("add_starting_mana_converters")
 	
@@ -72,7 +80,7 @@ func init():
 	for player in players:
 		for _n in STARTING_DRAFT_PACK_SIZE:
 			var top_card = deck.pop_front()
-#			log_message(str("adding ", top_card.card_name))
+#			log_message(s tr("adding ", top_card.card_name))
 			player.draft_pack.push_back(top_card)
 	
 	first_turn = true
@@ -82,7 +90,7 @@ func init():
 	
 	do_untap_phase()
 
-func set_up_stack() -> void:
+func clear_stack_container() -> void:
 	for child in stack_container.get_children():
 		stack_container.remove_child(child)
 
@@ -241,21 +249,59 @@ func serialize():
 	var state_dict := {}
 	
 	var state_players = []
+	
 	for player in players:
-		state_players.push_back(player.serliaze())
-		
+		state_players.push_back(player.serialize())
+	
 	state_dict.players = state_players
 	
 	state_dict.first_turn = first_turn
 	state_dict.phase = GameController.phase
 	
-	return str(state_dict)
+	return JSON.print(state_dict)
+
+func deserialize_and_load(serialized_state):
+	var loaded_dict = JSON.parse(serialized_state).result
+	
+	GameController.phase = loaded_dict.phase
+	first_turn = loaded_dict.first_turn
+	
+	reset_all_visuals()
+	
+	for player_child in player_list.get_children():
+		player_list.remove_child(player_child)
+	
+	for player in players:
+		player.queue_free()
+
+	players.clear()
+	
+	var player_data_map = {}
+	SteamController.network_players_by_id.clear()
+	
+	# Players have to first be initiated, then all their battlefields created
+	# And then finally all their properties and permanents can be assigned
+	for player in loaded_dict.players:
+		var player_to_add = Player.new(self, int(player.player_id))
+		players.push_back(player_to_add)
+		player_data_map[player_to_add] = player
+	
+	for player in players:
+		player.init_after_player_creation()
+	
+	for player in players:
+		player.load_data(player_data_map[player])
+		player_list.add_child(player)
+	
+	# If the game is in draft phase all players are drafting
+	if GameController.phase == GameController.GamePhase.DRAFT:
+		SteamController.network_players_by_id[str(SteamController.self_peer_id)].draft()
+	
 
 func add_to_ability_stack(ability) -> void:
 	ability_stack.push_front(ability)
 	
 	stack_container.add_child(StackAbilityContainer.new(ability))
-#	stack_container.pu
 
 func remove_ability_from_stack_gui(ability) -> void:
 	for stack_ability in stack_container.get_children():
@@ -270,9 +316,29 @@ func on_activated_ability_or_passed(has_passed):
 func _on_PassButton_pressed():
 	GameController.emit_signal("activated_ability_or_passed", true)
 
+func reset_all_visuals() -> void:
+	# Logical elements will be created from scratch so we only need to
+	# reset visuals
+	draft_container.hide()
+	draft_container.remove_all_cards()
+	
+	set_up_battlefields()
+	clear_hand_container()
+	clear_stack_container()
+
+func clear_hand_container():
+	for child in hand_container.get_children():
+		hand_container.remove_child(child)
+
 func set_up_battlefields():
 	for child in player_field.get_children():
 		player_field.remove_child(child)
 	
 	for child in opponent_field.get_children():
 		opponent_field.remove_child(child)
+
+func _on_SaveButton_pressed():
+	GameController.save_game()
+
+func _on_LoadButton_pressed():
+	GameController.load_game()
