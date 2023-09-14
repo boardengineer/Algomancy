@@ -35,6 +35,11 @@ _global_script_classes=[ {
 "path": "res://cards/red/animated_spark.gd"
 }, {
 "base": "Card",
+"class": "AnthemOfInspirationCard",
+"language": "GDScript",
+"path": "res://cards/test/anthem_of_inspiration.gd"
+}, {
+"base": "Card",
 "class": "ArcLightningCard",
 "language": "GDScript",
 "path": "res://cards/red/arc_lightning.gd"
@@ -53,6 +58,11 @@ _global_script_classes=[ {
 "class": "BasicResourceIntoPlayEffect",
 "language": "GDScript",
 "path": "res://mana/basic_resource_into_play_effect.gd"
+}, {
+"base": "Card",
+"class": "BoonOfInspirationCard",
+"language": "GDScript",
+"path": "res://cards/green/boon_of_inspiration.gd"
 }, {
 "base": "Card",
 "class": "BurningVengeanceCard",
@@ -205,6 +215,11 @@ _global_script_classes=[ {
 "path": "res://cards/red/infernal_wispweaver.gd"
 }, {
 "base": "Card",
+"class": "LightningBoltCard",
+"language": "GDScript",
+"path": "res://cards/test/lightning_bolt.gd"
+}, {
+"base": "Card",
 "class": "LuminousArc",
 "language": "GDScript",
 "path": "res://cards/red/luminous_arc.gd"
@@ -248,6 +263,11 @@ _global_script_classes=[ {
 "class": "MoltenbirthCard",
 "language": "GDScript",
 "path": "res://cards/red/molten_birth.gd"
+}, {
+"base": "Card",
+"class": "MonssGoblinRaidersCard",
+"language": "GDScript",
+"path": "res://cards/test/monss_goblin_raiders.gd"
 }, {
 "base": "Card",
 "class": "NimbusEelCard",
@@ -390,6 +410,11 @@ _global_script_classes=[ {
 "path": "res://cards/red/wildfire.gd"
 }, {
 "base": "Card",
+"class": "WindDrakeCard",
+"language": "GDScript",
+"path": "res://cards/test/wind_drake.gd"
+}, {
+"base": "Card",
 "class": "Wood",
 "language": "GDScript",
 "path": "res://cards/resources/wood.gd"
@@ -400,10 +425,12 @@ _global_script_class_icons={
 "AggressiveOne": "",
 "AllConsumingBlazeCard": "",
 "AnimatedSparkCard": "",
+"AnthemOfInspirationCard": "",
 "ArcLightningCard": "",
 "ArticleOfReverberationCard": "",
 "BasicResourceIntoHandEffect": "",
 "BasicResourceIntoPlayEffect": "",
+"BoonOfInspirationCard": "",
 "BurningVengeanceCard": "",
 "Card": "",
 "CardPermanentIntoPlayEffect": "",
@@ -434,6 +461,7 @@ _global_script_class_icons={
 "ImmolateCard": "",
 "InfernalCultivatorCard": "",
 "InfernalWispwaverCard": "",
+"LightningBoltCard": "",
 "LuminousArc": "",
 "ManaConverterAbility": "",
 "ManaConverterCard": "",
@@ -443,6 +471,7 @@ _global_script_class_icons={
 "MoltenRiftbreakerCard": "",
 "MoltenUpheavelCard": "",
 "MoltenbirthCard": "",
+"MonssGoblinRaidersCard": "",
 "NimbusEelCard": "",
 "OracleOfTheFlameCard": "",
 "Permanent": "",
@@ -471,6 +500,7 @@ _global_script_class_icons={
 "UnitCardAbility": "",
 "VoltwrathBehemothCard": "",
 "WildfireCard": "",
+"WindDrakeCard": "",
 "Wood": ""
 }
 
