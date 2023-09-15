@@ -10,4 +10,10 @@ func _init(f_network_id = -1).(f_network_id):
 	
 	# 2 / 2
 	# Flying
+	
+	power = 2
+	toughness = 2
+	
 	card_id = "base_wind_drake"
+	
+	ability_scripts.push_back(UnitCardAbility)

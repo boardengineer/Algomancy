@@ -26,7 +26,6 @@ func get_targets_for_effect(effect) -> void:
 	emit_signal("targeting_complete")
 
 func on_target_selected(target) -> void:
-	print_debug("on target selected")
 	if GameController.is_targeting and valid_targets.has(target):
 		selected_targets.push_back(target)
 		emit_signal("target_added")

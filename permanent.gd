@@ -18,8 +18,8 @@ var player_owner
 var name_label
 
 var power
-var toughness
-var damage 
+var toughness = -1
+var damage = -1
 
 var network_id
 
@@ -42,6 +42,9 @@ func _ready():
 	name_label = Label.new()
 	
 	name_label.text = card.card_name
+	
+	if toughness > -1:
+		 name_label.text = card.card_name + str("\n", power, "/", toughness)
 
 	name_label.rect_min_size.x = 50
 	name_label.rect_min_size.y = 70
