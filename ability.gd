@@ -11,7 +11,8 @@ var player_owner
 
 var is_static = false
 
-func _init(f_player_owner):
+func _init(f_card, f_player_owner):
+	card = f_card
 	player_owner = f_player_owner
 
 func pay_cost() -> bool:
@@ -50,7 +51,7 @@ func activate() -> bool:
 	
 	var result
 	if not cancelled and pay_cost():
-		main.add_to_ability_stack(self)
+		player_owner.main.add_to_ability_stack(self)
 		result = true
 	else:
 		result = false

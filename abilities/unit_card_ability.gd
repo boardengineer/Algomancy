@@ -1,7 +1,7 @@
 extends Ability
 class_name UnitCardAbility 
 
-func _init(f_card, f_player_owner).(f_player_owner):
+func _init(f_card, f_player_owner).(f_card, f_player_owner):
 	card = f_card
 	effects.push_back(CardPermanentIntoPlayEffect.new(f_card, f_player_owner))
 

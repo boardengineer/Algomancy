@@ -64,7 +64,7 @@ func on_gui_input(event):
 		if GameController.is_targeting:
 			emit_signal("targeted", self)
 		else:
-			if abilities.size() == 1:
+			if abilities.size() == 1 and abilities[0].can_trigger():
 				abilities[0].activate()
 
 func erase() -> void:
@@ -93,7 +93,7 @@ func load_data(permanent_data) -> void:
 	card = CardLibrary.card_script_by_id[permanent_data.card.card_id].new(permanent_data.card.network_id)
 	
 	for ability_script in card.permanent_ability_scripts:
-		var ability_instance = ability_script.new(player_owner)
+		var ability_instance = ability_script.new(card, player_owner)
 		ability_instance.source = self
 		ability_instance.main = player_owner.main
 		abilities.push_back(ability_instance)

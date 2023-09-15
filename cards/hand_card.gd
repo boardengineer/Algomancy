@@ -5,6 +5,7 @@ var card
 var selected = false
 
 var player_owner
+var resource_from_hand_ability = load("res://mana/resource_from_hand_ability.gd")
 
 func _init(source_card, f_player_owner):
 	rect_min_size.x = 50
@@ -45,17 +46,28 @@ func on_card_input(event):
 				
 		if is_resource:
 			if GameController.is_in_mana_phase():
-				var ability = ResourceFromHandAbility.new(card, player_owner)
+				var ability = resource_from_hand_ability.new(card, player_owner)
 				ability.source = card
 				ability.main = player_owner.main
 				ability.card = card
 				if ability.can_trigger():
 					ability.activate()
 		else:
+			var possible_abilities = []
 			if GameController.is_in_mana_phase():
-				var ability = ManaTradeAbility.new(player_owner)
+				var ability = ManaTradeAbility.new(null, player_owner)
 				ability.source = card
 				ability.main = player_owner.main
 				ability.card = card
 				if ability.can_trigger():
-					ability.activate()
+					possible_abilities.push_back(ability)
+			
+			if card.ability_scripts.size() == 1:
+				var ability = card.ability_scripts[0].new(card, player_owner)
+				
+				if ability.can_trigger():
+					possible_abilities.push_back(ability)
+			
+			if possible_abilities.size() == 1:
+				var on_stack = possible_abilities[0].activate()
+				

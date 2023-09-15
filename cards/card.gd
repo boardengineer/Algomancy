@@ -11,7 +11,11 @@ enum CardType {UNIT, SPELL, RESOURCE}
 var affinity_provided = [0,0,0,0,0]
 var threshold_requirement = [0,0,0,0,0]
 
+# Given to the unit that is created by this card
 var permanent_ability_scripts = []
+
+# Triggered when the card is played
+var ability_scripts = []
 
 var power = -1
 var toughness = -1
@@ -26,15 +30,15 @@ func _init(f_network_id = -1):
 	SteamController.network_items_by_id[network_id] = self
 
 func activate(for_player) -> void:
-	for ability_script in permanent_ability_scripts:
-		ability_script.new(for_player).activate()
+	for ability_script in ability_scripts:
+		ability_script.new(self, for_player).activate()
 	
 func can_activate(for_player) -> bool:
 	if not for_player.meets_mana_cost(self):
 		return false
 	
-	for ability_script in permanent_ability_scripts:
-		if not ability_script.new(for_player).can_trigger():
+	for ability_script in ability_scripts:
+		if not ability_script.new(self, for_player).can_trigger():
 			return false
 	
 	return true

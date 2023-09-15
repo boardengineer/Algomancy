@@ -123,14 +123,15 @@ func load_data(player_dict) -> void:
 	draft_pack = deserialized_card_array_json(player_dict.draft_pack)
 	
 	for battlefield_player_id in player_dict.battlefields:
-		var battlefield = []
+		var player
+		for q_player in main.players:
+			if q_player.player_id == int(battlefield_player_id):
+				player = q_player
 		for permanent_json in player_dict.battlefields[battlefield_player_id]:
 			var permanent_to_add = Permanent.new(self, permanent_json.network_id)
 			permanent_to_add.load_data(permanent_json)
 			
-			add_permanent(permanent_to_add)
-#			battlefield.push_back(permanent_to_add)
-		battlefields[SteamController.network_players_by_id[str(battlefield_player_id)]] = battlefield
+			add_permanent(permanent_to_add, battlefields[player])
 
 static func serialize_card_array(card_array):
 	var result = []
@@ -152,16 +153,16 @@ static func deserialized_card_array_json(card_array_json):
 func add_starting_mana_converters():
 	var mc_one = ManaConverterPermanent.new(self)
 	mc_one.main = main
-	add_permanent(mc_one)
+	add_permanent(mc_one, battlefields[self])
 	
 	var mc_two = ManaConverterPermanent.new(self)
 	mc_two.main = main
-	add_permanent(mc_two)
+	add_permanent(mc_two, battlefields[self])
 
 # Default add case
-func add_permanent(permanent_to_add) -> void:
-	battlefields[self].push_back(permanent_to_add)
-	permanent_to_add.logic_container = battlefields[self]
+func add_permanent(permanent_to_add, battlefield) -> void:
+	battlefield.push_back(permanent_to_add)
+	permanent_to_add.logic_container = battlefield
 	
 	var field
 	

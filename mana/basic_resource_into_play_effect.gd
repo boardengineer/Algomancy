@@ -20,4 +20,5 @@ func resolve() -> void:
 	var permanent = Permanent.new(player_owner)
 	permanent.card = resource_card
 	
-	player_owner.add_permanent(permanent)
+	var battlefield = player_owner.battlefields[player_owner]
+	player_owner.add_permanent(permanent, battlefield)

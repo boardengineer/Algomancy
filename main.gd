@@ -8,7 +8,7 @@ var ability_stack := []
 const NUM_PLAYERS := 2
 const ResourceContainer = preload("res://resource_container.tscn")
 
-signal activated_or_passed
+signal activated_or_passed_or_cancelled
 
 var first_turn = true
 
@@ -35,6 +35,7 @@ func _ready():
 	GameController.set_up_references(self)
 	
 	var _unused = GameController.connect("activated_ability_or_passed", self, "on_activated_ability_or_passed")
+	_unused = GameController.connect("cancel", self, "_on_cancelled")
 	
 	var card_type = ArcLightningCard
 	var card_instance = card_type.new()
@@ -155,17 +156,19 @@ func do_mana_ti_phase():
 	GameController.phase = GameController.GamePhase.MANA_TI
 	current_player_passed = false
 	
-	while not current_player_passed:
-		yield(self, "activated_or_passed")
+	while not current_player_passed and not GameController.action_cancelled:
+		yield(self, "activated_or_passed_or_cancelled")
 		
 		if not ability_stack.empty():
 			var ability = ability_stack.pop_front()
 			ability.resolve()
 			remove_ability_from_stack_gui(ability)
 	
-	players[0].do_mana_phase()
+	if not GameController.action_cancelled:
+		do_mana_nti_phase()
 
 func do_mana_nti_phase():
+	log_message("starting opp mana phase")
 	GameController.phase = GameController.GamePhase.MANA_NTI
 	
 	players[1].do_mana_phase()
@@ -173,22 +176,27 @@ func do_mana_nti_phase():
 	do_attack_ti_phase()
 
 func do_attack_ti_phase():
-	GameController.phase = GameController.GamePhase.ATTACK_TI
+	log_message("starting ti atk phase")
 	
-	players[0].declare_ti_attackers()
-	interaction_phase()
+	GameController.phase = GameController.GamePhase.ATTACK_TI
+#
+#	players[0].declare_ti_attackers()
+#	interaction_phase()
 	
 	do_block_ti_phase()
 
 func do_block_ti_phase():
+	log_message("starting ti blk phase")
+	
 	GameController.phase = GameController.GamePhase.BLOCK_TI
 	
-	players[1].declare_ti_blockers()
-	interaction_phase()
+#	players[1].declare_ti_blockers()3
 	
 	do_damage_ti_phase()
 
 func do_damage_ti_phase():
+	log_message("starting ti dmg phase")
+	
 	GameController.phase = GameController.GamePhase.DAMAGE_TI
 	
 	# Damage calculations go here
@@ -196,30 +204,68 @@ func do_damage_ti_phase():
 	do_post_combat_ti()
 
 func do_post_combat_ti():
+	log_message("starting ti post phase")
+	
 	GameController.phase = GameController.GamePhase.POST_COMBAT_TI
 	
 	# Triggers should go here
-	interaction_phase()
+#	interaction_phase()
+
+	do_attack_nti_phase()
 	
 func do_attack_nti_phase():
-	pass
+	log_message("starting nti atk phase")
+	
+	GameController.phase = GameController.GamePhase.ATTACK_NTI
+	
+	do_block_nti_phase()
 
 func do_block_nti_phase():
-	pass
+	log_message("starting nti blk phase")
+	
+	GameController.phase = GameController.GamePhase.BLOCK_NTI
+	
+	do_damage_nti_phase()
 	
 func do_damage_nti_phase():
-	pass
+	log_message("starting nti dmg phase")
+	
+	GameController.phase = GameController.GamePhase.DAMAGE_NTI
+	
+	do_post_combat_nti_phase()
 
 func do_post_combat_nti_phase():
-	pass
+	log_message("starting nti post phase")
+	
+	GameController.phase = GameController.GamePhase.POST_COMBAT_NTI
+	do_regroup()
 	
 func do_regroup():
-	pass
+	log_message("starting regroup phase")
+	
+	GameController.phase = GameController.GamePhase.REGROUP
+	do_main_ti()
 	
 func do_main_ti():
-	pass
+	log_message("starting ti main phase")
+	
+	GameController.phase = GameController.GamePhase.MAIN_TI
+	
+	current_player_passed = false
+	while not current_player_passed and not GameController.action_cancelled:
+		yield(self, "activated_or_passed_or_cancelled")
+		
+		if current_player_passed and not ability_stack.empty():
+			var ability = ability_stack.pop_front()
+			ability.resolve()
+			remove_ability_from_stack_gui(ability)
+			current_player_passed = false
+	
+#	do_main_nti()
 	
 func do_main_nti():
+	log_message("starting nti main phase")
+	
 	pass
 
 func interaction_phase():
@@ -305,7 +351,8 @@ func resume_phase() -> void:
 		do_mana_ti_phase()
 		return
 		
-	pass
+	if GameController.phase == GameController.GamePhase.MAIN_TI:
+		do_main_ti()
 
 
 func add_to_ability_stack(ability) -> void:
@@ -321,7 +368,7 @@ func remove_ability_from_stack_gui(ability) -> void:
 
 func on_activated_ability_or_passed(has_passed):
 	current_player_passed = has_passed
-	emit_signal("activated_or_passed")
+	emit_signal("activated_or_passed_or_cancelled")
 
 func _on_PassButton_pressed():
 	GameController.emit_signal("activated_ability_or_passed", true)
@@ -352,3 +399,6 @@ func _on_SaveButton_pressed():
 
 func _on_LoadButton_pressed():
 	GameController.load_game()
+
+func _on_cancelled():
+	emit_signal("activated_or_passed_or_cancelled")

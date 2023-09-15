@@ -7,4 +7,7 @@ func _init(f_network_id = -1).(f_network_id):
 	
 	types.push_back(CardType.UNIT)
 	card_name = "Raider"
+	
 	card_id = "test_monss_goblin_raiders"
+	
+	ability_scripts.push_back(UnitCardAbility)

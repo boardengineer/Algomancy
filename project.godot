@@ -517,6 +517,10 @@ GameController="*res://globals/game_controller.gd"
 TargetHelper="*res://globals/target_helper.gd"
 CardLibrary="*res://globals/card_library.gd"
 
+[global]
+
+global=false
+
 [gui]
 
 common/drop_mouse_on_gui_input_disabled=true
