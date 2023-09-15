@@ -89,6 +89,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://cards/red/conduit_of_pain.gd"
 }, {
+"base": "Effect",
+"class": "DamageAnyTargetEffect",
+"language": "GDScript",
+"path": "res://effects/damage_any_target_effect.gd"
+}, {
 "base": "Card",
 "class": "DelverOfMysteries",
 "language": "GDScript",
@@ -213,6 +218,11 @@ _global_script_classes=[ {
 "class": "InfernalWispwaverCard",
 "language": "GDScript",
 "path": "res://cards/red/infernal_wispweaver.gd"
+}, {
+"base": "Ability",
+"class": "LightningBoltAbility",
+"language": "GDScript",
+"path": "res://abilities/lightning_bolt_ability.gd"
 }, {
 "base": "Card",
 "class": "LightningBoltCard",
@@ -436,6 +446,7 @@ _global_script_class_icons={
 "CardPermanentIntoPlayEffect": "",
 "ChanneledBoonCard": "",
 "ConduitOfPain": "",
+"DamageAnyTargetEffect": "",
 "DelverOfMysteries": "",
 "DraftCard": "",
 "Effect": "",
@@ -461,6 +472,7 @@ _global_script_class_icons={
 "ImmolateCard": "",
 "InfernalCultivatorCard": "",
 "InfernalWispwaverCard": "",
+"LightningBoltAbility": "",
 "LightningBoltCard": "",
 "LuminousArc": "",
 "ManaConverterAbility": "",
@@ -516,6 +528,13 @@ SteamController="*res://globals/steam_controller.gd"
 GameController="*res://globals/game_controller.gd"
 TargetHelper="*res://globals/target_helper.gd"
 CardLibrary="*res://globals/card_library.gd"
+DamageHelper="*res://globals/damage_helper.gd"
+
+[display]
+
+window/size/width=1920
+window/size/height=1080
+window/size/resizable=false
 
 [global]
 

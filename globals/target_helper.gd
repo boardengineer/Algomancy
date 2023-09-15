@@ -15,7 +15,8 @@ func get_targets_for_effect(effect) -> void:
 		valid_targets = effect.get_valid_targets(selected_targets)
 		
 		for resource in get_all_resource_targets():
-			main.basic_resource_dialog.show()
+			if valid_targets.has(resource):
+				main.basic_resource_dialog.show()
 		
 		yield(self, "target_added")
 		
@@ -25,6 +26,7 @@ func get_targets_for_effect(effect) -> void:
 	emit_signal("targeting_complete")
 
 func on_target_selected(target) -> void:
+	print_debug("on target selected")
 	if GameController.is_targeting and valid_targets.has(target):
 		selected_targets.push_back(target)
 		emit_signal("target_added")
@@ -68,3 +70,11 @@ func get_all_targets() -> Array:
 				all_targets.push_back(unit)
 				
 	return all_targets
+
+func get_current_battlefields() -> Array:
+	# TODO, make this return battlefields based on phase
+	return [main.players[0].battlefields[main.players[0]]]
+		
+func get_targetable_players() -> Array:
+	# TODO, make this return player based on phase and combat state
+	return [main.players[0]]

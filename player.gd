@@ -4,7 +4,7 @@ class_name Player
 signal draft_complete_or_cancelled
 
 var resource_plays_remaining 
-var life_remaining
+var life_remaining = 30
 var main
 
 var player_id

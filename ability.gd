@@ -40,8 +40,10 @@ func activate() -> bool:
 	for effect in effects:
 		# Blocking call to get targets from the UI
 		TargetHelper.get_targets_for_effect(effect)
+		
 		if GameController.is_targeting:
 			yield(TargetHelper, "targeting_complete")
+		
 		var targets = TargetHelper.selected_targets
 		if not effect.needs_more_targets([]) or targets:
 			effect.targets = targets

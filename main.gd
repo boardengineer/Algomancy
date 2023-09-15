@@ -9,6 +9,7 @@ const NUM_PLAYERS := 2
 const ResourceContainer = preload("res://resource_container.tscn")
 
 signal activated_or_passed_or_cancelled
+signal targeted_player
 
 var first_turn = true
 
@@ -27,6 +28,9 @@ onready var basic_resource_container = $BasicResourcePopup/ResourceContainer/HBo
 onready var basic_resource_dialog = $BasicResourcePopup/ResourceContainer
 onready var pass_button = $Controls/PassButton
 
+onready var player_target_self = $PlayerTargets/SelfPlayerButton
+onready var player_target_opponent = $PlayerTargets/OppPlayerButton
+
 var current_player_passed
 
 # Called when the node enters the scene tree for the first time.
@@ -36,6 +40,10 @@ func _ready():
 	
 	var _unused = GameController.connect("activated_ability_or_passed", self, "on_activated_ability_or_passed")
 	_unused = GameController.connect("cancel", self, "_on_cancelled")
+	
+	_unused = player_target_self.connect("gui_input", self, "player_self_gui_event")
+	_unused = player_target_opponent.connect("gui_input", self, "player_opponent_gui_event")
+	_unused = connect("targeted_player", TargetHelper, "on_target_selected")
 	
 	var card_type = ArcLightningCard
 	var card_instance = card_type.new()
@@ -402,3 +410,31 @@ func _on_LoadButton_pressed():
 
 func _on_cancelled():
 	emit_signal("activated_or_passed_or_cancelled")
+
+func player_self_gui_event(event):
+	if event.is_pressed():
+		print_debug("pressed self player")
+		if not SteamController.has_priority:
+			return
+			
+		if GameController.is_targeting:
+			var player
+			for q_player in players:
+				if q_player.player_id == SteamController.self_peer_id:
+					player = q_player
+			
+			emit_signal("targeted_player", player)
+	
+func player_opponent_gui_event(event):
+	if event.is_pressed():
+		print_debug("pressed other player")
+		if not SteamController.has_priority:
+			return
+			
+		if GameController.is_targeting:
+			var player
+			for q_player in players:
+				if q_player.player_id != SteamController.self_peer_id:
+					player = q_player
+			
+			emit_signal("targeted_player", player)
