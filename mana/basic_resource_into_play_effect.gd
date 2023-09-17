@@ -17,7 +17,7 @@ func resolve() -> void:
 	var resource_container = targets[0]
 	
 	var resource_card = resource_container.resource_card.duplicate()
-	var permanent = Permanent.new(player_owner)
+	var permanent = CardLibrary.permanent_for_owner(player_owner)
 	permanent.card = resource_card
 	
 	var battlefield = player_owner.battlefields[player_owner]

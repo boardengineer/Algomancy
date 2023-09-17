@@ -10,8 +10,10 @@ var is_targeting = false
 var main
 var action_cancelled = false
 
-var phase = GamePhase.UNTAP
 var current_battlefields = []
+
+var interaction_phase = false
+var phase = GamePhase.UNTAP
 enum GamePhase {
 	UNTAP,
 	DRAW,
@@ -30,6 +32,9 @@ enum GamePhase {
 	MAIN_TI,
 	MAIN_NTI
 	}
+
+func is_declaring_attackers() -> bool:
+	return phase == GamePhase.ATTACK_TI and not interaction_phase
 
 func is_in_mana_phase() -> bool:
 	return phase == GamePhase.MANA_TI or phase == GamePhase.MANA_NTI
@@ -61,3 +66,29 @@ func load_game():
 func cancel_all_yields() -> void:
 	action_cancelled = true
 	emit_signal("cancel")
+
+func update_static_state() -> void:
+	# Reset all Stats
+	for player in main.players:
+		# TODO update formation 
+		
+		for battlefield_player in player.battlefields:
+			var battlefield = player.battlefields[battlefield_player]
+			for permanent in battlefield:
+				if permanent.toughness:
+					permanent.power = permanent.card.power
+					permanent.toughness = permanent.card.toughness
+			
+	
+	# Apply active effects Effects
+	
+	# Check for death
+	for player in main.players:
+		# TODO update formation 
+		
+		for battlefield_player in player.battlefields:
+			var battlefield = player.battlefields[battlefield_player]
+			for permanent in battlefield:
+				if permanent.toughness:
+					if permanent.damage >= permanent.toughness:
+						permanent.die()

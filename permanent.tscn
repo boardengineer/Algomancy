@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://permanent.gd" type="Script" id=1]
+
+[node name="Permanent" type="ColorRect"]
+margin_right = 50.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 50, 70 )
+script = ExtResource( 1 )
+
+[node name="Label" type="Label" parent="."]
+margin_right = 50.0
+margin_bottom = 70.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "UNIT
+GOES
+HERE
+"
+align = 1
+valign = 1

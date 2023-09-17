@@ -54,20 +54,21 @@ func on_card_input(event):
 					ability.activate()
 		else:
 			var possible_abilities = []
-			if GameController.is_in_mana_phase():
-				var ability = ManaTradeAbility.new(null, player_owner)
-				ability.source = card
-				ability.main = player_owner.main
-				ability.card = card
-				if ability.can_trigger():
-					possible_abilities.push_back(ability)
-			
-			if card.ability_scripts.size() == 1:
-				var ability = card.ability_scripts[0].new(card, player_owner)
+			if not GameController.is_targeting:
+				if GameController.is_in_mana_phase():
+					var ability = ManaTradeAbility.new(null, player_owner)
+					ability.source = card
+					ability.main = player_owner.main
+					ability.card = card
+					if ability.can_trigger():
+						possible_abilities.push_back(ability)
 				
-				if ability.can_trigger():
-					possible_abilities.push_back(ability)
-			
-			if possible_abilities.size() == 1:
-				var on_stack = possible_abilities[0].activate()
+				if card.ability_scripts.size() == 1:
+					var ability = card.ability_scripts[0].new(card, player_owner)
+					
+					if ability.can_trigger():
+						possible_abilities.push_back(ability)
+				
+				if possible_abilities.size() == 1:
+					var on_stack = possible_abilities[0].activate()
 				

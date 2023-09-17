@@ -10,6 +10,7 @@ var main = null
 
 func get_targets_for_effect(effect) -> void:
 	GameController.is_targeting = true
+	main.target_image.show()
 	selected_targets = []
 	while selected_targets != null and effect.needs_more_targets(selected_targets):
 		valid_targets = effect.get_valid_targets(selected_targets)
@@ -23,7 +24,13 @@ func get_targets_for_effect(effect) -> void:
 		main.basic_resource_dialog.hide()
 	
 	GameController.is_targeting = false
+	main.target_image.hide()
 	emit_signal("targeting_complete")
+
+func get_targets_for_attack(permanent) -> Array:
+	GameController.is_targeting = true
+	
+	return main.player_formation.get_possible_positions_for_unit(permanent)
 
 func on_target_selected(target) -> void:
 	if GameController.is_targeting and valid_targets.has(target):
@@ -65,7 +72,7 @@ func get_all_targets() -> Array:
 		
 	for battlefield in GameController.current_battlefields:
 		for unit in battlefield:
-			if unit.toughness > -1:
+			if unit.toughness:
 				all_targets.push_back(unit)
 				
 	return all_targets
@@ -75,5 +82,9 @@ func get_current_battlefields() -> Array:
 	return [main.players[0].battlefields[main.players[0]]]
 		
 func get_targetable_players() -> Array:
-	# TODO, make this return player based on phase and combat state
-	return [main.players[0]]
+	# TODO proper targetable logic
+	var res_players = []
+	for player in main.players:
+		res_players.push_back(player)
+	
+	return res_players

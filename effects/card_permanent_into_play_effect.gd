@@ -16,8 +16,7 @@ func get_valid_targets(_current_targets = []) -> Array:
 	return []
 
 func resolve() -> void:
-	var permanent = Permanent.new(player_owner)
-	
+	var permanent = CardLibrary.permanent_for_owner(player_owner)
 	var abilities = []
 	
 	permanent.card = card

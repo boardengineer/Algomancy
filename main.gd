@@ -10,6 +10,7 @@ const ResourceContainer = preload("res://resource_container.tscn")
 
 signal activated_or_passed_or_cancelled
 signal targeted_player
+signal formation_accepted
 
 var first_turn = true
 
@@ -23,13 +24,18 @@ onready var player_list = $Players
 onready var opponent_field = $GameFields/OpponentField
 onready var player_field = $GameFields/PlayerField
 onready var hand_container = $GameFields/HandContainer
+onready var discard_container = $DiscardHolder/Discard
 onready var stack_container = $Stack
 onready var basic_resource_container = $BasicResourcePopup/ResourceContainer/HBoxContainer
 onready var basic_resource_dialog = $BasicResourcePopup/ResourceContainer
 onready var pass_button = $Controls/PassButton
 
+onready var player_formation = $Formations/PanelContainer/PlayerFormation
+
 onready var player_target_self = $PlayerTargets/SelfPlayerButton
 onready var player_target_opponent = $PlayerTargets/OppPlayerButton
+
+onready var target_image = $TargetContainer/TargetIcon
 
 var current_player_passed
 
@@ -55,8 +61,9 @@ func _ready():
 func init():
 	set_up_basic_resource_container()
 	
-	clear_stack_container()
+	reset_all_visuals()
 	set_up_battlefields()
+	target_image.hide()
 	
 	players = []
 	
@@ -179,7 +186,8 @@ func do_mana_nti_phase():
 	log_message("starting opp mana phase")
 	GameController.phase = GameController.GamePhase.MANA_NTI
 	
-	players[1].do_mana_phase()
+	log_message("(skipping phase)")
+#	players[1].do_mana_phase()
 	
 	do_attack_ti_phase()
 
@@ -187,19 +195,34 @@ func do_attack_ti_phase():
 	log_message("starting ti atk phase")
 	
 	GameController.phase = GameController.GamePhase.ATTACK_TI
-#
-#	players[0].declare_ti_attackers()
-#	interaction_phase()
+	player_formation.show()
+	yield(self,"formation_accepted")
+	player_formation.hide()
+
+	GameController.interaction_phase = true
+	current_player_passed = false
+	while not current_player_passed and not GameController.action_cancelled:
+		yield(self, "activated_or_passed_or_cancelled")
+		
+		if not ability_stack.empty():
+			var ability = ability_stack.pop_front()
+			ability.resolve()
+			remove_ability_from_stack_gui(ability)
 	
-	do_block_ti_phase()
+	GameController.interaction_phase = false
+	
+	if not GameController.action_cancelled:
+		do_block_ti_phase()
 
 func do_block_ti_phase():
 	log_message("starting ti blk phase")
+	
 	
 	GameController.phase = GameController.GamePhase.BLOCK_TI
 	
 #	players[1].declare_ti_blockers()3
 	
+	log_message("(skipping phase)")
 	do_damage_ti_phase()
 
 func do_damage_ti_phase():
@@ -209,6 +232,7 @@ func do_damage_ti_phase():
 	
 	# Damage calculations go here
 	
+	log_message("(skipping phase)")
 	do_post_combat_ti()
 
 func do_post_combat_ti():
@@ -219,6 +243,7 @@ func do_post_combat_ti():
 	# Triggers should go here
 #	interaction_phase()
 
+	log_message("(skipping phase)")
 	do_attack_nti_phase()
 	
 func do_attack_nti_phase():
@@ -226,11 +251,13 @@ func do_attack_nti_phase():
 	
 	GameController.phase = GameController.GamePhase.ATTACK_NTI
 	
+	log_message("(skipping phase)")
 	do_block_nti_phase()
 
 func do_block_nti_phase():
 	log_message("starting nti blk phase")
 	
+	log_message("(skipping phase)")
 	GameController.phase = GameController.GamePhase.BLOCK_NTI
 	
 	do_damage_nti_phase()
@@ -238,6 +265,7 @@ func do_block_nti_phase():
 func do_damage_nti_phase():
 	log_message("starting nti dmg phase")
 	
+	log_message("(skipping phase)")
 	GameController.phase = GameController.GamePhase.DAMAGE_NTI
 	
 	do_post_combat_nti_phase()
@@ -245,12 +273,14 @@ func do_damage_nti_phase():
 func do_post_combat_nti_phase():
 	log_message("starting nti post phase")
 	
+	log_message("(skipping phase)")
 	GameController.phase = GameController.GamePhase.POST_COMBAT_NTI
 	do_regroup()
 	
 func do_regroup():
 	log_message("starting regroup phase")
 	
+	log_message("(skipping phase)")
 	GameController.phase = GameController.GamePhase.REGROUP
 	do_main_ti()
 	
@@ -268,13 +298,18 @@ func do_main_ti():
 			ability.resolve()
 			remove_ability_from_stack_gui(ability)
 			current_player_passed = false
+			GameController.update_static_state()
 	
-#	do_main_nti()
+	do_main_nti()
 	
 func do_main_nti():
 	log_message("starting nti main phase")
 	
-	pass
+	GameController.phase = GameController.GamePhase.MAIN_NTI
+	
+	log_message("(skipping phase)")
+	first_turn = false
+	do_untap_phase()
 
 func interaction_phase():
 	var all_passed = false
@@ -358,10 +393,14 @@ func resume_phase() -> void:
 	if GameController.phase == GameController.GamePhase.MANA_TI:
 		do_mana_ti_phase()
 		return
-		
+	
+	if GameController.phase == GameController.GamePhase.ATTACK_TI:
+		do_attack_ti_phase()
+		return
+	
 	if GameController.phase == GameController.GamePhase.MAIN_TI:
 		do_main_ti()
-
+		return
 
 func add_to_ability_stack(ability) -> void:
 	ability_stack.push_front(ability)
@@ -390,10 +429,15 @@ func reset_all_visuals() -> void:
 	set_up_battlefields()
 	clear_hand_container()
 	clear_stack_container()
+	clear_discard_container()
 
 func clear_hand_container():
 	for child in hand_container.get_children():
 		hand_container.remove_child(child)
+
+func clear_discard_container():
+	for child in discard_container.get_children():
+		discard_container.remove_child(child)
 
 func set_up_battlefields():
 	for child in player_field.get_children():
@@ -413,7 +457,6 @@ func _on_cancelled():
 
 func player_self_gui_event(event):
 	if event.is_pressed():
-		print_debug("pressed self player")
 		if not SteamController.has_priority:
 			return
 			
@@ -424,10 +467,9 @@ func player_self_gui_event(event):
 					player = q_player
 			
 			emit_signal("targeted_player", player)
-	
+
 func player_opponent_gui_event(event):
 	if event.is_pressed():
-		print_debug("pressed other player")
 		if not SteamController.has_priority:
 			return
 			
@@ -438,3 +480,8 @@ func player_opponent_gui_event(event):
 					player = q_player
 			
 			emit_signal("targeted_player", player)
+
+func _on_AcceptFormation_pressed():
+	if not GameController.is_targeting:
+		if player_formation.is_formation_valid():
+			emit_signal("formation_accepted")

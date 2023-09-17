@@ -84,7 +84,12 @@ func add_to_hand(card) -> void:
 	hand.push_back(card)
 	if player_id == SteamController.self_peer_id:
 		main.hand_container.add_child(HandCard.new(card, self))
-	
+
+func add_to_discard(card) -> void:
+	discard.push_back(card)
+	if player_id == SteamController.self_peer_id:
+		main.discard_container.add_child(HandCard.new(card, self))
+
 func clear_hand_container():
 	main.clear_hand_container()
 
@@ -128,7 +133,7 @@ func load_data(player_dict) -> void:
 			if q_player.player_id == int(battlefield_player_id):
 				player = q_player
 		for permanent_json in player_dict.battlefields[battlefield_player_id]:
-			var permanent_to_add = Permanent.new(self, permanent_json.network_id)
+			var permanent_to_add = CardLibrary.permanent_for_owner(self, permanent_json.network_id)
 			permanent_to_add.load_data(permanent_json)
 			
 			add_permanent(permanent_to_add, battlefields[player])
@@ -151,11 +156,11 @@ static func deserialized_card_array_json(card_array_json):
 	return result
 
 func add_starting_mana_converters():
-	var mc_one = ManaConverterPermanent.new(self)
+	var mc_one = CardLibrary.get_mana_converter_permanent(self)
 	mc_one.main = main
 	add_permanent(mc_one, battlefields[self])
 	
-	var mc_two = ManaConverterPermanent.new(self)
+	var mc_two = CardLibrary.get_mana_converter_permanent(self)
 	mc_two.main = main
 	add_permanent(mc_two, battlefields[self])
 

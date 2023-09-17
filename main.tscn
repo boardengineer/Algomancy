@@ -1,8 +1,11 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://main.gd" type="Script" id=1]
 [ext_resource path="res://draft_container.gd" type="Script" id=2]
 [ext_resource path="res://resource_container.tscn" type="PackedScene" id=3]
+[ext_resource path="res://permanent.tscn" type="PackedScene" id=4]
+[ext_resource path="res://formation/formation.tscn" type="PackedScene" id=5]
+[ext_resource path="res://images/target.png" type="Texture" id=6]
 
 [node name="Main" type="HBoxContainer"]
 margin_right = 1920.0
@@ -47,22 +50,11 @@ margin_bottom = 200.0
 rect_min_size = Vector2( 0, 200 )
 columns = 10
 
-[node name="ColorRect" type="ColorRect" parent="GameFields/OpponentField"]
-margin_right = 50.0
-margin_bottom = 70.0
-rect_min_size = Vector2( 50, 70 )
-size_flags_horizontal = 0
-size_flags_vertical = 0
-color = Color( 0.12549, 0.2, 0.803922, 1 )
+[node name="Permanent" parent="GameFields/OpponentField" instance=ExtResource( 4 )]
 
-[node name="ColorRect2" type="ColorRect" parent="GameFields/OpponentField"]
+[node name="Permanent2" parent="GameFields/OpponentField" instance=ExtResource( 4 )]
 margin_left = 54.0
 margin_right = 104.0
-margin_bottom = 70.0
-rect_min_size = Vector2( 50, 70 )
-size_flags_horizontal = 0
-size_flags_vertical = 0
-color = Color( 0.12549, 0.2, 0.803922, 1 )
 
 [node name="PlayerField" type="GridContainer" parent="GameFields"]
 margin_top = 204.0
@@ -71,31 +63,11 @@ margin_bottom = 955.0
 rect_min_size = Vector2( 0, 751 )
 columns = 10
 
-[node name="ColorRect" type="ColorRect" parent="GameFields/PlayerField"]
-margin_right = 50.0
-margin_bottom = 70.0
-rect_min_size = Vector2( 50, 70 )
-size_flags_horizontal = 0
-size_flags_vertical = 0
-color = Color( 0.12549, 0.2, 0.803922, 1 )
+[node name="Permanent" parent="GameFields/PlayerField" instance=ExtResource( 4 )]
 
-[node name="Label" type="Label" parent="GameFields/PlayerField/ColorRect"]
-margin_right = 50.0
-margin_bottom = 70.0
-rect_min_size = Vector2( 50, 70 )
-rect_pivot_offset = Vector2( -754, -95 )
-text = "50"
-align = 1
-valign = 1
-
-[node name="ColorRect2" type="ColorRect" parent="GameFields/PlayerField"]
+[node name="Permanent2" parent="GameFields/PlayerField" instance=ExtResource( 4 )]
 margin_left = 54.0
 margin_right = 104.0
-margin_bottom = 70.0
-rect_min_size = Vector2( 50, 70 )
-size_flags_horizontal = 0
-size_flags_vertical = 0
-color = Color( 0.12549, 0.2, 0.803922, 1 )
 
 [node name="HandContainer" type="HBoxContainer" parent="GameFields"]
 margin_top = 959.0
@@ -146,6 +118,27 @@ rect_min_size = Vector2( 50, 70 )
 size_flags_horizontal = 0
 size_flags_vertical = 0
 color = Color( 0.12549, 0.2, 0.803922, 1 )
+
+[node name="Formations" type="Node" parent="."]
+
+[node name="PanelContainer" type="PanelContainer" parent="Formations"]
+visible = false
+margin_left = 647.0
+margin_top = 485.0
+margin_right = 1147.0
+margin_bottom = 785.0
+
+[node name="PlayerFormation" parent="Formations/PanelContainer" instance=ExtResource( 5 )]
+position = Vector2( 200, 68 )
+
+[node name="AcceptFormation" type="Button" parent="Formations/PanelContainer"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 132.0
+margin_bottom = 27.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+text = "Accept Formation"
 
 [node name="DraftContainerPopup" type="Node2D" parent="."]
 
@@ -296,6 +289,42 @@ text = "Opp"
 align = 1
 valign = 1
 
+[node name="DiscardHolder" type="Node" parent="."]
+
+[node name="Discard" type="GridContainer" parent="DiscardHolder"]
+margin_left = 1038.0
+margin_top = 938.0
+margin_right = 1695.0
+margin_bottom = 1062.0
+
+[node name="ColorRect3" type="ColorRect" parent="DiscardHolder/Discard"]
+margin_right = 50.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 50, 70 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+color = Color( 0.12549, 0.2, 0.803922, 1 )
+
+[node name="Label" type="Label" parent="DiscardHolder/Discard/ColorRect3"]
+margin_right = 50.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 50, 70 )
+rect_pivot_offset = Vector2( -754, -95 )
+text = "50"
+align = 1
+valign = 1
+
+[node name="TargetContainer" type="Node" parent="."]
+
+[node name="TargetIcon" type="TextureRect" parent="TargetContainer"]
+margin_left = 1364.0
+margin_top = 3.0
+margin_right = 1438.0
+margin_bottom = 69.0
+texture = ExtResource( 6 )
+expand = true
+
+[connection signal="pressed" from="Formations/PanelContainer/AcceptFormation" to="." method="_on_AcceptFormation_pressed"]
 [connection signal="pressed" from="DraftContainerPopup/PanelContainer/DraftContainer/AcceptButton" to="DraftContainerPopup/PanelContainer/DraftContainer" method="_on_AcceptButton_pressed"]
 [connection signal="pressed" from="Controls/PassButton" to="." method="_on_PassButton_pressed"]
 [connection signal="pressed" from="Controls/SaveButton" to="." method="_on_SaveButton_pressed"]

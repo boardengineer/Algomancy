@@ -15,18 +15,19 @@ var card
 var main
 
 var player_owner
-var name_label
 
 var power
-var toughness = -1
-var damage = -1
+var toughness
+var damage = 0
 
 var network_id
 
-func _init(f_player_owner, f_network_id = -1):
-	rect_min_size.x = 50
-	rect_min_size.y = 70
-	
+# TODO for now formation placeholder are permanents
+var formation_placeholder
+
+onready var name_label = $Label
+
+func init(f_player_owner, f_network_id = -1):
 	if f_network_id == -1:
 		network_id = SteamController.get_next_network_id()
 	else:
@@ -39,22 +40,7 @@ func _ready():
 	var _unused = connect("gui_input", self, "on_gui_input")
 	_unused = connect("targeted", TargetHelper, "on_target_selected")
 	
-	name_label = Label.new()
-	
-	name_label.text = card.card_name
-	
-	if toughness > -1:
-		 name_label.text = card.card_name + str("\n", power, "/", toughness)
-
-	name_label.rect_min_size.x = 50
-	name_label.rect_min_size.y = 70
-	
-	name_label.add_color_override("font_color", Color(0,0,0))
-	
-	name_label.align = Label.ALIGN_CENTER
-	name_label.valign = Label.ALIGN_CENTER
-	
-	call_deferred("add_child", name_label)
+	update_name_label()
 
 func on_gui_input(event):
 	if event.is_pressed():
@@ -67,13 +53,32 @@ func on_gui_input(event):
 		if GameController.is_targeting:
 			emit_signal("targeted", self)
 		else:
-			if abilities.size() == 1 and abilities[0].can_trigger():
-				abilities[0].activate()
+			if GameController.interaction_phase:
+				
+				# TODO Check for normal abilities that can trigger
+				
+				pass
+			else:
+				if abilities.size() == 1 and abilities[0].can_trigger():
+					abilities[0].activate()
+
+func die() -> void:
+	erase_no_trigger()
+	
+	# TODO on death triggers
+	if(card):
+		player_owner.add_to_discard(card)
 
 func erase() -> void:
-	logic_container.erase(self)
+	erase_no_trigger()
+
+# Used to remove the permanent from wherever it is.  This is the function to
+# call if you want to move the permanent from one zone to another.
+func erase_no_trigger() -> void:
+	if logic_container:
+		logic_container.erase(self)
 	tree_container.remove_child(self)
-	
+
 func tap() -> void:
 	tapped = true
 	name_label.text = card.card_name + "(T)"
@@ -101,3 +106,11 @@ func load_data(permanent_data) -> void:
 		ability_instance.main = player_owner.main
 		abilities.push_back(ability_instance)
 	damage = permanent_data.damage
+
+# stat fields should be effective stat fields
+func update_name_label() -> void:
+	if card:
+		name_label.text = card.card_name
+	
+	if toughness:
+		 name_label.text = card.card_name + str("\n", power, "/", toughness)
