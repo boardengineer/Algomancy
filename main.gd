@@ -31,6 +31,7 @@ onready var basic_resource_dialog = $BasicResourcePopup/ResourceContainer
 onready var pass_button = $Controls/PassButton
 
 onready var player_formation = $Formations/PanelContainer/PlayerFormation
+onready var accept_formation_button = $Formations/PanelContainer/AcceptFormation
 
 onready var player_target_self = $PlayerTargets/SelfPlayerButton
 onready var player_target_opponent = $PlayerTargets/OppPlayerButton
@@ -50,9 +51,6 @@ func _ready():
 	_unused = player_target_self.connect("gui_input", self, "player_self_gui_event")
 	_unused = player_target_opponent.connect("gui_input", self, "player_opponent_gui_event")
 	_unused = connect("targeted_player", TargetHelper, "on_target_selected")
-	
-	var card_type = ArcLightningCard
-	var card_instance = card_type.new()
 	
 	randomize()
 	init()
@@ -166,7 +164,10 @@ func do_draft_phase():
 func do_mana_ti_phase():
 	log_message("starting mana phase")
 	
-	players[0].resource_plays_remaining = RESOURCE_PLAYS_PER_TURN
+	if first_turn:
+		players[0].resource_plays_remaining = 0
+	else:
+		players[0].resource_plays_remaining = RESOURCE_PLAYS_PER_TURN
 	
 	GameController.phase = GameController.GamePhase.MANA_TI
 	current_player_passed = false
@@ -195,10 +196,15 @@ func do_attack_ti_phase():
 	log_message("starting ti atk phase")
 	
 	GameController.phase = GameController.GamePhase.ATTACK_TI
+	player_formation.init_empty_formation()
 	player_formation.show()
+	accept_formation_button.show()
+	
 	yield(self,"formation_accepted")
-	player_formation.hide()
-
+	
+#	player_formation.hide()
+	accept_formation_button.hide()
+	
 	GameController.interaction_phase = true
 	current_player_passed = false
 	while not current_player_passed and not GameController.action_cancelled:
@@ -216,7 +222,6 @@ func do_attack_ti_phase():
 
 func do_block_ti_phase():
 	log_message("starting ti blk phase")
-	
 	
 	GameController.phase = GameController.GamePhase.BLOCK_TI
 	
@@ -279,9 +284,11 @@ func do_post_combat_nti_phase():
 	
 func do_regroup():
 	log_message("starting regroup phase")
-	
-	log_message("(skipping phase)")
 	GameController.phase = GameController.GamePhase.REGROUP
+	
+	player_formation.return_all_units()
+	player_formation.hide()
+
 	do_main_ti()
 	
 func do_main_ti():

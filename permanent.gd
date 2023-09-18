@@ -23,7 +23,8 @@ var damage = 0
 var network_id
 
 # TODO for now formation placeholder are permanents
-var formation_placeholder
+var is_formation_placeholder
+var is_in_formation = false
 
 onready var name_label = $Label
 
@@ -35,6 +36,7 @@ func init(f_player_owner, f_network_id = -1):
 	SteamController.network_items_by_id[network_id] = self
 	
 	player_owner = f_player_owner
+	is_in_formation = false
 
 func _ready():
 	var _unused = connect("gui_input", self, "on_gui_input")
@@ -46,13 +48,22 @@ func on_gui_input(event):
 	if event.is_pressed():
 		if not SteamController.has_priority:
 			return
-			
-		if player_owner.player_id != SteamController.self_peer_id:
-			return
 		
 		if GameController.is_targeting:
 			emit_signal("targeted", self)
 		else:
+			if not player_owner:
+				return
+			if GameController.is_declaring_attackers():
+				if is_in_formation:
+					get_parent().remove_from_column(self)
+				else:
+					TargetHelper.get_targets_for_attack(self)
+				return
+			
+			if player_owner.player_id != SteamController.self_peer_id:
+				return
+				
 			if GameController.interaction_phase:
 				
 				# TODO Check for normal abilities that can trigger

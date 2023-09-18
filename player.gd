@@ -32,7 +32,7 @@ func _ready():
 	# layer
 	if player_id == SteamController.self_peer_id:
 		main.draft_container.connect("draft_selection_complete", self, "_on_draft_selection_complete")
-		GameController.connect("cancel", self, "_on_cancelled")
+		var _unused = GameController.connect("cancel", self, "_on_cancelled")
 
 func draw(amount = 1):
 	for _n in amount:
@@ -176,7 +176,7 @@ func add_permanent(permanent_to_add, battlefield) -> void:
 	else:
 		field = main.opponent_field
 	
-	field.add_child(permanent_to_add)
+	field.call_deferred("add_child", permanent_to_add)
 	permanent_to_add.tree_container = main.player_field
 
 func remove_from_hand(card) -> void:

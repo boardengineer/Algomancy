@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://permanent.tscn" type="PackedScene" id=1]
+[ext_resource path="res://formation/battle_column.gd" type="Script" id=2]
 
 [node name="BattleColumn" type="VBoxContainer"]
+script = ExtResource( 2 )
 
 [node name="Permanent" parent="." instance=ExtResource( 1 )]
 

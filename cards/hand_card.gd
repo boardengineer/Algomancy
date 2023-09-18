@@ -70,5 +70,5 @@ func on_card_input(event):
 						possible_abilities.push_back(ability)
 				
 				if possible_abilities.size() == 1:
-					var on_stack = possible_abilities[0].activate()
+					var _on_stack = possible_abilities[0].activate()
 				

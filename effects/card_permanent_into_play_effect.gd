@@ -9,7 +9,7 @@ func _init(f_card, f_player_owner).(f_player_owner):
 func can_trigger() -> bool:
 	return true
 
-func needs_more_targets(current_targets = []) -> bool:
+func needs_more_targets(_current_targets = []) -> bool:
 	return false
 
 func get_valid_targets(_current_targets = []) -> Array:

@@ -5,7 +5,6 @@ signal activated_ability_or_passed
 # All yields should also yield to this to allow the game to be properly disconnected
 signal cancel
 
-
 var is_targeting = false
 var main
 var action_cancelled = false
@@ -47,16 +46,17 @@ func set_up_references(main_game) -> void:
 
 func save_game():
 	var save_file := File.new()
-	save_file.open("user://algomancy_save.save", File.WRITE)
+	var _error = save_file.open("user://algomancy_save.save", File.WRITE)
 	
 	save_file.store_string(main.serialize())
 	save_file.close()
 	
 func load_game():
+	print_debug("starting load")
 	cancel_all_yields()
 	var load_file := File.new()
 	
-	load_file.open("user://algomancy_save.save", File.READ)
+	var _error = load_file.open("user://algomancy_save.save", File.READ)
 	var content = load_file.get_as_text()
 	load_file.close()
 	

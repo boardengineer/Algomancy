@@ -4,7 +4,7 @@ extends Node2D
 # Formation
 onready var battle_columns = $Columns
 
-var column_scene = load("res://battle_column.tscn")
+var column_scene = load("res://formation/battle_column.tscn")
 
 func init_empty_formation() -> void:
 	for column_child in battle_columns.get_children():
@@ -12,7 +12,7 @@ func init_empty_formation() -> void:
 		
 	battle_columns.add_child(create_column())
 
-func get_possible_positions_for_unit(unit_to_place):
+func get_possible_positions_for_unit(_unit_to_place):
 	var result = []
 	
 	for column in battle_columns.get_children():
@@ -22,7 +22,10 @@ func get_possible_positions_for_unit(unit_to_place):
 
 func create_column():
 	var column = column_scene.instance()
+	
+	column.reset_formation()
 	column.formation = self
+	
 	return column
 
 func create_new_columns():
@@ -46,3 +49,25 @@ func show() -> void:
 	
 func hide():
 	get_parent().hide()
+
+func maybe_remove_column(column_to_remove) -> void:
+	var column_index = -1
+	
+	for column_child_index in battle_columns.get_child_count():
+		var column_child = battle_columns.get_children()[column_child_index]
+		if column_child == column_to_remove:
+			column_index = column_child_index
+	
+	if column_index > 0 and column_index < battle_columns.get_child_count() - 1:
+		battle_columns.remove_child(column_to_remove)
+
+func return_all_units() -> void:
+	var to_remove = []
+	
+	for column in battle_columns.get_children():
+		for unit in column.get_units_to_return():
+			to_remove.push_back(unit)
+	
+	for unit in to_remove:
+		unit.erase()
+		unit.player_owner.add_permanent(unit, unit.player_owner.battlefields[unit.player_owner])

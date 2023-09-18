@@ -43,7 +43,7 @@ func can_activate(for_player) -> bool:
 	
 	return true
 
-func activation_abilities(for_player) -> Array:
+func activation_abilities(_for_player) -> Array:
 	return []
 
 func serialize():

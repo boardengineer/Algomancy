@@ -1,6 +1,6 @@
 extends Node
 
-func deal_damage(target, source, initial_damage, modifiers = []) -> void:
+func deal_damage(target, _source, initial_damage, _modifiers = []) -> void:
 	var modified_damage = initial_damage
 	# damage modifications and shields would go here
 	

@@ -27,10 +27,22 @@ func get_targets_for_effect(effect) -> void:
 	main.target_image.hide()
 	emit_signal("targeting_complete")
 
-func get_targets_for_attack(permanent) -> Array:
+func get_targets_for_attack(permanent) -> void:
 	GameController.is_targeting = true
 	
-	return main.player_formation.get_possible_positions_for_unit(permanent)
+	valid_targets = main.player_formation.get_possible_positions_for_unit(permanent)
+	main.target_image.show()
+	selected_targets.clear()
+	yield(self, "target_added")
+	
+	GameController.is_targeting = false
+	var formation_position = selected_targets[0]
+	
+	if formation_position.is_formation_placeholder:
+		formation_position.get_parent().add_to_back_of_column(permanent)
+	
+	main.target_image.hide()
+	emit_signal("targeting_complete")
 
 func on_target_selected(target) -> void:
 	if GameController.is_targeting and valid_targets.has(target):
@@ -88,3 +100,10 @@ func get_targetable_players() -> Array:
 		res_players.push_back(player)
 	
 	return res_players
+
+func get_player_for_id(query_id):
+	for player in main.players:
+		if player.player_id == query_id:
+			return player
+	
+	return null
