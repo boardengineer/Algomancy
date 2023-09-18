@@ -54,7 +54,7 @@ func on_gui_input(event):
 		else:
 			if not player_owner:
 				return
-			if GameController.is_declaring_attackers():
+			if toughness and GameController.is_declaring_attackers():
 				if is_in_formation:
 					get_parent().remove_from_column(self)
 				else:
@@ -92,11 +92,11 @@ func erase_no_trigger() -> void:
 
 func tap() -> void:
 	tapped = true
-	name_label.text = card.card_name + "(T)"
+	update_name_label()
 	
 func untap() -> void:
 	tapped = false
-	name_label.text = card.card_name
+	update_name_label()
 
 func serialize() -> Dictionary:
 	var result_dict = {}
@@ -105,6 +105,9 @@ func serialize() -> Dictionary:
 	result_dict.card = card.serialize()
 	
 	result_dict.damage = damage
+	result_dict.toughness = toughness
+	result_dict.power = power
+	result_dict.tapped = tapped
 	
 	return result_dict
 
@@ -116,7 +119,12 @@ func load_data(permanent_data) -> void:
 		ability_instance.source = self
 		ability_instance.main = player_owner.main
 		abilities.push_back(ability_instance)
+	
 	damage = permanent_data.damage
+	toughness = permanent_data.toughness
+	power = permanent_data.power
+	
+	tapped = permanent_data.tapped
 
 # stat fields should be effective stat fields
 func update_name_label() -> void:
@@ -125,3 +133,6 @@ func update_name_label() -> void:
 	
 	if toughness:
 		 name_label.text = card.card_name + str("\n", power, "/", toughness)
+		
+	if tapped:
+		name_label.text += "\n(T)"

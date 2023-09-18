@@ -130,7 +130,7 @@ func do_untap_phase():
 	for player in players:
 		for battlefield_players in player.battlefields:
 			for permanent in player.battlefields[battlefield_players]:
-				permanent.tapped = false
+				permanent.untap()
 				
 	do_draw_phase()
 	
