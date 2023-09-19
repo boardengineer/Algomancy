@@ -31,7 +31,6 @@ func _ready():
 	# connect the signal but only for the host we'll deal with client players
 	# layer
 	if player_id == SteamController.self_peer_id:
-		main.draft_container.connect("draft_selection_complete", self, "_on_draft_selection_complete")
 		var _unused = GameController.connect("cancel", self, "_on_cancelled")
 
 func draw(amount = 1):
@@ -40,17 +39,10 @@ func draw(amount = 1):
 			hand.push_back(main.deck.pop_front())
 
 func draft():
-	if player_id != SteamController.self_peer_id:
-		dummy_draft()
-		return
-	
 	draft_pack.append_array(hand)
 	
 	hand.clear()
 	clear_hand_container()
-	
-	# This is where we yield and something will populated draft_selected_cards
-	main.draft_container.display_draft_pack(draft_pack)
 
 # Intended to simulate "other player" doing stuff
 func dummy_draft():
@@ -71,13 +63,6 @@ func take_action_or_pass() -> bool:
 	return false
 
 func _on_cancelled():
-	emit_signal("draft_complete_or_cancelled")
-
-func _on_draft_selection_complete(selected_cards):
-	for card in selected_cards:
-		draft_pack.erase(card)
-		add_to_hand(card) 
-	
 	emit_signal("draft_complete_or_cancelled")
 	
 func add_to_hand(card) -> void:

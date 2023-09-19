@@ -16,6 +16,7 @@ var first_turn = true
 
 const STARTING_DRAFT_PACK_SIZE = 16
 const RESOURCE_PLAYS_PER_TURN = 2
+const DUMMY_PLAYER_ID = -1
 
 onready var game_log = $GameLog
 onready var draft_container = $DraftContainerPopup/PanelContainer/DraftContainer
@@ -39,6 +40,8 @@ onready var player_target_opponent = $PlayerTargets/OppPlayerButton
 onready var target_image = $TargetContainer/TargetIcon
 
 var current_player_passed
+
+var use_dummy_opponent = true
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -71,13 +74,14 @@ func init():
 		if n == 0:
 			new_player = Player.new(self, SteamController.self_peer_id)
 		else:
-			new_player = Player.new(self)
+			new_player = Player.new(self, DUMMY_PLAYER_ID)
 		
 		players.push_back(new_player)
 		
 	for player in players:
 		player.init_after_player_creation()
 		player_list.add_child(player)
+		
 		player.call_deferred("add_starting_mana_converters")
 	
 	# init deck, this will probably be a resource file
@@ -151,13 +155,36 @@ func do_draft_phase():
 	log_message("starting draft phase")
 	
 	GameController.phase = GameController.GamePhase.DRAFT
+	SteamController.start_draft()
 	
-	# Done in parallel across machines, just show one at a time for now  
 	for player in players:
 		player.draft()
-		if player.player_id == SteamController.self_peer_id:
-			yield(player, "draft_complete_or_cancelled")
+	
+	if use_dummy_opponent:
+#		Fake receiving a message from the opponent
+		var dummy_selections = []
+		var opponent = SteamController.network_players_by_id[str(DUMMY_PLAYER_ID)]
 		
+		var num_to_draft = opponent.draft_pack.size() - 10
+		for i in num_to_draft:
+			dummy_selections.push_back(opponent.draft_pack[i].network_id)
+		
+#		var cards_to_select = opponent.
+		SteamController.receive_draft_selection(DUMMY_PLAYER_ID, dummy_selections)
+	
+	# This is where we yield and something will populated draft_selected_cards
+	draft_container.display_draft_pack(players[0].draft_pack)
+	
+	yield(SteamController, "draft_complete")
+	
+	for player in players:
+		var selected_cards = SteamController.draft_selection_by_player_id[player.player_id]
+		for card in selected_cards:
+			player.draft_pack.erase(card)
+			player.add_to_hand(card)
+	
+	draft_container.hide()
+	
 	if not GameController.action_cancelled:
 		do_mana_ti_phase()
 

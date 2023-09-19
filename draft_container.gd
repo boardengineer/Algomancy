@@ -41,8 +41,9 @@ func _on_AcceptButton_pressed():
 		if draft_card.selected:
 			selected.push_back(draft_card.card)
 	
-	emit_signal("draft_selection_complete", selected)
-	hide()
+#	emit_signal("draft_selection_complete", selected)
+	SteamController.submit_draft_selection(selected)
+#	hide()
 
 func on_card_toggled():
 	check_accept_button()
