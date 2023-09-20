@@ -1,6 +1,7 @@
 extends Node
 
-signal draft_complete
+signal draft_complete_or_cancelled
+signal activated_ability_or_passed_or_cancelled
 
 enum LobbyAvailability {PRIVATE, FRIENDS, PUBLIC, INVISIBLE}
 var lobby_id = 0
@@ -20,6 +21,7 @@ var waiting_for_draft = false
 var draft_selection_by_player_id = {}
 
 func _ready():
+	var _unused = GameController.connect("cancel", self, "_on_cancelled")
 	var _init_status = Steam.steamInit()
 	self_peer_id = Steam.getSteamID()
 
@@ -37,7 +39,7 @@ func start_draft() -> void:
 
 func complete_draft() -> void:
 	waiting_for_draft = false
-	emit_signal("draft_complete")
+	emit_signal("draft_complete_or_cancelled")
 
 func receive_draft_selection(player_id, selected_network_ids) -> void:
 	if not waiting_for_draft:
@@ -50,6 +52,14 @@ func receive_draft_selection(player_id, selected_network_ids) -> void:
 	
 	if draft_selection_by_player_id.size() == network_players_by_id.size():
 		complete_draft()
+
+func submit_ability_or_passed(command) -> void:
+	if is_host:
+		receive_ability_or_pass(command)
+	pass
+
+func receive_ability_or_pass(command) -> void:
+	network_items_by_id[command.source].activate_ability(command.index, command.effects)
 
 func submit_draft_selection(draft_selection) -> void:
 	var selected_card_ids = []
@@ -64,3 +74,6 @@ func submit_draft_selection(draft_selection) -> void:
 
 func mock_send_message(message) -> void:
 	print_debug("would be sending a message: ", message)
+
+func _on_cancelled():
+	emit_signal("draft_complete_or_cancelled")

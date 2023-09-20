@@ -49,7 +49,6 @@ func _ready():
 	GameController.set_up_references(self)
 	
 	var _unused = GameController.connect("activated_ability_or_passed", self, "on_activated_ability_or_passed")
-	_unused = GameController.connect("cancel", self, "_on_cancelled")
 	
 	_unused = player_target_self.connect("gui_input", self, "player_self_gui_event")
 	_unused = player_target_opponent.connect("gui_input", self, "player_opponent_gui_event")
@@ -172,10 +171,9 @@ func do_draft_phase():
 #		var cards_to_select = opponent.
 		SteamController.receive_draft_selection(DUMMY_PLAYER_ID, dummy_selections)
 	
-	# This is where we yield and something will populated draft_selected_cards
 	draft_container.display_draft_pack(players[0].draft_pack)
 	
-	yield(SteamController, "draft_complete")
+	yield(SteamController, "draft_complete_or_cancelled")
 	
 	for player in players:
 		var selected_cards = SteamController.draft_selection_by_player_id[player.player_id]
@@ -361,12 +359,14 @@ func interaction_phase():
 func log_message(message):
 	var to_add = Label.new()
 	to_add.text = message
-	
+	 
 	game_log.add_child(to_add)
 
 # For transmitting and for saves
 func serialize():
 	var state_dict := {}
+	
+	# TODO encode resource container ids
 	
 	var state_players = []
 	
@@ -485,9 +485,6 @@ func _on_SaveButton_pressed():
 
 func _on_LoadButton_pressed():
 	GameController.load_game()
-
-func _on_cancelled():
-	emit_signal("activated_or_passed_or_cancelled")
 
 func player_self_gui_event(event):
 	if event.is_pressed():

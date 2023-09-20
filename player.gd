@@ -1,8 +1,6 @@
 extends Node
 class_name Player
 
-signal draft_complete_or_cancelled
-
 var resource_plays_remaining 
 var life_remaining = 30
 var main
@@ -44,14 +42,6 @@ func draft():
 	hand.clear()
 	clear_hand_container()
 
-# Intended to simulate "other player" doing stuff
-func dummy_draft():
-	draft_pack.append_array(hand)
-	hand.clear()
-	
-	while draft_pack.size() > 10:
-		hand.push_back(draft_pack.pop_front())
-
 func do_mana_phase():
 	pass
 	
@@ -62,9 +52,6 @@ func declare_ti_attackers():
 func take_action_or_pass() -> bool:
 	return false
 
-func _on_cancelled():
-	emit_signal("draft_complete_or_cancelled")
-	
 func add_to_hand(card) -> void:
 	hand.push_back(card)
 	if player_id == SteamController.self_peer_id:

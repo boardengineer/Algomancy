@@ -11,7 +11,7 @@ var main = null
 func get_targets_for_effect(effect) -> void:
 	GameController.is_targeting = true
 	main.target_image.show()
-	selected_targets = []
+	selected_targets = effect.targets
 	while selected_targets != null and effect.needs_more_targets(selected_targets):
 		valid_targets = effect.get_valid_targets(selected_targets)
 		

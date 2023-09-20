@@ -73,11 +73,40 @@ func on_gui_input(event):
 				if abilities.size() == 1 and abilities[0].can_trigger():
 					abilities[0].activate()
 
+func process_activation_signal() -> void:
+	pass
+
+func activate_ability(ability_index:int, serialized_effects:Array) -> void:
+	var possible_abilities = []
+	
+	# TODO check for invalid timings and indeces
+	if abilities.size() == 1 and abilities[0].can_trigger():
+		possible_abilities.push_back(abilities[0])
+	
+	if possible_abilities.size() > ability_index:
+		var to_activate = possible_abilities[ability_index]
+		
+		for effect_index in serialized_effects.size():
+			var ability_effect = to_activate.effects[effect_index]
+			var effect_dict = serialized_effects[effect_index]
+			
+			var deserialized_targets = []
+			for serialized_target in effect_dict.targets:
+				deserialized_targets.push_back(SteamController.network_items_by_id[serialized_target])
+				
+			ability_effect.targets = deserialized_targets
+		
+		if to_activate.pay_cost():
+			if to_activate.goes_on_stack:
+				player_owner.main.add_to_ability_stack(to_activate)
+			else:
+				to_activate.resolve()
+
 func die() -> void:
 	erase_no_trigger()
 	
 	# TODO on death triggers
-	if(card):
+	if card:
 		player_owner.add_to_discard(card)
 
 func erase() -> void:
