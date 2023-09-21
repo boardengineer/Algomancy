@@ -30,7 +30,7 @@ func get_targets_for_effect(effect) -> void:
 func get_targets_for_attack(permanent) -> void:
 	GameController.is_targeting = true
 	
-	valid_targets = main.player_formation.get_possible_positions_for_unit(permanent)
+	valid_targets = main.player_attack_formation.get_possible_positions_for_unit(permanent)
 	main.target_image.show()
 	selected_targets.clear()
 	yield(self, "target_added")

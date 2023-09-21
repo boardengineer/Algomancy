@@ -54,6 +54,7 @@ func on_gui_input(event):
 		else:
 			if not player_owner:
 				return
+				
 			if toughness and GameController.is_declaring_attackers():
 				if is_in_formation:
 					get_parent().remove_from_column(self)

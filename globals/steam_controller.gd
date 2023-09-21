@@ -72,8 +72,11 @@ func submit_draft_selection(draft_selection) -> void:
 		pass
 	pass
 
-func mock_send_message(message) -> void:
-	print_debug("would be sending a message: ", message)
+func submit_formation(formation_dict:Dictionary) -> void:
+	pass
+
+func receive_formation(formation_dict:Dictionary) -> void:
+	pass
 
 func _on_cancelled():
 	emit_signal("draft_complete_or_cancelled")

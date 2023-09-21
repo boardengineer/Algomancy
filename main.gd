@@ -31,8 +31,14 @@ onready var basic_resource_container = $BasicResourcePopup/ResourceContainer/HBo
 onready var basic_resource_dialog = $BasicResourcePopup/ResourceContainer
 onready var pass_button = $Controls/PassButton
 
-onready var player_formation = $Formations/PanelContainer/PlayerFormation
-onready var accept_formation_button = $Formations/PanelContainer/AcceptFormation
+onready var player_attack_formation = $Formations/PlayerAttackFormationPanelContainer/PlayerAttackFormation
+onready var accept_attack_formation_button = $Formations/PlayerAttackFormationPanelContainer/AcceptFormation
+
+onready var player_block_formation = $Formations/PlayerBlockFormationPanelContainer/PlayerBlockFormation
+onready var accept_block_formation_button = $Formations/PlayerBlockFormationPanelContainer/AcceptFormation
+
+onready var opponent_attack_formation = $Formations/OpponentAttackFormationPanelContainer/OpponentAttackFormation
+onready var opponent_block_formation = $Formations/OpponentBlockFormationPanelContainer/OpponentBlockFormation
 
 onready var player_target_self = $PlayerTargets/SelfPlayerButton
 onready var player_target_opponent = $PlayerTargets/OppPlayerButton
@@ -221,14 +227,13 @@ func do_attack_ti_phase():
 	log_message("starting ti atk phase")
 	
 	GameController.phase = GameController.GamePhase.ATTACK_TI
-	player_formation.init_empty_formation()
-	player_formation.show()
-	accept_formation_button.show()
+	player_attack_formation.init_empty_formation()
+	player_attack_formation.show()
+	accept_attack_formation_button.show()
 	
 	yield(self,"formation_accepted")
 	
-#	player_formation.hide()
-	accept_formation_button.hide()
+	accept_attack_formation_button.hide()
 	
 	GameController.interaction_phase = true
 	current_player_passed = false
@@ -311,8 +316,8 @@ func do_regroup():
 	log_message("starting regroup phase")
 	GameController.phase = GameController.GamePhase.REGROUP
 	
-	player_formation.return_all_units()
-	player_formation.hide()
+	player_attack_formation.return_all_units()
+	player_attack_formation.hide()
 
 	do_main_ti()
 	
@@ -460,6 +465,11 @@ func reset_all_visuals() -> void:
 	draft_container.hide()
 	draft_container.remove_all_cards()
 	
+	player_attack_formation.hide()
+	player_block_formation.hide()
+	opponent_attack_formation.hide()
+	opponent_block_formation.hide()
+	
 	set_up_battlefields()
 	clear_hand_container()
 	clear_stack_container()
@@ -514,5 +524,5 @@ func player_opponent_gui_event(event):
 
 func _on_AcceptFormation_pressed():
 	if not GameController.is_targeting:
-		if player_formation.is_formation_valid():
+		if player_attack_formation.is_formation_valid():
 			emit_signal("formation_accepted")

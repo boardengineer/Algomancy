@@ -48,11 +48,12 @@ func save_game():
 	var save_file := File.new()
 	var _error = save_file.open("user://algomancy_save.save", File.WRITE)
 	
-	save_file.store_string(main.serialize())
+	var serialized_state = main.serialize()
+	
+	save_file.store_string(serialized_state)
 	save_file.close()
 	
 func load_game():
-	print_debug("starting load")
 	cancel_all_yields()
 	var load_file := File.new()
 	

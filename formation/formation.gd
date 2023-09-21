@@ -71,3 +71,24 @@ func return_all_units() -> void:
 	for unit in to_remove:
 		unit.erase()
 		unit.player_owner.add_permanent(unit, unit.player_owner.battlefields[unit.player_owner])
+
+func get_formation_command_dict() -> Dictionary:
+	var result := {}
+		
+	var formation_array := []
+	for column_child in battle_columns.get_children():
+		var column_array := []
+		
+		var num_units = column_child.units_in_formation
+		if num_units < 1:
+			continue
+			
+		for permanent_index in num_units:
+			var permanent = column_child.get_children()[permanent_index]
+			column_array.push_back(permanent.network_id)
+		
+		formation_array.push_back(column_array)
+	
+	result.formation = formation_array
+	return result
+
