@@ -8,8 +8,8 @@
 [ext_resource path="res://images/target.png" type="Texture" id=6]
 
 [node name="Main" type="HBoxContainer"]
-margin_right = 1920.0
-margin_bottom = 1080.0
+margin_right = 1284.0
+margin_bottom = 779.0
 rect_pivot_offset = Vector2( 577, -9 )
 size_flags_horizontal = 2
 size_flags_vertical = 2
@@ -19,7 +19,7 @@ script = ExtResource( 1 )
 
 [node name="GameLog" type="VBoxContainer" parent="."]
 margin_right = 100.0
-margin_bottom = 1108.0
+margin_bottom = 779.0
 grow_horizontal = 2
 rect_min_size = Vector2( 100, 0 )
 rect_pivot_offset = Vector2( -1071, 87 )
@@ -38,14 +38,14 @@ clip_text = true
 
 [node name="GameFields" type="VBoxContainer" parent="."]
 margin_left = 104.0
-margin_right = 1816.0
-margin_bottom = 1108.0
-rect_min_size = Vector2( 673, 0 )
+margin_right = 1180.0
+margin_bottom = 779.0
+rect_min_size = Vector2( 553, 0 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="OpponentField" type="GridContainer" parent="GameFields"]
-margin_right = 1712.0
+margin_right = 1076.0
 margin_bottom = 200.0
 rect_min_size = Vector2( 0, 200 )
 columns = 10
@@ -58,9 +58,9 @@ margin_right = 104.0
 
 [node name="PlayerField" type="GridContainer" parent="GameFields"]
 margin_top = 204.0
-margin_right = 1712.0
-margin_bottom = 955.0
-rect_min_size = Vector2( 0, 751 )
+margin_right = 1076.0
+margin_bottom = 626.0
+rect_min_size = Vector2( 0, 422 )
 columns = 10
 
 [node name="Permanent" parent="GameFields/PlayerField" instance=ExtResource( 4 )]
@@ -70,9 +70,9 @@ margin_left = 54.0
 margin_right = 104.0
 
 [node name="HandContainer" type="HBoxContainer" parent="GameFields"]
-margin_top = 959.0
-margin_right = 1712.0
-margin_bottom = 1108.0
+margin_top = 630.0
+margin_right = 1076.0
+margin_bottom = 779.0
 rect_min_size = Vector2( 0, 149 )
 size_flags_horizontal = 3
 
@@ -85,9 +85,9 @@ size_flags_vertical = 0
 color = Color( 0.12549, 0.2, 0.803922, 1 )
 
 [node name="Stack" type="VBoxContainer" parent="."]
-margin_left = 1820.0
-margin_right = 1920.0
-margin_bottom = 1108.0
+margin_left = 1184.0
+margin_right = 1284.0
+margin_bottom = 779.0
 grow_horizontal = 2
 rect_min_size = Vector2( 100, 0 )
 rect_pivot_offset = Vector2( -1071, 87 )
@@ -122,13 +122,13 @@ color = Color( 0.12549, 0.2, 0.803922, 1 )
 [node name="Formations" type="Node" parent="."]
 
 [node name="PlayerAttackFormationPanelContainer" type="PanelContainer" parent="Formations"]
-margin_left = 1067.0
-margin_top = 548.0
-margin_right = 1567.0
-margin_bottom = 848.0
+margin_left = 801.0
+margin_top = 317.0
+margin_right = 1101.0
+margin_bottom = 467.0
 
 [node name="PlayerAttackFormation" parent="Formations/PlayerAttackFormationPanelContainer" instance=ExtResource( 5 )]
-position = Vector2( 200, 68 )
+position = Vector2( 130, 0 )
 
 [node name="AcceptFormation" type="Button" parent="Formations/PlayerAttackFormationPanelContainer"]
 margin_left = 7.0
@@ -140,31 +140,31 @@ size_flags_vertical = 0
 text = "Accept Formation"
 
 [node name="OpponentAttackFormationPanelContainer" type="PanelContainer" parent="Formations"]
-margin_left = 479.0
-margin_top = 217.0
-margin_right = 979.0
-margin_bottom = 517.0
+margin_left = 432.0
+margin_top = 90.0
+margin_right = 732.0
+margin_bottom = 240.0
 
 [node name="OpponentAttackFormation" parent="Formations/OpponentAttackFormationPanelContainer" instance=ExtResource( 5 )]
-position = Vector2( 200, 68 )
+position = Vector2( 130, 0 )
 
 [node name="OpponentBlockFormationPanelContainer" type="PanelContainer" parent="Formations"]
-margin_left = 1065.0
-margin_top = 223.0
-margin_right = 1565.0
-margin_bottom = 523.0
+margin_left = 804.0
+margin_top = 89.0
+margin_right = 1104.0
+margin_bottom = 239.0
 
 [node name="OpponentBlockFormation" parent="Formations/OpponentBlockFormationPanelContainer" instance=ExtResource( 5 )]
-position = Vector2( 200, 68 )
+position = Vector2( 130, 0 )
 
 [node name="PlayerBlockFormationPanelContainer" type="PanelContainer" parent="Formations"]
-margin_left = 480.0
-margin_top = 549.0
-margin_right = 980.0
-margin_bottom = 849.0
+margin_left = 432.0
+margin_top = 306.0
+margin_right = 732.0
+margin_bottom = 456.0
 
 [node name="PlayerBlockFormation" parent="Formations/PlayerBlockFormationPanelContainer" instance=ExtResource( 5 )]
-position = Vector2( 200, 68 )
+position = Vector2( 130, 0 )
 
 [node name="AcceptFormation" type="Button" parent="Formations/PlayerBlockFormationPanelContainer"]
 margin_left = 7.0
@@ -181,26 +181,26 @@ text = "Accept Formation"
 visible = false
 margin_left = 203.0
 margin_top = 73.0
-margin_right = 1708.0
-margin_bottom = 925.0
+margin_right = 874.0
+margin_bottom = 583.0
 
 [node name="DraftContainer" type="VBoxContainer" parent="DraftContainerPopup/PanelContainer"]
 margin_left = 7.0
 margin_top = 7.0
-margin_right = 1498.0
-margin_bottom = 845.0
+margin_right = 664.0
+margin_bottom = 503.0
 rect_clip_content = true
 script = ExtResource( 2 )
 
 [node name="AcceptButton" type="Button" parent="DraftContainerPopup/PanelContainer/DraftContainer"]
-margin_right = 1491.0
+margin_right = 657.0
 margin_bottom = 102.0
 rect_min_size = Vector2( 0, 102 )
 text = "Accept"
 
 [node name="CardContainer" type="GridContainer" parent="DraftContainerPopup/PanelContainer/DraftContainer"]
 margin_top = 106.0
-margin_right = 1491.0
+margin_right = 657.0
 margin_bottom = 176.0
 columns = 3
 
@@ -262,42 +262,43 @@ margin_right = 124.0
 [node name="Controls" type="Node" parent="."]
 
 [node name="PassButton" type="Button" parent="Controls"]
-margin_left = 1739.0
-margin_top = 874.0
-margin_right = 1899.0
-margin_bottom = 933.0
+margin_left = 1111.0
+margin_top = 522.0
+margin_right = 1271.0
+margin_bottom = 581.0
 text = "Pass"
 
 [node name="SaveButton" type="Button" parent="Controls"]
-margin_left = 1740.0
-margin_top = 939.0
-margin_right = 1900.0
-margin_bottom = 998.0
+margin_left = 1111.0
+margin_top = 589.0
+margin_right = 1271.0
+margin_bottom = 648.0
 text = "Save"
 
 [node name="LoadButton" type="Button" parent="Controls"]
-margin_left = 1741.0
-margin_top = 1004.0
-margin_right = 1901.0
-margin_bottom = 1063.0
+margin_left = 1112.0
+margin_top = 652.0
+margin_right = 1272.0
+margin_bottom = 711.0
 text = "Load"
 
 [node name="PlayerTargets" type="Node" parent="."]
 
 [node name="SelfPlayerButton" type="ColorRect" parent="PlayerTargets"]
-margin_left = 1745.0
-margin_top = 772.0
-margin_right = 1795.0
-margin_bottom = 842.0
+margin_left = 1157.0
+margin_top = 394.0
+margin_right = 1207.0
+margin_bottom = 464.0
 rect_min_size = Vector2( 50, 70 )
 size_flags_horizontal = 0
 size_flags_vertical = 0
 color = Color( 0.12549, 0.2, 0.803922, 1 )
 
 [node name="Label" type="Label" parent="PlayerTargets/SelfPlayerButton"]
-margin_top = 3.0
-margin_right = 50.0
-margin_bottom = 73.0
+margin_left = -2.0
+margin_top = 1.0
+margin_right = 48.0
+margin_bottom = 71.0
 rect_min_size = Vector2( 50, 70 )
 rect_pivot_offset = Vector2( -754, -95 )
 text = "Me"
@@ -305,19 +306,19 @@ align = 1
 valign = 1
 
 [node name="OppPlayerButton" type="ColorRect" parent="PlayerTargets"]
-margin_left = 1840.0
-margin_top = 773.0
-margin_right = 1890.0
-margin_bottom = 843.0
+margin_left = 1221.0
+margin_top = 394.0
+margin_right = 1271.0
+margin_bottom = 464.0
 rect_min_size = Vector2( 50, 70 )
 size_flags_horizontal = 0
 size_flags_vertical = 0
 color = Color( 0.12549, 0.2, 0.803922, 1 )
 
 [node name="Label" type="Label" parent="PlayerTargets/OppPlayerButton"]
-margin_top = -2.0
-margin_right = 50.0
-margin_bottom = 68.0
+margin_left = 7.0
+margin_right = 57.0
+margin_bottom = 70.0
 rect_min_size = Vector2( 50, 70 )
 rect_pivot_offset = Vector2( -754, -95 )
 text = "Opp"
@@ -327,10 +328,10 @@ valign = 1
 [node name="DiscardHolder" type="Node" parent="."]
 
 [node name="Discard" type="GridContainer" parent="DiscardHolder"]
-margin_left = 1038.0
-margin_top = 938.0
-margin_right = 1695.0
-margin_bottom = 1062.0
+margin_left = 729.0
+margin_top = 625.0
+margin_right = 787.0
+margin_bottom = 702.0
 
 [node name="ColorRect3" type="ColorRect" parent="DiscardHolder/Discard"]
 margin_right = 50.0
@@ -352,10 +353,10 @@ valign = 1
 [node name="TargetContainer" type="Node" parent="."]
 
 [node name="TargetIcon" type="TextureRect" parent="TargetContainer"]
-margin_left = 1364.0
-margin_top = 3.0
-margin_right = 1438.0
-margin_bottom = 69.0
+margin_left = 822.0
+margin_top = 7.0
+margin_right = 896.0
+margin_bottom = 73.0
 texture = ExtResource( 6 )
 expand = true
 

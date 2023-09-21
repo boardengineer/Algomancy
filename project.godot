@@ -532,13 +532,14 @@ DamageHelper="*res://globals/damage_helper.gd"
 
 [display]
 
-window/size/width=1920
-window/size/height=1080
+window/size/width=1280
+window/size/height=720
 window/size/resizable=false
 
 [global]
 
 global=false
+window=false
 
 [gui]
 
