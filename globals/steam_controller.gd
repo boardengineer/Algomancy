@@ -20,13 +20,25 @@ var waiting_for_draft = false
 
 var draft_selection_by_player_id = {}
 
+var tracked_players = {}
+
 func _ready():
-	var _unused = GameController.connect("cancel", self, "_on_cancelled")
 	var _init_status = Steam.steamInit()
 	self_peer_id = Steam.getSteamID()
+	
+	var _unused = GameController.connect("cancel", self, "_on_cancelled")
+	_unused = Steam.connect("lobby_joined", self, "_on_Lobby_Joined")
 
 func _process(_delta):
 	Steam.run_callbacks()
+
+func start_game(f_is_host = true) -> void:
+	var main_scene = load("res://main.tscn").instance()
+	
+	is_host = f_is_host
+	
+	get_tree().get_root().add_child(main_scene)
+	get_tree().set_current_scene(main_scene)
 
 func get_next_network_id() -> int:
 	var result = latest_network_id
@@ -74,9 +86,61 @@ func submit_draft_selection(draft_selection) -> void:
 
 func submit_formation(formation_dict:Dictionary) -> void:
 	pass
-
+ 
 func receive_formation(formation_dict:Dictionary) -> void:
 	pass
 
 func _on_cancelled():
 	emit_signal("draft_complete_or_cancelled")
+
+func send_handshakes() -> void:
+	var send_data = {}
+	send_data["type"] = "handshake"
+	send_data_to_all(send_data)
+
+func send_data_to_all(packet_data: Dictionary) -> void:
+	for player_id in tracked_players:
+		if player_id == self_peer_id:
+			continue
+		send_data(packet_data, player_id)
+
+func send_data(packet_data: Dictionary, target: int, channel:int = 0) -> void:
+	# TODO actually compress
+	var compressed_data = var2bytes(packet_data).compress(File.COMPRESSION_GZIP)
+	
+	# Just use channel 0 for everything for now
+	var _error = Steam.sendP2PPacket(target, compressed_data, Steam.P2P_SEND_RELIABLE, channel)
+
+# clears tracked_players and resets tracked players based  
+func update_tracked_players() -> void:
+	# Clear your previous lobby list
+	tracked_players.clear()
+
+	# Get the number of members from this lobby from Steam
+	var num_members = Steam.getNumLobbyMembers(lobby_id)
+#	var all_players_ready = true
+
+	# Get the data of these players from Steam
+	for member_index in range(num_members):
+		var member_steam_id = Steam.getLobbyMemberByIndex(lobby_id, member_index)
+		var member_username: String = Steam.getFriendPersonaName(member_steam_id)
+		
+#		if not established_p2p_connections.has(member_steam_id) or not established_p2p_connections[member_steam_id]:
+#			if member_steam_id != parent.self_peer_id:
+#				all_players_ready = false
+#				if parent.is_host:
+#					member_username = member_username + " (loading)"
+		
+		tracked_players[member_steam_id] = {"username": member_username}
+
+
+func _on_Lobby_Joined(joined_lobby_id: int, _permissions: int, _locked: bool, response: int) -> void:
+	print_debug("on lobby joined")
+	if response == 1:
+		SteamController.lobby_id = joined_lobby_id
+		var _scene_error = get_tree().change_scene("res://multiplayer_lobby.tscn")
+		update_tracked_players()
+		send_handshakes()
+		
+#		if not parent.is_host:
+#			request_lobby_update()

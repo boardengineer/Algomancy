@@ -529,6 +529,7 @@ GameController="*res://globals/game_controller.gd"
 TargetHelper="*res://globals/target_helper.gd"
 CardLibrary="*res://globals/card_library.gd"
 DamageHelper="*res://globals/damage_helper.gd"
+SteamMessageReceiver="*res://globals/steam_message_receiver.gd"
 
 [display]
 
