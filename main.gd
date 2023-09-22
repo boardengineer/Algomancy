@@ -86,6 +86,11 @@ func init(is_host := true, f_tracked_players := {}) -> void:
 				new_player = Player.new(self, DUMMY_PLAYER_ID)
 			
 			players.push_back(new_player)
+	else:
+		for player_id in f_tracked_players:
+			print_debug("creating player object for id ", player_id)
+			var new_player = Player.new(self, player_id)
+			players.push_back(new_player)
 		
 	for player in players:
 		player.init_after_player_creation()

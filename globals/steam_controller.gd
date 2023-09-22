@@ -34,6 +34,7 @@ func _ready():
 	var _unused = GameController.connect("cancel", self, "_on_cancelled")
 	_unused = Steam.connect("lobby_joined", self, "_on_Lobby_Joined")
 	_unused = Steam.connect("p2p_session_request", self, "_on_P2P_Session_Request")
+	_unused = Steam.connect("lobby_chat_update", self, "_on_Lobby_Chat_Update")
 
 func _process(_delta):
 	Steam.run_callbacks()
@@ -49,10 +50,10 @@ func start_game(f_is_host = true) -> void:
 	
 	is_host = f_is_host
 	
+	main_scene.call_deferred("init", is_host, tracked_players)
+	
 	get_tree().get_root().add_child(main_scene)
 	get_tree().set_current_scene(main_scene)
-	
-	main_scene.call_deferred("init", is_host, tracked_players)
 	
 	if is_host:
 		start_tracking_players_in_game()
@@ -169,6 +170,7 @@ func send_data(packet_data: Dictionary, target: int, channel:int = 0) -> void:
 	var compressed_data = var2bytes(packet_data).compress(File.COMPRESSION_GZIP)
 	
 	# Just use channel 0 for everything for now
+	print_debug("sending message")
 	var _error = Steam.sendP2PPacket(target, compressed_data, Steam.P2P_SEND_RELIABLE, channel)
 
 # clears tracked_players and resets tracked players based  
@@ -204,3 +206,7 @@ func _on_Lobby_Joined(joined_lobby_id: int, _permissions: int, _locked: bool, re
 		
 #		if not parent.is_host:
 #			request_lobby_update()
+
+func _on_Lobby_Chat_Update(_update_lobby_id: int, change_id: int, _making_change_id: int, chat_state: int) -> void:
+	var username = Steam.getFriendPersonaName(change_id)
+	update_tracked_players()
