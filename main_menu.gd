@@ -9,6 +9,8 @@ func _ready():
 func _on_Button_pressed():
 	var main_scene = load("res://main.tscn").instance()
 	
+	main_scene.call_deferred("init", true, {})
+	
 	get_tree().get_root().add_child(main_scene)
 	get_tree().set_current_scene(main_scene)
 

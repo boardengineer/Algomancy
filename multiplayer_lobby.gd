@@ -14,3 +14,9 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
+
+
+func _on_StartGame_pressed():
+	if SteamController.is_host:
+		SteamController.start_game(true)
+	pass # Replace with function body.

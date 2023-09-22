@@ -60,28 +60,32 @@ func _ready():
 	_unused = player_target_opponent.connect("gui_input", self, "player_opponent_gui_event")
 	_unused = connect("targeted_player", TargetHelper, "on_target_selected")
 	
-	randomize()
-	init()
-	
 # Do init stuff in this function for easier modding
-func init():
+func init(is_host := true, f_tracked_players := {}) -> void:
 	set_up_basic_resource_container()
 	
 	reset_all_visuals()
 	set_up_battlefields()
 	target_image.hide()
 	
-	players = []
+	if not is_host:
+		print_debug("client sending started game")
+		SteamController.send_game_started_status()
+		return
 	
-	# init players
-	for n in NUM_PLAYERS:
-		var new_player
-		if n == 0:
-			new_player = Player.new(self, SteamController.self_peer_id)
-		else:
-			new_player = Player.new(self, DUMMY_PLAYER_ID)
+	randomize()
+	if f_tracked_players.size() < 2:
+		players = []
 		
-		players.push_back(new_player)
+		# init players
+		for n in NUM_PLAYERS:
+			var new_player
+			if n == 0:
+				new_player = Player.new(self, SteamController.self_peer_id)
+			else:
+				new_player = Player.new(self, DUMMY_PLAYER_ID)
+			
+			players.push_back(new_player)
 		
 	for player in players:
 		player.init_after_player_creation()
@@ -107,7 +111,7 @@ func init():
 	# TODO remove when not debugging
 	players[0].player_id = SteamController.self_peer_id
 	
-	do_untap_phase()
+	SteamController.start_first_phase_when_all_ready()
 
 func clear_stack_container() -> void:
 	for child in stack_container.get_children():

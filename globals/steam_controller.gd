@@ -22,15 +22,27 @@ var draft_selection_by_player_id = {}
 
 var tracked_players = {}
 
+# Tracks players that have send status updates saying they're in game, ensures
+# players are loaded before they get the initial game state so they can load
+# in properly.
+var players_in_game = {}
+
 func _ready():
 	var _init_status = Steam.steamInit()
 	self_peer_id = Steam.getSteamID()
 	
 	var _unused = GameController.connect("cancel", self, "_on_cancelled")
 	_unused = Steam.connect("lobby_joined", self, "_on_Lobby_Joined")
+	_unused = Steam.connect("p2p_session_request", self, "_on_P2P_Session_Request")
 
 func _process(_delta):
 	Steam.run_callbacks()
+
+func _on_P2P_Session_Request(remote_id: int) -> void:
+	var _error = Steam.acceptP2PSessionWithUser(remote_id)
+
+	# Make the initial handshake
+	send_handshakes()
 
 func start_game(f_is_host = true) -> void:
 	var main_scene = load("res://main.tscn").instance()
@@ -39,6 +51,35 @@ func start_game(f_is_host = true) -> void:
 	
 	get_tree().get_root().add_child(main_scene)
 	get_tree().set_current_scene(main_scene)
+	
+	main_scene.call_deferred("init", is_host, tracked_players)
+	
+	if is_host:
+		start_tracking_players_in_game()
+		send_start_game()
+		start_first_phase_when_all_ready()
+
+func start_first_phase_when_all_ready() -> void:
+	for player_id in tracked_players:
+		if not players_in_game.has(player_id) or not players_in_game[player_id]:
+			print_debug("not starting because player ", player_id, " has not reported ready")
+			return
+	
+	print_debug("all players reported ready, starting game")
+	GameController.main.do_untap_phase()
+
+func start_tracking_players_in_game() -> void:
+	players_in_game = {}
+	
+	for player_id in tracked_players:
+		if player_id == self_peer_id:
+			continue
+		
+		players_in_game[player_id] = false
+
+func receive_game_started_status(sender_id) -> void:
+	players_in_game[sender_id] = true
+	start_first_phase_when_all_ready()
 
 func get_next_network_id() -> int:
 	var result = latest_network_id
@@ -48,6 +89,8 @@ func get_next_network_id() -> int:
 func start_draft() -> void:
 	waiting_for_draft = true
 	draft_selection_by_player_id = {}
+	
+	send_game_state()
 
 func complete_draft() -> void:
 	waiting_for_draft = false
@@ -93,9 +136,26 @@ func receive_formation(formation_dict:Dictionary) -> void:
 func _on_cancelled():
 	emit_signal("draft_complete_or_cancelled")
 
+func send_game_state() -> void:
+	var state = GameController.main.serialize()
+	var send_data = {}
+	send_data["type"] = "game_state"
+	send_data["state"] = state
+	send_data_to_all(send_data)
+
 func send_handshakes() -> void:
 	var send_data = {}
 	send_data["type"] = "handshake"
+	send_data_to_all(send_data)
+
+func send_start_game() -> void:
+	var send_data = {}
+	send_data["type"] = "start_game"
+	send_data_to_all(send_data)
+
+func send_game_started_status() -> void:
+	var send_data = {}
+	send_data["type"] = "status_started_game"
 	send_data_to_all(send_data)
 
 func send_data_to_all(packet_data: Dictionary) -> void:
