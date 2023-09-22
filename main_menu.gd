@@ -7,12 +7,14 @@ func _ready():
 	_unused = Steam.connect("lobby_match_list", self, "_on_Lobby_Match_List")
 
 func _on_Button_pressed():
+	var old_main = get_tree().get_current_scene()
 	var main_scene = load("res://main.tscn").instance()
 	
 	main_scene.call_deferred("init", true, {})
 	
 	get_tree().get_root().add_child(main_scene)
 	get_tree().set_current_scene(main_scene)
+	get_tree().get_root().remove_child(old_main)
 
 func _on_CreateLobby_pressed():
 	if SteamController.lobby_id == 0:

@@ -46,6 +46,7 @@ func _on_P2P_Session_Request(remote_id: int) -> void:
 	send_handshakes()
 
 func start_game(f_is_host = true) -> void:
+	var old_main = get_tree().get_current_scene()
 	var main_scene = load("res://main.tscn").instance()
 	
 	is_host = f_is_host
@@ -54,6 +55,7 @@ func start_game(f_is_host = true) -> void:
 	
 	get_tree().get_root().add_child(main_scene)
 	get_tree().set_current_scene(main_scene)
+	get_tree().get_root().remove_child(old_main)
 	
 	if is_host:
 		start_tracking_players_in_game()
