@@ -19,8 +19,10 @@ func read_p2p_packet() -> bool:
 			SteamController.start_game(false)
 		if data.type == "status_started_game":
 			SteamController.receive_game_started_status(sender)
-		
-		
+		if data.type == "game_state":
+			SteamController.receive_game_state(data.state)
+		if data.type == "draft_selection":
+			SteamController.receive_draft_selection(sender, data.draft_selection)
 		return true
 	
 	return false

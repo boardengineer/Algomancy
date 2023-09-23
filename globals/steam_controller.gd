@@ -64,6 +64,9 @@ func start_game(f_is_host = true) -> void:
 
 func start_first_phase_when_all_ready() -> void:
 	for player_id in tracked_players:
+		if player_id == self_peer_id:
+			continue
+		
 		if not players_in_game.has(player_id) or not players_in_game[player_id]:
 			print_debug("not starting because player ", player_id, " has not reported ready")
 			return
@@ -123,12 +126,18 @@ func submit_draft_selection(draft_selection) -> void:
 	var selected_card_ids = []
 	for card in draft_selection:
 		selected_card_ids.push_back(card.network_id)
+	
 	if is_host:
 		receive_draft_selection(self_peer_id, selected_card_ids)
 	else:
-		# Send draft selection to host
-		pass
-	pass
+		send_draft_selection(selected_card_ids)
+
+func send_draft_selection(selected_card_ids) -> void:
+	var state = GameController.main.serialize()
+	var send_data = {}
+	send_data["type"] = "draft_selection"
+	send_data["draft_selection"] = selected_card_ids
+	send_data_to_all(send_data)
 
 func submit_formation(formation_dict:Dictionary) -> void:
 	pass

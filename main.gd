@@ -186,7 +186,8 @@ func do_draft_phase():
 #		var cards_to_select = opponent.
 		SteamController.receive_draft_selection(DUMMY_PLAYER_ID, dummy_selections)
 	
-	draft_container.display_draft_pack(players[0].draft_pack)
+	
+	draft_container.display_draft_pack(GameController.get_player_for_id(SteamController.self_peer_id).draft_pack)
 	
 	yield(SteamController, "draft_complete_or_cancelled")
 	

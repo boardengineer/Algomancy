@@ -93,3 +93,10 @@ func update_static_state() -> void:
 				if permanent.toughness:
 					if permanent.damage >= permanent.toughness:
 						permanent.die()
+
+func get_player_for_id(player_id):
+	for player in main.players:
+		if player.player_id == player_id:
+			return player
+	
+	return null
