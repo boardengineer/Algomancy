@@ -47,7 +47,7 @@ onready var target_image = $TargetContainer/TargetIcon
 
 var current_player_passed
 
-var use_dummy_opponent = true
+var use_dummy_opponent = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

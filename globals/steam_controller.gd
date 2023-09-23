@@ -146,6 +146,13 @@ func send_game_state() -> void:
 	send_data["state"] = state
 	send_data_to_all(send_data)
 
+func receive_game_state(game_state) -> void:
+	if is_host:
+		print_debug("you're the host, why are you getting states?")
+		return
+	
+	GameController.main.deserialize_and_load(game_state)
+
 func send_handshakes() -> void:
 	var send_data = {}
 	send_data["type"] = "handshake"
