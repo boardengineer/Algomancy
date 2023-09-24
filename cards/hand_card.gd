@@ -45,7 +45,7 @@ func _ready():
 
 func on_card_input(event):
 	if event.is_pressed():
-		if not SteamController.has_priority:
+		if player_owner != GameController.priority_player:
 			return
 			
 		var is_resource = false

@@ -18,7 +18,7 @@ script = ExtResource( 1 )
 [node name="Players" type="Node" parent="."]
 
 [node name="GameLog" type="VBoxContainer" parent="."]
-margin_right = 100.0
+margin_right = 168.0
 margin_bottom = 779.0
 grow_horizontal = 2
 rect_min_size = Vector2( 100, 0 )
@@ -26,18 +26,18 @@ rect_pivot_offset = Vector2( -1071, 87 )
 size_flags_horizontal = 0
 
 [node name="Label3" type="Label" parent="GameLog"]
-margin_right = 100.0
+margin_right = 168.0
 margin_bottom = 100.0
-rect_min_size = Vector2( 100, 100 )
+rect_min_size = Vector2( 168, 100 )
 rect_clip_content = true
 size_flags_horizontal = 3
 size_flags_vertical = 0
-text = "Logtext1234asdfasdfasdfasdffghfghfghfghfghfghfghfghfghfghfgh"
+text = "Message Log End"
 autowrap = true
 clip_text = true
 
 [node name="GameFields" type="VBoxContainer" parent="."]
-margin_left = 104.0
+margin_left = 172.0
 margin_right = 1180.0
 margin_bottom = 779.0
 rect_min_size = Vector2( 553, 0 )
@@ -45,7 +45,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="OpponentField" type="GridContainer" parent="GameFields"]
-margin_right = 1076.0
+margin_right = 1008.0
 margin_bottom = 200.0
 rect_min_size = Vector2( 0, 200 )
 columns = 10
@@ -58,7 +58,7 @@ margin_right = 104.0
 
 [node name="PlayerField" type="GridContainer" parent="GameFields"]
 margin_top = 204.0
-margin_right = 1076.0
+margin_right = 1008.0
 margin_bottom = 626.0
 rect_min_size = Vector2( 0, 422 )
 columns = 10
@@ -71,7 +71,7 @@ margin_right = 104.0
 
 [node name="HandContainer" type="HBoxContainer" parent="GameFields"]
 margin_top = 630.0
-margin_right = 1076.0
+margin_right = 1008.0
 margin_bottom = 779.0
 rect_min_size = Vector2( 0, 149 )
 size_flags_horizontal = 3
@@ -122,10 +122,10 @@ color = Color( 0.12549, 0.2, 0.803922, 1 )
 [node name="Formations" type="Node" parent="."]
 
 [node name="PlayerAttackFormationPanelContainer" type="PanelContainer" parent="Formations"]
-margin_left = 801.0
-margin_top = 317.0
-margin_right = 1101.0
-margin_bottom = 467.0
+margin_left = 793.0
+margin_top = 394.0
+margin_right = 1093.0
+margin_bottom = 544.0
 
 [node name="PlayerAttackFormation" parent="Formations/PlayerAttackFormationPanelContainer" instance=ExtResource( 5 )]
 position = Vector2( 130, 0 )
@@ -140,28 +140,28 @@ size_flags_vertical = 0
 text = "Accept Formation"
 
 [node name="OpponentAttackFormationPanelContainer" type="PanelContainer" parent="Formations"]
-margin_left = 432.0
-margin_top = 90.0
-margin_right = 732.0
-margin_bottom = 240.0
+margin_left = 465.0
+margin_top = 182.0
+margin_right = 765.0
+margin_bottom = 332.0
 
 [node name="OpponentAttackFormation" parent="Formations/OpponentAttackFormationPanelContainer" instance=ExtResource( 5 )]
 position = Vector2( 130, 0 )
 
 [node name="OpponentBlockFormationPanelContainer" type="PanelContainer" parent="Formations"]
-margin_left = 804.0
-margin_top = 89.0
-margin_right = 1104.0
-margin_bottom = 239.0
+margin_left = 788.0
+margin_top = 182.0
+margin_right = 1088.0
+margin_bottom = 332.0
 
 [node name="OpponentBlockFormation" parent="Formations/OpponentBlockFormationPanelContainer" instance=ExtResource( 5 )]
 position = Vector2( 130, 0 )
 
 [node name="PlayerBlockFormationPanelContainer" type="PanelContainer" parent="Formations"]
-margin_left = 432.0
-margin_top = 306.0
-margin_right = 732.0
-margin_bottom = 456.0
+margin_left = 460.0
+margin_top = 395.0
+margin_right = 760.0
+margin_bottom = 545.0
 
 [node name="PlayerBlockFormation" parent="Formations/PlayerBlockFormationPanelContainer" instance=ExtResource( 5 )]
 position = Vector2( 130, 0 )
@@ -353,6 +353,7 @@ valign = 1
 [node name="TargetContainer" type="Node" parent="."]
 
 [node name="TargetIcon" type="TextureRect" parent="TargetContainer"]
+visible = false
 margin_left = 822.0
 margin_top = 7.0
 margin_right = 896.0

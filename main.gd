@@ -47,7 +47,7 @@ onready var target_image = $TargetContainer/TargetIcon
 
 var current_player_passed
 
-var use_dummy_opponent = false
+var use_dummy_opponent = true
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -132,12 +132,14 @@ func set_up_basic_resource_container() -> void:
 	var fire_container = ResourceContainer.instance()
 	fire_container.text = "fire"
 	fire_container.set_name("Fire")
+	fire_container.set_network_id(-1000)
 	fire_container.resource_card = Fire.new()
 	basic_resource_container.add_child(fire_container)
 	
 	var wood_container = ResourceContainer.instance()
 	wood_container.text = "wood"
 	wood_container.set_name("Wood")
+	wood_container.set_network_id(-1001)
 	wood_container.resource_card = Wood.new()
 	basic_resource_container.add_child(wood_container)
 	
@@ -190,25 +192,27 @@ func do_draft_phase():
 	draft_container.display_draft_pack(GameController.get_player_for_id(SteamController.self_peer_id).draft_pack)
 	
 	yield(SteamController, "draft_complete_or_cancelled")
-	
-	for player in players:
-		var selected_cards = SteamController.draft_selection_by_player_id[player.player_id]
-		for card in selected_cards:
-			player.draft_pack.erase(card)
-			player.add_to_hand(card)
-	
-	draft_container.hide()
-	
 	if not GameController.action_cancelled:
+		for player in players:
+			var selected_cards = SteamController.draft_selection_by_player_id[player.player_id]
+			for card in selected_cards:
+				player.draft_pack.erase(card)
+				player.add_to_hand(card)
+		
+		draft_container.hide()
 		do_mana_ti_phase()
 
 func do_mana_ti_phase():
 	log_message("starting mana phase")
 	
+	var active_player = GameController.get_ti_player()
+	
+	GameController.priority_player = active_player
+	
 	if first_turn:
-		players[0].resource_plays_remaining = 0
+		active_player.resource_plays_remaining = 0
 	else:
-		players[0].resource_plays_remaining = RESOURCE_PLAYS_PER_TURN
+		active_player.resource_plays_remaining = RESOURCE_PLAYS_PER_TURN
 	
 	GameController.phase = GameController.GamePhase.MANA_TI
 	current_player_passed = false
@@ -226,12 +230,49 @@ func do_mana_ti_phase():
 
 func do_mana_nti_phase():
 	log_message("starting opp mana phase")
+	
 	GameController.phase = GameController.GamePhase.MANA_NTI
 	
-	log_message("(skipping phase)")
-#	players[1].do_mana_phase()
+	var active_player = GameController.get_nti_player()
 	
-	do_attack_ti_phase()
+	GameController.priority_player = active_player
+	
+	if first_turn:
+		active_player.resource_plays_remaining = 0
+	else:
+		active_player.resource_plays_remaining = RESOURCE_PLAYS_PER_TURN
+	
+	current_player_passed = false
+	
+	if active_player.is_dummy():
+		var command_dict = {}
+		command_dict.type = "ability"
+		
+		command_dict.effects = []
+		var effects_dict = {}
+		effects_dict.targets = []
+		effects_dict.targets.push_back(-1000)
+		command_dict.effects.push_back(effects_dict)
+		
+		command_dict.source = "114"
+		command_dict.index = 0
+		
+		SteamController.receive_ability_or_pass(DUMMY_PLAYER_ID, command_dict)
+		return
+#		SteamController.submit_ability_or_passed()
+#		print_debug("skipping")
+#		do_attack_ti_phase()
+	
+	while not current_player_passed and not GameController.action_cancelled:
+		yield(self, "activated_or_passed_or_cancelled")
+		
+		if not ability_stack.empty():
+			var ability = ability_stack.pop_front()
+			ability.resolve()
+			remove_ability_from_stack_gui(ability)
+	
+	if not GameController.action_cancelled:
+		do_attack_ti_phase()
 
 func do_attack_ti_phase():
 	log_message("starting ti atk phase")
@@ -376,6 +417,7 @@ func log_message(message):
 	to_add.text = message
 	 
 	game_log.add_child(to_add)
+	game_log.move_child(to_add, 0)
 
 # For transmitting and for saves
 func serialize():
@@ -392,6 +434,10 @@ func serialize():
 	
 	state_dict.first_turn = first_turn
 	state_dict.phase = GameController.phase
+	
+	state_dict.initiative_player_id = GameController.initiative_player.player_id
+	if GameController.priority_player:
+		state_dict.priority_player_id = GameController.priority_player.player_id
 	
 	return JSON.print(state_dict)
 
@@ -419,14 +465,19 @@ func deserialize_and_load(serialized_state):
 	for player in loaded_dict.players:
 		var player_to_add = Player.new(self, int(player.player_id))
 		players.push_back(player_to_add)
+		player_list.add_child(player_to_add)
 		player_data_map[player_to_add] = player
 	
 	for player in players:
 		player.init_after_player_creation()
-	
-	for player in players:
 		player.load_data(player_data_map[player])
-		player_list.add_child(player)
+		
+	for player in players:
+		if player.player_id == loaded_dict.initiative_player_id:
+			GameController.initiative_player = player
+		if loaded_dict.has("priority_player_id"):
+			if player.player_id == loaded_dict.priority_player_id:
+				GameController.priority_player = player
 	
 	# If the game is in draft phase all players are drafting
 	if GameController.phase == GameController.GamePhase.DRAFT:
@@ -441,6 +492,10 @@ func resume_phase() -> void:
 		
 	if GameController.phase == GameController.GamePhase.MANA_TI:
 		do_mana_ti_phase()
+		return
+	
+	if GameController.phase == GameController.GamePhase.MANA_NTI:
+		do_mana_nti_phase()
 		return
 	
 	if GameController.phase == GameController.GamePhase.ATTACK_TI:
@@ -467,7 +522,10 @@ func on_activated_ability_or_passed(has_passed):
 	emit_signal("activated_or_passed_or_cancelled")
 
 func _on_PassButton_pressed():
-	GameController.emit_signal("activated_ability_or_passed", true)
+	var command_dict = {}
+	command_dict.type = "pass"
+	SteamController.submit_ability_or_passed(command_dict)
+#	GameController.emit_signal("activated_ability_or_passed", true)
 
 func reset_all_visuals() -> void:
 	# Logical elements will be created from scratch so we only need to

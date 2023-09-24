@@ -25,12 +25,6 @@ func init_after_player_creation():
 	for player in main.players:
 		battlefields[player] = []
 
-func _ready():
-	# connect the signal but only for the host we'll deal with client players
-	# layer
-	if player_id == SteamController.self_peer_id:
-		var _unused = GameController.connect("cancel", self, "_on_cancelled")
-
 func draw(amount = 1):
 	for _n in amount:
 		if not main.deck.empty():
@@ -106,6 +100,7 @@ func load_data(player_dict) -> void:
 				player = q_player
 		for permanent_json in player_dict.battlefields[battlefield_player_id]:
 			var permanent_to_add = CardLibrary.permanent_for_owner(self, permanent_json.network_id)
+			permanent_to_add.player_owner = self
 			permanent_to_add.load_data(permanent_json)
 			
 			add_permanent(permanent_to_add, battlefields[player])
@@ -149,7 +144,7 @@ func add_permanent(permanent_to_add, battlefield) -> void:
 		field = main.opponent_field
 	
 	field.call_deferred("add_child", permanent_to_add)
-	permanent_to_add.tree_container = main.player_field
+	permanent_to_add.tree_container = field
 
 func remove_from_hand(card) -> void:
 	for hand_card in main.hand_container.get_children():
@@ -205,3 +200,6 @@ func meets_card_threshold(card) -> bool:
 			return false
 	
 	return true
+
+func is_dummy() -> bool:
+	return player_id == -1

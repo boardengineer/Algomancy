@@ -33,7 +33,8 @@ func init(f_player_owner, f_network_id = -1):
 		network_id = SteamController.get_next_network_id()
 	else:
 		network_id = f_network_id
-	SteamController.network_items_by_id[network_id] = self
+	
+	SteamController.network_items_by_id[str(network_id)] = self
 	
 	player_owner = f_player_owner
 	is_in_formation = false
@@ -46,7 +47,7 @@ func _ready():
 
 func on_gui_input(event):
 	if event.is_pressed():
-		if not SteamController.has_priority:
+		if not player_owner != GameController.priority_player:
 			return
 		
 		if GameController.is_targeting:

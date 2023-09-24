@@ -55,6 +55,7 @@ func activate(ability_index = 0) -> void:
 	
 	if not cancelled:
 		var command_dict = {}
+		command_dict.type = "ability"
 		command_dict.source = source.network_id
 		command_dict.index = ability_index
 	

@@ -23,6 +23,8 @@ func read_p2p_packet() -> bool:
 			SteamController.receive_game_state(data.state)
 		if data.type == "draft_selection":
 			SteamController.receive_draft_selection(sender, data.draft_selection)
+		if data.type == "command":
+			SteamController.receive_ability_or_pass(sender, data.command)
 		return true
 	
 	return false

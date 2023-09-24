@@ -72,6 +72,7 @@ func start_first_phase_when_all_ready() -> void:
 			return
 	
 	print_debug("all players reported ready, starting game")
+	GameController.initiative_player = GameController.main.players[0]
 	GameController.main.do_untap_phase()
 
 func start_tracking_players_in_game() -> void:
@@ -85,6 +86,7 @@ func start_tracking_players_in_game() -> void:
 
 func receive_game_started_status(sender_id) -> void:
 	players_in_game[sender_id] = true
+	
 	start_first_phase_when_all_ready()
 
 func get_next_network_id() -> int:
@@ -108,7 +110,7 @@ func receive_draft_selection(player_id, selected_network_ids) -> void:
 	
 	var deindexed_card_list = []
 	for id_selected in selected_network_ids:
-		deindexed_card_list.push_back(network_items_by_id[id_selected])
+		deindexed_card_list.push_back(network_items_by_id[int(id_selected)])
 	draft_selection_by_player_id[player_id] = deindexed_card_list
 	
 	if draft_selection_by_player_id.size() == network_players_by_id.size():
@@ -116,11 +118,27 @@ func receive_draft_selection(player_id, selected_network_ids) -> void:
 
 func submit_ability_or_passed(command) -> void:
 	if is_host:
-		receive_ability_or_pass(command)
-	pass
+		receive_ability_or_pass(self_peer_id, command)
+	else:
+		send_ability_or_passed(command)
+	
+func send_ability_or_passed(command) -> void:
+	var state = GameController.main.serialize()
+	var send_data = {}
+	send_data["type"] = "command"
+	send_data["command"] = command
+	send_data_to_all(send_data)
 
-func receive_ability_or_pass(command) -> void:
-	network_items_by_id[command.source].activate_ability(command.index, command.effects)
+func receive_ability_or_pass(player_id, command) -> void:
+	if GameController.priority_player.player_id != player_id:
+		return
+	
+	var is_pass = command.type != "ability"
+	
+	GameController.emit_signal("activated_ability_or_passed", is_pass)
+	
+	if not is_pass:
+		network_items_by_id[command.source].activate_ability(command.index, command.effects)
 
 func submit_draft_selection(draft_selection) -> void:
 	var selected_card_ids = []

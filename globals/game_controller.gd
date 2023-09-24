@@ -11,6 +11,11 @@ var action_cancelled = false
 
 var current_battlefields = []
 
+var initiative_player
+
+# The player the game is waiting on unless both players are drafting
+var priority_player
+
 var interaction_phase = false
 var phase = GamePhase.UNTAP
 enum GamePhase {
@@ -54,8 +59,13 @@ func save_game():
 	save_file.close()
 	
 func load_game():
+	print_debug("loading game")
+	
 	cancel_all_yields()
 	var load_file := File.new()
+	
+	for key in SteamController.network_items_by_id:
+		SteamController.network_items_by_id.erase(key)
 	
 	var _error = load_file.open("user://algomancy_save.save", File.READ)
 	var content = load_file.get_as_text()
@@ -99,4 +109,13 @@ func get_player_for_id(player_id):
 		if player.player_id == player_id:
 			return player
 	
+	return null
+
+func get_ti_player():
+	return initiative_player
+
+func get_nti_player():
+	for player in main.players:
+		if player != initiative_player:
+			return player
 	return null
