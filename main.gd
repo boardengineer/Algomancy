@@ -258,6 +258,22 @@ func do_mana_nti_phase():
 		command_dict.index = 0
 		
 		SteamController.receive_ability_or_pass(DUMMY_PLAYER_ID, command_dict)
+		
+		var second_command_dict = {}
+		second_command_dict.type = "ability"
+		
+		second_command_dict.effects = []
+		var second_effects_dict = {}
+		second_effects_dict.targets = []
+		second_effects_dict.targets.push_back(-1000)
+		second_command_dict.effects.push_back(second_effects_dict)
+		
+		second_command_dict.source = "116"
+		second_command_dict.index = 0
+		
+		SteamController.receive_ability_or_pass(DUMMY_PLAYER_ID, second_command_dict)
+		
+		do_attack_ti_phase()
 		return
 #		SteamController.submit_ability_or_passed()
 #		print_debug("skipping")
@@ -277,7 +293,10 @@ func do_mana_nti_phase():
 func do_attack_ti_phase():
 	log_message("starting ti atk phase")
 	
+	GameController.priority_player = GameController.get_ti_player()
 	GameController.phase = GameController.GamePhase.ATTACK_TI
+	GameController.interaction_phase = false
+	
 	player_attack_formation.init_empty_formation()
 	player_attack_formation.show()
 	accept_attack_formation_button.show()
@@ -288,6 +307,8 @@ func do_attack_ti_phase():
 	
 	GameController.interaction_phase = true
 	current_player_passed = false
+	
+#	TODO players should have a chance to do things in each interaction phase
 	while not current_player_passed and not GameController.action_cancelled:
 		yield(self, "activated_or_passed_or_cancelled")
 		

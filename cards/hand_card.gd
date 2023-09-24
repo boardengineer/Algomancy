@@ -15,7 +15,7 @@ func _init(source_card, f_player_owner, f_network_id = -1):
 	else:
 		network_id = f_network_id
 	
-	SteamController.network_items_by_id[network_id] = self
+	SteamController.network_items_by_id[str(network_id)] = self
 	
 	rect_min_size.x = 50
 	rect_min_size.y = 70

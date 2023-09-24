@@ -138,7 +138,7 @@ func receive_ability_or_pass(player_id, command) -> void:
 	GameController.emit_signal("activated_ability_or_passed", is_pass)
 	
 	if not is_pass:
-		network_items_by_id[command.source].activate_ability(command.index, command.effects)
+		network_items_by_id[str(int(command.source))].activate_ability(command.index, command.effects)
 
 func submit_draft_selection(draft_selection) -> void:
 	var selected_card_ids = []
