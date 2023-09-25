@@ -10,10 +10,7 @@ var resource_from_hand_ability = load("res://mana/resource_from_hand_ability.gd"
 var network_id
 
 func _init(source_card, f_player_owner, f_network_id = -1):
-	if f_network_id == -1:
-		network_id = SteamController.get_next_network_id()
-	else:
-		network_id = f_network_id
+	network_id = source_card.network_id
 	
 	SteamController.network_items_by_id[str(network_id)] = self
 	
@@ -45,6 +42,8 @@ func _ready():
 
 func on_card_input(event):
 	if event.is_pressed():
+#		print_debug("pressed on card in hand, priority match? ", player_owner.player_id, " ", GameController.priority_player.player_id)
+
 		if player_owner != GameController.priority_player:
 			return
 			
@@ -65,6 +64,7 @@ func on_card_input(event):
 		else:
 			var possible_abilities = []
 			if not GameController.is_targeting:
+				
 				if GameController.is_in_mana_phase():
 					var ability = ManaTradeAbility.new(null, player_owner)
 					ability.source = card

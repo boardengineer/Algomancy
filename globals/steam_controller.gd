@@ -137,6 +137,8 @@ func receive_ability_or_pass(player_id, command) -> void:
 	
 	GameController.emit_signal("activated_ability_or_passed", is_pass)
 	
+	print_debug("player doing command ", player_id, " " , command)
+	
 	if not is_pass:
 		network_items_by_id[str(int(command.source))].activate_ability(command.index, command.effects)
 

@@ -84,6 +84,12 @@ size_flags_horizontal = 0
 size_flags_vertical = 0
 color = Color( 0.12549, 0.2, 0.803922, 1 )
 
+[node name="OpponentHandCotainer" type="HBoxContainer" parent="GameFields"]
+visible = false
+margin_top = 783.0
+margin_right = 1008.0
+margin_bottom = 783.0
+
 [node name="Stack" type="VBoxContainer" parent="."]
 margin_left = 1184.0
 margin_right = 1284.0

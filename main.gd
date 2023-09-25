@@ -24,9 +24,13 @@ onready var player_list = $Players
 
 onready var opponent_field = $GameFields/OpponentField
 onready var player_field = $GameFields/PlayerField
+
 onready var hand_container = $GameFields/HandContainer
 onready var discard_container = $DiscardHolder/Discard
 onready var stack_container = $Stack
+
+onready var opponent_hand_container = $GameFields/OpponentHandCotainer
+
 onready var basic_resource_container = $BasicResourcePopup/ResourceContainer/HBoxContainer
 onready var basic_resource_dialog = $BasicResourcePopup/ResourceContainer
 onready var pass_button = $Controls/PassButton
@@ -88,7 +92,6 @@ func init(is_host := true, f_tracked_players := {}) -> void:
 			players.push_back(new_player)
 	else:
 		for player_id in f_tracked_players:
-			print_debug("creating player object for id ", player_id)
 			var new_player = Player.new(self, player_id)
 			players.push_back(new_player)
 		
@@ -245,33 +248,34 @@ func do_mana_nti_phase():
 	current_player_passed = false
 	
 	if active_player.is_dummy():
-		var command_dict = {}
-		command_dict.type = "ability"
-		
-		command_dict.effects = []
-		var effects_dict = {}
-		effects_dict.targets = []
-		effects_dict.targets.push_back(-1000)
-		command_dict.effects.push_back(effects_dict)
-		
-		command_dict.source = "114"
-		command_dict.index = 0
-		
-		SteamController.receive_ability_or_pass(DUMMY_PLAYER_ID, command_dict)
-		
-		var second_command_dict = {}
-		second_command_dict.type = "ability"
-		
-		second_command_dict.effects = []
-		var second_effects_dict = {}
-		second_effects_dict.targets = []
-		second_effects_dict.targets.push_back(-1000)
-		second_command_dict.effects.push_back(second_effects_dict)
-		
-		second_command_dict.source = "116"
-		second_command_dict.index = 0
-		
-		SteamController.receive_ability_or_pass(DUMMY_PLAYER_ID, second_command_dict)
+#		uncomment for first turn commands
+#		var command_dict = {}
+#		command_dict.type = "ability"
+#
+#		command_dict.effects = []
+#		var effects_dict = {}
+#		effects_dict.targets = []
+#		effects_dict.targets.push_back(-1000)
+#		command_dict.effects.push_back(effects_dict)
+#
+#		command_dict.source = "114"
+#		command_dict.index = 0
+#
+#		SteamController.receive_ability_or_pass(DUMMY_PLAYER_ID, command_dict)
+#
+#		var second_command_dict = {}
+#		second_command_dict.type = "ability"
+#
+#		second_command_dict.effects = []
+#		var second_effects_dict = {}
+#		second_effects_dict.targets = []
+#		second_effects_dict.targets.push_back(-1000)
+#		second_command_dict.effects.push_back(second_effects_dict)
+#
+#		second_command_dict.source = "116"
+#		second_command_dict.index = 0
+#
+#		SteamController.receive_ability_or_pass(DUMMY_PLAYER_ID, second_command_dict)
 		
 		do_attack_ti_phase()
 		return
@@ -397,6 +401,7 @@ func do_main_ti():
 	log_message("starting ti main phase")
 	
 	GameController.phase = GameController.GamePhase.MAIN_TI
+	GameController.priority_player = GameController.get_ti_player()
 	
 	current_player_passed = false
 	while not current_player_passed and not GameController.action_cancelled:
@@ -414,10 +419,62 @@ func do_main_ti():
 func do_main_nti():
 	log_message("starting nti main phase")
 	
-	GameController.phase = GameController.GamePhase.MAIN_NTI
-	
-	log_message("(skipping phase)")
 	first_turn = false
+	GameController.phase = GameController.GamePhase.MAIN_NTI
+	GameController.priority_player = GameController.get_nti_player()
+	
+	if GameController.priority_player.is_dummy():
+		var command_dict = {}
+		command_dict.type = "ability"
+		
+		command_dict.effects = []
+#		var effects_dict = {}
+#		effects_dict.targets = []
+#		effects_dict.targets.push_back(-1000)
+#		command_dict.effects.push_back(effects_dict)
+		
+		command_dict.source = "108"
+		command_dict.index = 0
+		
+		print_debug("doing command?")
+		SteamController.receive_ability_or_pass(DUMMY_PLAYER_ID, command_dict)
+		
+		# Clear the stack
+		if not ability_stack.empty():
+			var ability = ability_stack.pop_front()
+			ability.resolve()
+			remove_ability_from_stack_gui(ability)
+			current_player_passed = false
+			GameController.update_static_state()
+		
+		var second_command_dict = {}
+		second_command_dict.type = "pass"
+
+#		second_command_dict.effects = []
+#		var second_effects_dict = {}
+#		second_effects_dict.targets = []
+#		second_effects_dict.targets.push_back(-1000)
+#		second_command_dict.effects.push_back(second_effects_dict)
+#
+#		second_command_dict.source = "116"
+#		second_command_dict.index = 0
+#
+		SteamController.receive_ability_or_pass(DUMMY_PLAYER_ID, second_command_dict)
+		
+		do_untap_phase()
+		return
+	
+	current_player_passed = false
+	while not current_player_passed and not GameController.action_cancelled:
+		yield(self, "activated_or_passed_or_cancelled")
+		
+		if current_player_passed and not ability_stack.empty():
+			var ability = ability_stack.pop_front()
+			ability.resolve()
+			remove_ability_from_stack_gui(ability)
+			current_player_passed = false
+			GameController.update_static_state()
+	
 	do_untap_phase()
 
 func interaction_phase():
@@ -614,4 +671,6 @@ func player_opponent_gui_event(event):
 func _on_AcceptFormation_pressed():
 	if not GameController.is_targeting:
 		if player_attack_formation.is_formation_valid():
-			emit_signal("formation_accepted")
+			print_debug("accepting formation ", player_attack_formation.get_formation_command_dict())
+			player_attack_formation.return_all_units()
+#			emit_signal("formation_accepted")
