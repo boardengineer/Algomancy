@@ -2,6 +2,7 @@ extends Node
 
 signal draft_complete_or_cancelled
 signal activated_ability_or_passed_or_cancelled
+signal formation_accepted
 
 enum LobbyAvailability {PRIVATE, FRIENDS, PUBLIC, INVISIBLE}
 var lobby_id = 0
@@ -160,10 +161,19 @@ func send_draft_selection(selected_card_ids) -> void:
 	send_data_to_all(send_data)
 
 func submit_formation(formation_dict:Dictionary) -> void:
-	pass
+	if is_host:
+		receive_formation(self_peer_id, formation_dict)
+	else:
+		send_formation(formation_dict)
  
-func receive_formation(formation_dict:Dictionary) -> void:
-	pass
+func receive_formation(player_id, formation_dict:Dictionary) -> void:
+	emit_signal("formation_accepted")
+
+func send_formation(formation_dict) -> void:
+	var send_data = {}
+	send_data["type"] = "formation"
+	send_data["formation"] = formation_dict
+	send_data_to_all(send_data)
 
 func _on_cancelled():
 	emit_signal("draft_complete_or_cancelled")

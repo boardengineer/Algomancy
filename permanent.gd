@@ -23,7 +23,7 @@ var damage = 0
 var network_id
 
 # TODO for now formation placeholder are permanents
-var is_formation_placeholder
+var is_formation_placeholder = false
 var is_in_formation = false
 
 onready var name_label = $Label
@@ -58,7 +58,7 @@ func on_gui_input(event):
 				
 			if toughness and GameController.is_declaring_attackers():
 				if is_in_formation:
-					get_parent().remove_from_column(self)
+					get_parent().get_parent().remove_from_column(self)
 				else:
 					TargetHelper.get_targets_for_attack(self)
 				return

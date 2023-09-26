@@ -128,51 +128,15 @@ color = Color( 0.12549, 0.2, 0.803922, 1 )
 [node name="Formations" type="Node" parent="."]
 
 [node name="PlayerAttackFormationPanelContainer" type="PanelContainer" parent="Formations"]
-margin_left = 793.0
-margin_top = 394.0
-margin_right = 1093.0
-margin_bottom = 544.0
+margin_left = 457.0
+margin_top = 139.0
+margin_right = 1078.0
+margin_bottom = 573.0
 
 [node name="PlayerAttackFormation" parent="Formations/PlayerAttackFormationPanelContainer" instance=ExtResource( 5 )]
-position = Vector2( 130, 0 )
+position = Vector2( 299, 79 )
 
 [node name="AcceptFormation" type="Button" parent="Formations/PlayerAttackFormationPanelContainer"]
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 132.0
-margin_bottom = 27.0
-size_flags_horizontal = 0
-size_flags_vertical = 0
-text = "Accept Formation"
-
-[node name="OpponentAttackFormationPanelContainer" type="PanelContainer" parent="Formations"]
-margin_left = 465.0
-margin_top = 182.0
-margin_right = 765.0
-margin_bottom = 332.0
-
-[node name="OpponentAttackFormation" parent="Formations/OpponentAttackFormationPanelContainer" instance=ExtResource( 5 )]
-position = Vector2( 130, 0 )
-
-[node name="OpponentBlockFormationPanelContainer" type="PanelContainer" parent="Formations"]
-margin_left = 788.0
-margin_top = 182.0
-margin_right = 1088.0
-margin_bottom = 332.0
-
-[node name="OpponentBlockFormation" parent="Formations/OpponentBlockFormationPanelContainer" instance=ExtResource( 5 )]
-position = Vector2( 130, 0 )
-
-[node name="PlayerBlockFormationPanelContainer" type="PanelContainer" parent="Formations"]
-margin_left = 460.0
-margin_top = 395.0
-margin_right = 760.0
-margin_bottom = 545.0
-
-[node name="PlayerBlockFormation" parent="Formations/PlayerBlockFormationPanelContainer" instance=ExtResource( 5 )]
-position = Vector2( 130, 0 )
-
-[node name="AcceptFormation" type="Button" parent="Formations/PlayerBlockFormationPanelContainer"]
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 132.0
@@ -368,7 +332,6 @@ texture = ExtResource( 6 )
 expand = true
 
 [connection signal="pressed" from="Formations/PlayerAttackFormationPanelContainer/AcceptFormation" to="." method="_on_AcceptFormation_pressed"]
-[connection signal="pressed" from="Formations/PlayerBlockFormationPanelContainer/AcceptFormation" to="." method="_on_AcceptFormation_pressed"]
 [connection signal="pressed" from="DraftContainerPopup/PanelContainer/DraftContainer/AcceptButton" to="DraftContainerPopup/PanelContainer/DraftContainer" method="_on_AcceptButton_pressed"]
 [connection signal="pressed" from="Controls/PassButton" to="." method="_on_PassButton_pressed"]
 [connection signal="pressed" from="Controls/SaveButton" to="." method="_on_SaveButton_pressed"]

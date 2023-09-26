@@ -6,8 +6,30 @@
 [node name="BattleColumn" type="VBoxContainer"]
 script = ExtResource( 2 )
 
-[node name="Permanent" parent="." instance=ExtResource( 1 )]
+[node name="OpponentUnits" type="VBoxContainer" parent="."]
+margin_right = 50.0
+margin_bottom = 144.0
 
-[node name="Permanent2" parent="." instance=ExtResource( 1 )]
+[node name="Permanent3" parent="OpponentUnits" instance=ExtResource( 1 )]
+
+[node name="Permanent4" parent="OpponentUnits" instance=ExtResource( 1 )]
+margin_top = 74.0
+margin_bottom = 144.0
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_top = 148.0
+margin_right = 50.0
+margin_bottom = 170.0
+rect_min_size = Vector2( 0, 22 )
+color = Color( 0.4, 0.423529, 0.00392157, 1 )
+
+[node name="PlayerUnits" type="VBoxContainer" parent="."]
+margin_top = 174.0
+margin_right = 50.0
+margin_bottom = 318.0
+
+[node name="Permanent" parent="PlayerUnits" instance=ExtResource( 1 )]
+
+[node name="Permanent2" parent="PlayerUnits" instance=ExtResource( 1 )]
 margin_top = 74.0
 margin_bottom = 144.0

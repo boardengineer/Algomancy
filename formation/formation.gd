@@ -23,7 +23,8 @@ func get_possible_positions_for_unit(_unit_to_place):
 func create_column():
 	var column = column_scene.instance()
 	
-	column.reset_formation()
+	column.call_deferred("reset_formation")
+	
 	column.formation = self
 	
 	return column
@@ -60,6 +61,9 @@ func maybe_remove_column(column_to_remove) -> void:
 	
 	if column_index > 0 and column_index < battle_columns.get_child_count() - 1:
 		battle_columns.remove_child(column_to_remove)
+		
+	if column_index == 1 and battle_columns.get_child_count() == 2:
+		battle_columns.remove_child(battle_columns.get_children()[0])
 
 func return_all_units() -> void:
 	var to_remove = []
@@ -70,11 +74,14 @@ func return_all_units() -> void:
 	
 	for unit in to_remove:
 		unit.erase()
+		unit.is_in_formation = false
 		unit.player_owner.add_permanent(unit, unit.player_owner.battlefields[unit.player_owner])
+		
+	init_empty_formation()
 
 func get_formation_command_dict() -> Dictionary:
 	var result := {}
-		
+	
 	var formation_array := []
 	for column_child in battle_columns.get_children():
 		var column_array := []
@@ -84,7 +91,7 @@ func get_formation_command_dict() -> Dictionary:
 			continue
 			
 		for permanent_index in num_units:
-			var permanent = column_child.get_children()[permanent_index]
+			var permanent = column_child.player_units.get_children()[permanent_index]
 			column_array.push_back(permanent.network_id)
 		
 		formation_array.push_back(column_array)
@@ -92,3 +99,12 @@ func get_formation_command_dict() -> Dictionary:
 	result.formation = formation_array
 	return result
 
+func apply_attack_formation_command(command_dict:Dictionary) -> void:
+	var command_formation = command_dict.formation
+	
+	for column_array in command_formation:
+		var column = create_column()
+		battle_columns.add_child(column)
+		for perm_id in column_array:
+			var perm = SteamController.network_items_by_id[str(perm_id)]
+			column.call_deferred("add_to_back_of_column", perm)

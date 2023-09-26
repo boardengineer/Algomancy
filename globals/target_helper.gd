@@ -39,7 +39,7 @@ func get_targets_for_attack(permanent) -> void:
 	var formation_position = selected_targets[0]
 	
 	if formation_position.is_formation_placeholder:
-		formation_position.get_parent().add_to_back_of_column(permanent)
+		formation_position.get_parent().get_parent().add_to_back_of_column(permanent)
 	
 	main.target_image.hide()
 	emit_signal("targeting_complete")

@@ -41,8 +41,8 @@ onready var accept_attack_formation_button = $Formations/PlayerAttackFormationPa
 onready var player_block_formation = $Formations/PlayerBlockFormationPanelContainer/PlayerBlockFormation
 onready var accept_block_formation_button = $Formations/PlayerBlockFormationPanelContainer/AcceptFormation
 
-onready var opponent_attack_formation = $Formations/OpponentAttackFormationPanelContainer/OpponentAttackFormation
-onready var opponent_block_formation = $Formations/OpponentBlockFormationPanelContainer/OpponentBlockFormation
+#onready var opponent_attack_formation = $Formations/OpponentAttackFormationPanelContainer/OpponentAttackFormation
+#onready var opponent_block_formation = $Formations/OpponentBlockFormationPanelContainer/OpponentBlockFormation
 
 onready var player_target_self = $PlayerTargets/SelfPlayerButton
 onready var player_target_opponent = $PlayerTargets/OppPlayerButton
@@ -612,9 +612,9 @@ func reset_all_visuals() -> void:
 	draft_container.remove_all_cards()
 	
 	player_attack_formation.hide()
-	player_block_formation.hide()
-	opponent_attack_formation.hide()
-	opponent_block_formation.hide()
+#	player_block_formation.hide()
+#	opponent_attack_formation.hide()
+#	opponent_block_formation.hide()
 	
 	set_up_battlefields()
 	clear_hand_container()
@@ -671,6 +671,7 @@ func player_opponent_gui_event(event):
 func _on_AcceptFormation_pressed():
 	if not GameController.is_targeting:
 		if player_attack_formation.is_formation_valid():
-			print_debug("accepting formation ", player_attack_formation.get_formation_command_dict())
+			var command_dict = player_attack_formation.get_formation_command_dict()
 			player_attack_formation.return_all_units()
+			player_attack_formation.apply_attack_formation_command(command_dict)
 #			emit_signal("formation_accepted")

@@ -38,6 +38,9 @@ func get_mana_converter_permanent(player_owner) -> Permanent:
 
 func permanent_for_owner(player_owner, network_id = -1) -> Permanent:
 	var result = permanent_scene.instance()
+	
+	if SteamController.latest_network_id < network_id:
+		SteamController.latest_network_id = network_id + 1
 	result.init(player_owner, network_id)
 	
 	return result
