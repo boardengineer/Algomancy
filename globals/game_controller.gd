@@ -37,6 +37,12 @@ enum GamePhase {
 	MAIN_NTI
 	}
 
+var battle_phases = [GamePhase.ATTACK_TI, GamePhase.BLOCK_TI, GamePhase.DAMAGE_TI, GamePhase.POST_COMBAT_TI,
+					 GamePhase.ATTACK_NTI, GamePhase.BLOCK_NTI, GamePhase.DAMAGE_NTI, GamePhase.POST_COMBAT_NTI]
+
+func is_in_battle() -> bool:
+	return battle_phases.has(phase)
+
 func is_declaring_attackers() -> bool:
 	return phase == GamePhase.ATTACK_TI and not interaction_phase
 
@@ -117,5 +123,17 @@ func get_ti_player():
 func get_nti_player():
 	for player in main.players:
 		if player != initiative_player:
+			return player
+	return null
+
+func get_self_player():
+	for player in main.players:
+		if player.player_id == SteamController.self_peer_id:
+			return player
+	return null
+
+func get_opponent_player():
+	for player in main.players:
+		if player.player_id != SteamController.self_peer_id:
 			return player
 	return null

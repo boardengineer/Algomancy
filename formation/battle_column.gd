@@ -2,26 +2,24 @@
 
 var units_in_formation = 0
 var formation
+var network_id
 
 onready var player_units = $PlayerUnits
 onready var opponent_units = $OpponentUnits
 
-func _ready():
+func init(f_network_id = -1):
+	if f_network_id == -1:
+		network_id = SteamController.get_next_network_id()
+	else:
+		network_id = f_network_id
+		
 	for child in player_units.get_children():
 		player_units.remove_child(child)
 	
 	for child in opponent_units.get_children():
 		opponent_units.remove_child(child)
 		
-	player_units.add_child(create_placeholder_permanent())
-
-func reset_formation():
-	pass
-	
-#	for child in get_children():
-#		remove_child(child)
-	
-	
+	player_units.add_child(create_placeholder_permanent()) 
 
 func get_available_positions() -> Array:
 	if units_in_formation >= 2:
@@ -95,3 +93,44 @@ func get_units_to_return() -> Array:
 			all_units.push_back(child)
 	
 	return all_units
+
+func serialize() -> Dictionary:
+	var result_dict = {}
+	
+	result_dict.network_id = network_id
+	
+	var current_player_dict = {}
+	current_player_dict.player_id = str(SteamController.self_peer_id)
+	var player_units_dict = []
+	for perm_child in player_units.get_children():
+		if not perm_child.is_formation_placeholder:
+			player_units_dict.push_back(perm_child.serialize())
+	current_player_dict.column = player_units_dict
+	result_dict[str(SteamController.self_peer_id)] = current_player_dict
+	
+	# TODO other side
+#	var opponent_player_dict = {}
+#	opponent_player_dict.player_id = 
+		
+		
+#	result_dict.
+	
+	return result_dict
+
+func load_data(column_dict:Dictionary) -> void:
+	var desrialized_network_id = column_dict.network_id
+	init(desrialized_network_id)
+	
+	var host_player_id
+	var client_player_id
+	
+	if SteamController.is_host:
+		host_player_id = SteamController.self_peer_id
+		client_player_id = GameController.get_opponent_player().player_id
+	else:
+		host_player_id = GameController.get_opponent_player().player_id
+		client_player_id = SteamController.self_peer_id
+	
+	column_dict[SteamController.self_peer_id]
+	
+	pass

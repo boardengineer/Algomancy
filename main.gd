@@ -517,6 +517,9 @@ func serialize():
 	if GameController.priority_player:
 		state_dict.priority_player_id = GameController.priority_player.player_id
 	
+	if GameController.is_in_battle():
+		state_dict.host_attack_formation = player_attack_formation.serialize()
+	
 	return JSON.print(state_dict)
 
 func deserialize_and_load(serialized_state):
@@ -551,10 +554,10 @@ func deserialize_and_load(serialized_state):
 		player.load_data(player_data_map[player])
 		
 	for player in players:
-		if player.player_id == loaded_dict.initiative_player_id:
+		if player.player_id == str(loaded_dict.initiative_player_id):
 			GameController.initiative_player = player
 		if loaded_dict.has("priority_player_id"):
-			if player.player_id == loaded_dict.priority_player_id:
+			if player.player_id == str(loaded_dict.priority_player_id):
 				GameController.priority_player = player
 	
 	# If the game is in draft phase all players are drafting

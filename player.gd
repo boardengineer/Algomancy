@@ -17,7 +17,7 @@ var battlefields := {}
 var draft_selected_cards := []
 
 func _init(game_main, assigned_player_id = -1):
-	player_id = assigned_player_id
+	player_id = str(assigned_player_id)	
 	main = game_main
 	SteamController.network_players_by_id[str(player_id)] = self
 
@@ -103,7 +103,7 @@ func load_data(player_dict) -> void:
 	for battlefield_player_id in player_dict.battlefields:
 		var player
 		for q_player in main.players:
-			if q_player.player_id == int(battlefield_player_id):
+			if q_player.player_id == battlefield_player_id:
 				player = q_player
 		for permanent_json in player_dict.battlefields[battlefield_player_id]:
 			var permanent_to_add = CardLibrary.permanent_for_owner(self, permanent_json.network_id)
@@ -209,4 +209,4 @@ func meets_card_threshold(card) -> bool:
 	return true
 
 func is_dummy() -> bool:
-	return player_id == -1
+	return player_id == str(-1)

@@ -23,7 +23,7 @@ func get_possible_positions_for_unit(_unit_to_place):
 func create_column():
 	var column = column_scene.instance()
 	
-	column.call_deferred("reset_formation")
+	column.call_deferred("init")
 	
 	column.formation = self
 	
@@ -108,3 +108,20 @@ func apply_attack_formation_command(command_dict:Dictionary) -> void:
 		for perm_id in column_array:
 			var perm = SteamController.network_items_by_id[str(perm_id)]
 			column.call_deferred("add_to_back_of_column", perm)
+
+func serialize() -> Array:
+	var result_arr = []
+	
+	var populated_columns = Array(battle_columns.get_children())
+	
+	# Remove any empty columns on the edges
+	while not populated_columns.empty() and populated_columns[0].units_in_formation == 0:
+		populated_columns.pop_front()
+		
+	while not populated_columns.empty() and populated_columns[populated_columns.size() - 1].units_in_formation == 0:
+		populated_columns.pop_back()
+	
+	for column in populated_columns:
+		result_arr.push_back(column.serialize())
+	
+	return result_arr

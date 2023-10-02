@@ -30,7 +30,7 @@ var players_in_game = {}
 
 func _ready():
 	var _init_status = Steam.steamInit()
-	self_peer_id = Steam.getSteamID()
+	self_peer_id = str(Steam.getSteamID())
 	
 	var _unused = GameController.connect("cancel", self, "_on_cancelled")
 	_unused = Steam.connect("lobby_joined", self, "_on_Lobby_Joined")
