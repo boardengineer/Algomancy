@@ -119,7 +119,8 @@ func erase() -> void:
 func erase_no_trigger() -> void:
 	if logic_container:
 		logic_container.erase(self)
-	tree_container.remove_child(self)
+	if tree_container:
+		tree_container.remove_child(self)
 
 func tap() -> void:
 	tapped = true

@@ -121,16 +121,10 @@ func load_data(column_dict:Dictionary) -> void:
 	var desrialized_network_id = column_dict.network_id
 	init(desrialized_network_id)
 	
-	var host_player_id
-	var client_player_id
-	
-	if SteamController.is_host:
-		host_player_id = SteamController.self_peer_id
-		client_player_id = GameController.get_opponent_player().player_id
-	else:
-		host_player_id = GameController.get_opponent_player().player_id
-		client_player_id = SteamController.self_peer_id
-	
-	column_dict[SteamController.self_peer_id]
-	
-	pass
+	for perm_dict in column_dict[SteamController.self_peer_id].column:
+		var my_player = GameController.get_self_player()
+		var permanent_to_add = CardLibrary.permanent_for_owner(my_player, perm_dict.network_id)
+		permanent_to_add.player_owner = my_player
+		permanent_to_add.load_data(perm_dict)
+		
+		add_to_back_of_column(permanent_to_add)

@@ -292,16 +292,17 @@ func do_mana_nti_phase():
 			remove_ability_from_stack_gui(ability)
 	
 	if not GameController.action_cancelled:
+		start_attack_ti_phase()
 		do_attack_ti_phase()
 
+func start_attack_ti_phase():
+	player_attack_formation.init_empty_formation()
+
 func do_attack_ti_phase():
-	log_message("starting ti atk phase")
-	
 	GameController.priority_player = GameController.get_ti_player()
 	GameController.phase = GameController.GamePhase.ATTACK_TI
 	GameController.interaction_phase = false
 	
-	player_attack_formation.init_empty_formation()
 	player_attack_formation.show()
 	accept_attack_formation_button.show()
 	
@@ -525,7 +526,7 @@ func serialize():
 func deserialize_and_load(serialized_state):
 	var loaded_dict = JSON.parse(serialized_state).result
 	
-	GameController.phase = loaded_dict.phase
+	GameController.phase = int(loaded_dict.phase)
 	first_turn = loaded_dict.first_turn
 	
 	reset_all_visuals()
@@ -563,6 +564,10 @@ func deserialize_and_load(serialized_state):
 	# If the game is in draft phase all players are drafting
 	if GameController.phase == GameController.GamePhase.DRAFT:
 		SteamController.network_players_by_id[str(SteamController.self_peer_id)].draft()
+	
+	if GameController.is_in_battle():
+		var host_attack_columns = loaded_dict.host_attack_formation
+		player_attack_formation.load_data(host_attack_columns)
 		
 	resume_phase()
 

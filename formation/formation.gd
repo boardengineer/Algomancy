@@ -9,7 +9,7 @@ var column_scene = load("res://formation/battle_column.tscn")
 func init_empty_formation() -> void:
 	for column_child in battle_columns.get_children():
 		battle_columns.remove_child(column_child)
-		
+	
 	battle_columns.add_child(create_column())
 
 func get_possible_positions_for_unit(_unit_to_place):
@@ -125,3 +125,16 @@ func serialize() -> Array:
 		result_arr.push_back(column.serialize())
 	
 	return result_arr
+
+func load_data(battle_column_dicts:Array) -> void:
+	for column_child in battle_columns.get_children():
+		battle_columns.remove_child(column_child)
+	
+	for column_dict in battle_column_dicts:
+		var column = column_scene.instance()
+
+		column.formation = self
+
+		battle_columns.add_child(column)
+		column.call_deferred("init")
+		column.call_deferred("load_data", column_dict)
