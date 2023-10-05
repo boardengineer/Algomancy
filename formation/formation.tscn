@@ -12,4 +12,4 @@ margin_bottom = 40.0
 
 [node name="BattleColumn" parent="Columns" instance=ExtResource( 1 )]
 margin_right = 50.0
-margin_bottom = 144.0
+margin_bottom = 318.0

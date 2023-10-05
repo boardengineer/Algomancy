@@ -7,6 +7,7 @@ onready var battle_columns = $Columns
 var column_scene = load("res://formation/battle_column.tscn")
 
 func init_empty_formation() -> void:
+	print_debug("init empty formation?")
 	for column_child in battle_columns.get_children():
 		battle_columns.remove_child(column_child)
 	
@@ -65,11 +66,11 @@ func maybe_remove_column(column_to_remove) -> void:
 	if column_index == 1 and battle_columns.get_child_count() == 2:
 		battle_columns.remove_child(battle_columns.get_children()[0])
 
-func return_all_units() -> void:
+func return_all_attacking_units() -> void:
 	var to_remove = []
 	
 	for column in battle_columns.get_children():
-		for unit in column.get_units_to_return():
+		for unit in column.get_player_units_to_return():
 			to_remove.push_back(unit)
 	
 	for unit in to_remove:
@@ -78,6 +79,30 @@ func return_all_units() -> void:
 		unit.player_owner.add_permanent(unit, unit.player_owner.battlefields[unit.player_owner])
 		
 	init_empty_formation()
+
+func return_all_player_units() -> void:
+	var to_remove = []
+	
+	for column in battle_columns.get_children():
+		for unit in column.get_player_units_to_return():
+			to_remove.push_back(unit)
+	
+	for unit in to_remove:
+		unit.erase()
+		unit.is_in_formation = false
+		unit.player_owner.add_permanent(unit, unit.player_owner.battlefields[unit.player_owner])
+
+func return_all_opponent_units() -> void:
+	var to_remove = []
+	
+	for column in battle_columns.get_children():
+		for unit in column.get_opponent_units_to_return():
+			to_remove.push_back(unit)
+	
+	for unit in to_remove:
+		unit.erase()
+		unit.is_in_formation = false
+		unit.player_owner.add_permanent(unit, unit.player_owner.battlefields[unit.player_owner])
 
 func get_formation_command_dict() -> Dictionary:
 	var result := {}
@@ -99,7 +124,13 @@ func get_formation_command_dict() -> Dictionary:
 	result.formation = formation_array
 	return result
 
-func apply_attack_formation_command(command_dict:Dictionary) -> void:
+func apply_attack_formation_command(command_dict:Dictionary, my_attack:bool) -> void:
+	if my_attack:
+		return_all_player_units()
+	else:
+		return_all_opponent_units()
+	init_empty_formation() 
+	
 	var command_formation = command_dict.formation
 	
 	for column_array in command_formation:
@@ -107,7 +138,30 @@ func apply_attack_formation_command(command_dict:Dictionary) -> void:
 		battle_columns.add_child(column)
 		for perm_id in column_array:
 			var perm = SteamController.network_items_by_id[str(perm_id)]
-			column.call_deferred("add_to_back_of_column", perm)
+			
+			if my_attack:
+				column.call_deferred("add_to_back_of_player_column", perm)
+			else:
+				column.call_deferred("add_to_back_of_opponent_column", perm)
+
+#func apply_block_formation_command(command_dict)
+
+func apply_block_formation_command(command_dict:Dictionary, my_block:bool) -> void:
+	if my_block:
+		return_all_player_units()
+	else:
+		return_all_opponent_units()
+	
+	var formation_dict = command_dict.formation
+	for column_network_id in formation_dict:
+		var column = SteamController.network_items_by_id[str(column_network_id)]
+		for perm_id in command_dict.formation[column_network_id]:
+			var perm = SteamController.network_items_by_id[str(perm_id)]
+			if my_block:
+				column.call_deferred("add_to_back_of_player_column", perm)
+			else:
+				column.call_deferred("add_to_back_of_opponent_column", perm)
+	
 
 func serialize() -> Array:
 	var result_arr = []

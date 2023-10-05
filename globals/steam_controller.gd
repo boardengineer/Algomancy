@@ -167,6 +167,44 @@ func submit_formation(formation_dict:Dictionary) -> void:
 		send_formation(formation_dict)
  
 func receive_formation(player_id, formation_dict:Dictionary) -> void:
+	if player_id != GameController.priority_player.player_id:
+		return
+	
+	if not is_host:
+		print_debug("why is a client receiving states? debug this!")
+		return
+	
+	if GameController.interaction_phase:
+		print_debug("The accept button should be disabled during interaction phases, debug this")
+		return
+	
+	if GameController.phase == GameController.GamePhase.ATTACK_TI:
+		var my_attack = self_peer_id == player_id
+		
+		var attack_formation = GameController.main.player_attack_formation
+		if not my_attack:
+			pass
+		
+		GameController.main.player_attack_formation.apply_attack_formation_command(formation_dict, my_attack)
+	elif GameController.phase == GameController.GamePhase.ATTACK_NTI:
+		print_debug("nit attack goes here")
+		pass
+	elif GameController.phase == GameController.GamePhase.BLOCK_TI:
+		var my_block = self_peer_id == player_id
+		
+		# TODO this should be the other formation that is nulled at time of
+		# writing
+		var block_formation = GameController.main.player_attack_formation
+		if not my_block:
+			block_formation = GameController.main.player_attack_formation
+		
+		print_debug("block ti goes here")
+		GameController.main.player_attack_formation.apply_block_formation_command(formation_dict, my_block)
+		pass
+	elif GameController.phase == GameController.GamePhase.BLOCK_NTI:
+		print_debug("block nit goes here")
+		pass
+	
 	emit_signal("formation_accepted")
 
 func send_formation(formation_dict) -> void:

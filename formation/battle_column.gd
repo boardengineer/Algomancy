@@ -4,14 +4,27 @@ var units_in_formation = 0
 var formation
 var network_id
 
+var should_spam = false
+
 onready var player_units = $PlayerUnits
 onready var opponent_units = $OpponentUnits
 
+func _process(delta):
+	if should_spam:
+		print_debug(opponent_units.get_child_count())
+
 func init(f_network_id = -1):
+	if SteamController.latest_network_id <= f_network_id:
+		SteamController.latest_network_id = f_network_id + 1
+	
 	if f_network_id == -1:
 		network_id = SteamController.get_next_network_id()
 	else:
 		network_id = f_network_id
+	
+	SteamController.network_items_by_id[str(network_id)] = self
+	
+	print_debug("network id ", network_id, " ", self)
 		
 	for child in player_units.get_children():
 		player_units.remove_child(child)
@@ -19,7 +32,8 @@ func init(f_network_id = -1):
 	for child in opponent_units.get_children():
 		opponent_units.remove_child(child)
 		
-	player_units.add_child(create_placeholder_permanent()) 
+	player_units.add_child(create_placeholder_permanent())
+	
 
 func get_available_positions() -> Array:
 	if units_in_formation >= 2:
@@ -35,7 +49,7 @@ func create_placeholder_permanent():
 	
 	return result
 
-func add_to_back_of_column(unit_permanent) -> void:
+func add_to_back_of_player_column(unit_permanent, is_command = false) -> void:
 	unit_permanent.erase_no_trigger()
 	unit_permanent.is_in_formation = true
 	
@@ -52,11 +66,24 @@ func add_to_back_of_column(unit_permanent) -> void:
 	
 	units_in_formation += 1
 	
-	if units_in_formation < 2:
-		player_units.add_child(create_placeholder_permanent())
+	if not is_command and not GameController.interaction_phase:
+		if units_in_formation < 2:
+			player_units.add_child(create_placeholder_permanent())
 	
-	if should_add_column_after:
-		formation.create_new_columns()
+		if should_add_column_after:
+			formation.create_new_columns()
+
+func add_to_back_of_opponent_column(unit_permanent) -> void:
+	print_debug("adding opp unit")
+	unit_permanent.erase_no_trigger()
+	unit_permanent.is_in_formation = true
+	
+	opponent_units.add_child(unit_permanent)
+	print_debug("opp unit count ", opponent_units.get_child_count())
+	print_debug("my unit count ", player_units.get_child_count(), " ", player_units.get_children()[0].is_formation_placeholder)
+	unit_permanent.tree_container = opponent_units
+	
+	units_in_formation += 1
 
 func remove_from_column(unit_permanent) -> void:
 	var start_removing = false
@@ -85,7 +112,7 @@ func remove_from_column(unit_permanent) -> void:
 	else:
 		add_child(create_placeholder_permanent())
 
-func get_units_to_return() -> Array:
+func get_player_units_to_return() -> Array:
 	var all_units = []
 	
 	for child in player_units.get_children():
@@ -94,19 +121,35 @@ func get_units_to_return() -> Array:
 	
 	return all_units
 
+func get_opponent_units_to_return() -> Array:
+	var all_units = []
+	
+	for child in opponent_units.get_children():
+		if not child.is_formation_placeholder:
+			all_units.push_back(child)
+	
+	return all_units
+
+
 func serialize() -> Dictionary:
 	var result_dict = {}
 	
 	result_dict.network_id = network_id
 	
-	var current_player_dict = {}
-	current_player_dict.player_id = str(SteamController.self_peer_id)
-	var player_units_dict = []
+	var player_units_dict := []
 	for perm_child in player_units.get_children():
 		if not perm_child.is_formation_placeholder:
 			player_units_dict.push_back(perm_child.serialize())
-	current_player_dict.column = player_units_dict
-	result_dict[str(SteamController.self_peer_id)] = current_player_dict
+	result_dict[str(SteamController.self_peer_id)] = player_units_dict
+	
+	var opp_units_dict := []
+	for perm_child in opponent_units.get_children():
+		if not perm_child.is_formation_placeholder:
+			opp_units_dict.push_back(perm_child.serialize())
+	var other_player_id = GameController.get_opponent_player().player_id
+	result_dict[str(other_player_id)] = opp_units_dict
+	
+	
 	
 	# TODO other side
 #	var opponent_player_dict = {}
@@ -119,12 +162,17 @@ func serialize() -> Dictionary:
 
 func load_data(column_dict:Dictionary) -> void:
 	var desrialized_network_id = column_dict.network_id
+	print_debug("load init")
 	init(desrialized_network_id)
+	print_debug("start loading")
 	
-	for perm_dict in column_dict[SteamController.self_peer_id].column:
+	for perm_dict in column_dict[SteamController.self_peer_id]:
 		var my_player = GameController.get_self_player()
 		var permanent_to_add = CardLibrary.permanent_for_owner(my_player, perm_dict.network_id)
 		permanent_to_add.player_owner = my_player
 		permanent_to_add.load_data(perm_dict)
 		
-		add_to_back_of_column(permanent_to_add)
+		# TODO add to correct side of column
+		add_to_back_of_player_column(permanent_to_add)
+		
+	print_debug("done loading ", self, " ", player_units.get_children()[0].is_formation_placeholder)

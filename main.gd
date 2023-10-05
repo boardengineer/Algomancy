@@ -10,8 +10,6 @@ const ResourceContainer = preload("res://resource_container.tscn")
 
 signal activated_or_passed_or_cancelled
 signal targeted_player
-signal formation_accepted
-
 var first_turn = true
 
 const STARTING_DRAFT_PACK_SIZE = 16
@@ -277,7 +275,7 @@ func do_mana_nti_phase():
 #
 #		SteamController.receive_ability_or_pass(DUMMY_PLAYER_ID, second_command_dict)
 		
-		do_attack_ti_phase()
+		init_attack_ti_phase()
 		return
 #		SteamController.submit_ability_or_passed()
 #		print_debug("skipping")
@@ -292,21 +290,26 @@ func do_mana_nti_phase():
 			remove_ability_from_stack_gui(ability)
 	
 	if not GameController.action_cancelled:
-		start_attack_ti_phase()
-		do_attack_ti_phase()
+		print_debug("is this?")
+		init_attack_ti_phase()
+		
 
-func start_attack_ti_phase():
+func init_attack_ti_phase():
+	log_message("starting ti blk phase")
+	
 	player_attack_formation.init_empty_formation()
+	accept_attack_formation_button.show()
+	GameController.interaction_phase = false
+	do_attack_ti_phase()
 
 func do_attack_ti_phase():
 	GameController.priority_player = GameController.get_ti_player()
 	GameController.phase = GameController.GamePhase.ATTACK_TI
-	GameController.interaction_phase = false
 	
 	player_attack_formation.show()
-	accept_attack_formation_button.show()
 	
-	yield(self,"formation_accepted")
+	if not GameController.interaction_phase:
+		yield(SteamController,"formation_accepted")
 	
 	accept_attack_formation_button.hide()
 	
@@ -325,17 +328,50 @@ func do_attack_ti_phase():
 	GameController.interaction_phase = false
 	
 	if not GameController.action_cancelled:
-		do_block_ti_phase()
+		init_block_ti_phase()
+
+func init_block_ti_phase():
+	GameController.interaction_phase = false
+	
+	do_block_ti_phase()
 
 func do_block_ti_phase():
 	log_message("starting ti blk phase")
 	
+	GameController.priority_player = GameController.get_nti_player()
 	GameController.phase = GameController.GamePhase.BLOCK_TI
 	
-#	players[1].declare_ti_blockers()3
+	if not GameController.interaction_phase:
+		if GameController.priority_player.is_dummy():
+			var command_dict := {}
+			
+			var formation_dict := {}
+			
+			var clumn_array = []
+			clumn_array.push_back(str(120))
+			formation_dict[str(142)] = clumn_array
+			print_debug("the thing is ", SteamController.network_items_by_id[str(142)])
+			command_dict.formation = formation_dict
+			
+			SteamController.receive_formation(str(DUMMY_PLAYER_ID), command_dict)
+		else:
+			yield(SteamController,"formation_accepted")
+		GameController.interaction_phase = true
+		current_player_passed = false
+	
+#	TODO players should have a chance to do things in each interaction phase
+	while not current_player_passed and not GameController.action_cancelled:
+		yield(self, "activated_or_passed_or_cancelled")
+		
+		if not ability_stack.empty():
+			var ability = ability_stack.pop_front()
+			ability.resolve()
+			remove_ability_from_stack_gui(ability)
 	
 	log_message("(skipping phase)")
-	do_damage_ti_phase()
+	
+	if not GameController.action_cancelled:
+		do_damage_ti_phase()
 
 func do_damage_ti_phase():
 	log_message("starting ti dmg phase")
@@ -393,7 +429,9 @@ func do_regroup():
 	log_message("starting regroup phase")
 	GameController.phase = GameController.GamePhase.REGROUP
 	
-	player_attack_formation.return_all_units()
+	player_attack_formation.return_all_attacking_units()
+	
+	
 	player_attack_formation.hide()
 
 	do_main_ti()
@@ -513,6 +551,7 @@ func serialize():
 	
 	state_dict.first_turn = first_turn
 	state_dict.phase = GameController.phase
+	state_dict.interaction_phase = GameController.interaction_phase
 	
 	state_dict.initiative_player_id = GameController.initiative_player.player_id
 	if GameController.priority_player:
@@ -527,6 +566,7 @@ func deserialize_and_load(serialized_state):
 	var loaded_dict = JSON.parse(serialized_state).result
 	
 	GameController.phase = int(loaded_dict.phase)
+	GameController.interaction_phase = loaded_dict.interaction_phase
 	first_turn = loaded_dict.first_turn
 	
 	reset_all_visuals()
@@ -568,6 +608,11 @@ func deserialize_and_load(serialized_state):
 	if GameController.is_in_battle():
 		var host_attack_columns = loaded_dict.host_attack_formation
 		player_attack_formation.load_data(host_attack_columns)
+		
+		if not GameController.interaction_phase:
+			accept_attack_formation_button.show()
+		else:
+			accept_attack_formation_button.hide()
 		
 	resume_phase()
 
@@ -677,9 +722,9 @@ func player_opponent_gui_event(event):
 			emit_signal("targeted_player", player)
 
 func _on_AcceptFormation_pressed():
-	if not GameController.is_targeting:
-		if player_attack_formation.is_formation_valid():
-			var command_dict = player_attack_formation.get_formation_command_dict()
-			player_attack_formation.return_all_units()
-			player_attack_formation.apply_attack_formation_command(command_dict)
-#			emit_signal("formation_accepted")
+	if GameController.is_targeting:
+		return
+	
+	if player_attack_formation.is_formation_valid():
+		var command_dict = player_attack_formation.get_formation_command_dict()
+		SteamController.submit_formation(command_dict)
