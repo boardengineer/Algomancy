@@ -74,7 +74,7 @@ func start_first_phase_when_all_ready() -> void:
 	
 	print_debug("all players reported ready, starting game")
 	GameController.initiative_player = GameController.main.players[0]
-	GameController.main.do_untap_phase()
+	GameController.main.run_game()
 
 func start_tracking_players_in_game() -> void:
 	players_in_game = {}
@@ -89,6 +89,11 @@ func receive_game_started_status(sender_id) -> void:
 	players_in_game[sender_id] = true
 	
 	start_first_phase_when_all_ready()
+
+
+		
+	
+	
 
 func get_next_network_id() -> int:
 	var result = latest_network_id
@@ -111,8 +116,8 @@ func receive_draft_selection(player_id, selected_network_ids) -> void:
 	
 	var deindexed_card_list = []
 	for id_selected in selected_network_ids:
-		deindexed_card_list.push_back(network_items_by_id[int(id_selected)])
-	draft_selection_by_player_id[player_id] = deindexed_card_list
+		deindexed_card_list.push_back(network_items_by_id[str(id_selected)])
+	draft_selection_by_player_id[str(player_id)] = deindexed_card_list
 	
 	if draft_selection_by_player_id.size() == network_players_by_id.size():
 		complete_draft()
@@ -131,7 +136,7 @@ func send_ability_or_passed(command) -> void:
 	send_data_to_all(send_data)
 
 func receive_ability_or_pass(player_id, command) -> void:
-	if GameController.priority_player.player_id != player_id:
+	if GameController.priority_player.player_id != str(player_id):
 		return
 	
 	var is_pass = command.type != "ability"
@@ -139,8 +144,7 @@ func receive_ability_or_pass(player_id, command) -> void:
 	GameController.emit_signal("activated_ability_or_passed", is_pass)
 	
 	print_debug("player doing command ", player_id, " " , command)
-	
-	if not is_pass:
+	if not is_pass and not GameController.action_cancelled:
 		network_items_by_id[str(int(command.source))].activate_ability(command.index, command.effects)
 
 func submit_draft_selection(draft_selection) -> void:

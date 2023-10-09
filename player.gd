@@ -55,8 +55,11 @@ func add_to_hand(card) -> void:
 
 func add_to_discard(card) -> void:
 	discard.push_back(card)
+	
 	if player_id == SteamController.self_peer_id:
-		main.discard_container.add_child(HandCard.new(card, self))
+		main.player_discard_container.add_child(HandCard.new(card, self))
+	else:
+		main.opponent_discard_container.add_child(HandCard.new(card, self))
 
 func clear_hand_container():
 	main.clear_hand_container()
@@ -94,11 +97,13 @@ func load_data(player_dict) -> void:
 		
 	for card in hand:
 		hand_container.add_child(HandCard.new(card, self))
+	print_debug("done adding cards to hand")
 	
 	discard = deserialized_card_array_json(player_dict.discard)
 	exile = deserialized_card_array_json(player_dict.exile)
 	
 	draft_pack = deserialized_card_array_json(player_dict.draft_pack)
+	print_debug("adding cards to other places")
 	
 	for battlefield_player_id in player_dict.battlefields:
 		var player
@@ -111,6 +116,7 @@ func load_data(player_dict) -> void:
 			permanent_to_add.load_data(permanent_json)
 			
 			add_permanent(permanent_to_add, battlefields[player])
+	print_debug("done loading player")
 
 static func serialize_card_array(card_array):
 	var result = []

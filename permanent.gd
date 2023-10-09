@@ -47,12 +47,14 @@ func _ready():
 
 func on_gui_input(event):
 	if event.is_pressed():
-		if player_owner != GameController.priority_player:
-			return
 		
 		if GameController.is_targeting:
+			print_debug("trying to target")
 			emit_signal("targeted", self)
 		else:
+			if player_owner != GameController.priority_player:
+				return
+			
 			if not player_owner:
 				return
 				

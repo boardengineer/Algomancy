@@ -77,16 +77,19 @@ func get_basic_fire_target():
 	return main.basic_resource_container.get_node("Fire")
 	
 func get_all_targets() -> Array:
-	var all_targets = []
+	var all_targets := []
 	
 	for player in main.players:
 		all_targets.push_back(player)
 		
-	for battlefield in GameController.current_battlefields:
+	for battlefield in GameController.get_current_battlefield():
 		for unit in battlefield:
 			if unit.toughness:
 				all_targets.push_back(unit)
-				
+	
+	if GameController.is_in_battle():
+		all_targets.append_array(GameController.get_active_formation().get_all_units())
+	
 	return all_targets
 
 func get_current_battlefields() -> Array:

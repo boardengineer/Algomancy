@@ -16,8 +16,11 @@ func get_valid_targets(_current_targets = []) -> Array:
 	
 	valid_targets.append_array(TargetHelper.get_targetable_players())
 	
-	for battlefield in TargetHelper.get_current_battlefields():
+	for battlefield in GameController.get_current_battlefield():
 		valid_targets.append_array(battlefield)
+	
+	if GameController.is_in_battle():
+		valid_targets.append_array(GameController.get_active_formation().get_all_units())
 	
 	return valid_targets
 

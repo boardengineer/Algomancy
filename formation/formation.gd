@@ -7,7 +7,6 @@ onready var battle_columns = $Columns
 var column_scene = load("res://formation/battle_column.tscn")
 
 func init_empty_formation() -> void:
-	print_debug("init empty formation?")
 	for column_child in battle_columns.get_children():
 		battle_columns.remove_child(column_child)
 	
@@ -192,3 +191,11 @@ func load_data(battle_column_dicts:Array) -> void:
 		battle_columns.add_child(column)
 		column.call_deferred("init")
 		column.call_deferred("load_data", column_dict)
+
+func get_all_units() -> Array:
+	var result := []
+	
+	for column_child in battle_columns.get_children():
+		result.append_array(column_child.get_all_units())
+	
+	return result

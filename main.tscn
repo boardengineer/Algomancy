@@ -295,15 +295,15 @@ text = "Opp"
 align = 1
 valign = 1
 
-[node name="DiscardHolder" type="Node" parent="."]
+[node name="PlayerDiscardHolder" type="Node" parent="."]
 
-[node name="Discard" type="GridContainer" parent="DiscardHolder"]
+[node name="Discard" type="GridContainer" parent="PlayerDiscardHolder"]
 margin_left = 729.0
 margin_top = 625.0
 margin_right = 787.0
 margin_bottom = 702.0
 
-[node name="ColorRect3" type="ColorRect" parent="DiscardHolder/Discard"]
+[node name="ColorRect3" type="ColorRect" parent="PlayerDiscardHolder/Discard"]
 margin_right = 50.0
 margin_bottom = 70.0
 rect_min_size = Vector2( 50, 70 )
@@ -311,7 +311,32 @@ size_flags_horizontal = 0
 size_flags_vertical = 0
 color = Color( 0.12549, 0.2, 0.803922, 1 )
 
-[node name="Label" type="Label" parent="DiscardHolder/Discard/ColorRect3"]
+[node name="Label" type="Label" parent="PlayerDiscardHolder/Discard/ColorRect3"]
+margin_right = 50.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 50, 70 )
+rect_pivot_offset = Vector2( -754, -95 )
+text = "50"
+align = 1
+valign = 1
+
+[node name="OpponentDiscardHolder" type="Node" parent="."]
+
+[node name="Discard" type="GridContainer" parent="OpponentDiscardHolder"]
+margin_left = 748.0
+margin_top = -1.0
+margin_right = 806.0
+margin_bottom = 76.0
+
+[node name="ColorRect3" type="ColorRect" parent="OpponentDiscardHolder/Discard"]
+margin_right = 50.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 50, 70 )
+size_flags_horizontal = 0
+size_flags_vertical = 0
+color = Color( 0.12549, 0.2, 0.803922, 1 )
+
+[node name="Label" type="Label" parent="OpponentDiscardHolder/Discard/ColorRect3"]
 margin_right = 50.0
 margin_bottom = 70.0
 rect_min_size = Vector2( 50, 70 )

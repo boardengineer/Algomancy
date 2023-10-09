@@ -10,6 +10,8 @@ const ResourceContainer = preload("res://resource_container.tscn")
 
 signal activated_or_passed_or_cancelled
 signal targeted_player
+signal phase_completed
+
 var first_turn = true
 
 const STARTING_DRAFT_PACK_SIZE = 16
@@ -24,7 +26,10 @@ onready var opponent_field = $GameFields/OpponentField
 onready var player_field = $GameFields/PlayerField
 
 onready var hand_container = $GameFields/HandContainer
-onready var discard_container = $DiscardHolder/Discard
+
+onready var player_discard_container = $PlayerDiscardHolder/Discard
+onready var opponent_discard_container = $OpponentDiscardHolder/Discard
+
 onready var stack_container = $Stack
 
 onready var opponent_hand_container = $GameFields/OpponentHandCotainer
@@ -61,6 +66,7 @@ func _ready():
 	_unused = player_target_self.connect("gui_input", self, "player_self_gui_event")
 	_unused = player_target_opponent.connect("gui_input", self, "player_opponent_gui_event")
 	_unused = connect("targeted_player", TargetHelper, "on_target_selected")
+	_unused = GameController.connect("cancel", self, "on_cancelled")
 	
 # Do init stuff in this function for easier modding
 func init(is_host := true, f_tracked_players := {}) -> void:
@@ -144,19 +150,29 @@ func set_up_basic_resource_container() -> void:
 	wood_container.resource_card = Wood.new()
 	basic_resource_container.add_child(wood_container)
 	
-func do_untap_phase():
-	log_message("starting untap phase")
+func init_untap_phase():
+	log_message("Starting Untap Phase")
 	
+	# This shouldn't be here, move it to an init
 	GameController.phase = GameController.GamePhase.UNTAP
+	
+func do_untap_phase():
+	log_message("In Untap Phase")
+	
 	for player in players:
 		for battlefield_players in player.battlefields:
 			for permanent in player.battlefields[battlefield_players]:
 				permanent.untap()
 				
-	do_draw_phase()
-	
+	init_draw_phase()
+	emit_signal("phase_completed")
+
+func init_draw_phase():
+	log_message("Starting Draw Phase")
+	GameController.phase = GameController.GamePhase.DRAW
+
 func do_draw_phase():
-	log_message("starting draw phase")
+	log_message("In Draw Step")
 	
 	GameController.phase = GameController.GamePhase.DRAW
 	
@@ -166,12 +182,16 @@ func do_draw_phase():
 	else:
 		log_message("skipping draw phase in the first turn")
 		
-	do_draft_phase()
-	
-func do_draft_phase():
-	log_message("starting draft phase")
-	
+	init_draft_phase()
+	emit_signal("phase_completed")
+
+func init_draft_phase():
+	log_message("Starting Draft Phase")
 	GameController.phase = GameController.GamePhase.DRAFT
+
+func do_draft_phase():
+	log_message("In Draft Phase")
+	
 	SteamController.start_draft()
 	
 	for player in players:
@@ -192,7 +212,9 @@ func do_draft_phase():
 	
 	draft_container.display_draft_pack(GameController.get_player_for_id(SteamController.self_peer_id).draft_pack)
 	
+	print_debug("waiting on draft yield")
 	yield(SteamController, "draft_complete_or_cancelled")
+	
 	if not GameController.action_cancelled:
 		for player in players:
 			var selected_cards = SteamController.draft_selection_by_player_id[player.player_id]
@@ -201,10 +223,17 @@ func do_draft_phase():
 				player.add_to_hand(card)
 		
 		draft_container.hide()
-		do_mana_ti_phase()
+	
+	init_mana_ti_phase()
+	emit_signal("phase_completed")
+
+func init_mana_ti_phase():
+	log_message("Starting Mana TI phase")
+	print_debug("Starting Mana TI phase")
+	GameController.phase = GameController.GamePhase.MANA_TI
 
 func do_mana_ti_phase():
-	log_message("starting mana phase")
+	log_message("In Mana TI Phase")
 	
 	var active_player = GameController.get_ti_player()
 	
@@ -215,7 +244,7 @@ func do_mana_ti_phase():
 	else:
 		active_player.resource_plays_remaining = RESOURCE_PLAYS_PER_TURN
 	
-	GameController.phase = GameController.GamePhase.MANA_TI
+	
 	current_player_passed = false
 	
 	while not current_player_passed and not GameController.action_cancelled:
@@ -226,11 +255,15 @@ func do_mana_ti_phase():
 			ability.resolve()
 			remove_ability_from_stack_gui(ability)
 	
-	if not GameController.action_cancelled:
-		do_mana_nti_phase()
+	init_mana_nti_phase()
+	emit_signal("phase_completed")
+
+func init_mana_nti_phase():
+	log_message("Starting Mana NTI phase")
+	GameController.phase = GameController.GamePhase.MANA_NTI
 
 func do_mana_nti_phase():
-	log_message("starting opp mana phase")
+	log_message("In Mana NTI phase")
 	
 	GameController.phase = GameController.GamePhase.MANA_NTI
 	
@@ -279,7 +312,6 @@ func do_mana_nti_phase():
 		return
 #		SteamController.submit_ability_or_passed()
 #		print_debug("skipping")
-#		do_attack_ti_phase()
 	
 	while not current_player_passed and not GameController.action_cancelled:
 		yield(self, "activated_or_passed_or_cancelled")
@@ -289,27 +321,28 @@ func do_mana_nti_phase():
 			ability.resolve()
 			remove_ability_from_stack_gui(ability)
 	
-	if not GameController.action_cancelled:
-		print_debug("is this?")
-		init_attack_ti_phase()
+	init_attack_ti_phase()
+	emit_signal("phase_completed")
 		
 
 func init_attack_ti_phase():
-	log_message("starting ti blk phase")
+	log_message("Starting TI Attack Phase")
 	
 	player_attack_formation.init_empty_formation()
 	accept_attack_formation_button.show()
+	GameController.phase = GameController.GamePhase.ATTACK_TI
+	GameController.priority_player = GameController.get_ti_player()
 	GameController.interaction_phase = false
-	do_attack_ti_phase()
 
 func do_attack_ti_phase():
-	GameController.priority_player = GameController.get_ti_player()
-	GameController.phase = GameController.GamePhase.ATTACK_TI
+	log_message("In TI Attack Phase")
 	
 	player_attack_formation.show()
 	
 	if not GameController.interaction_phase:
 		yield(SteamController,"formation_accepted")
+	
+	log_message("In TI Attack Interaction Phase")
 	
 	accept_attack_formation_button.hide()
 	
@@ -318,6 +351,7 @@ func do_attack_ti_phase():
 	
 #	TODO players should have a chance to do things in each interaction phase
 	while not current_player_passed and not GameController.action_cancelled:
+		log_message("waiting for interaction ti attack")
 		yield(self, "activated_or_passed_or_cancelled")
 		
 		if not ability_stack.empty():
@@ -327,80 +361,108 @@ func do_attack_ti_phase():
 	
 	GameController.interaction_phase = false
 	
-	if not GameController.action_cancelled:
-		init_block_ti_phase()
+	init_block_ti_phase()
+	emit_signal("phase_completed")
 
 func init_block_ti_phase():
+	log_message("Starting TI Block Phase")
 	GameController.interaction_phase = false
-	
-	do_block_ti_phase()
+	GameController.phase = GameController.GamePhase.BLOCK_TI
+	GameController.priority_player = GameController.get_nti_player()
 
 func do_block_ti_phase():
-	log_message("starting ti blk phase")
-	
-	GameController.priority_player = GameController.get_nti_player()
-	GameController.phase = GameController.GamePhase.BLOCK_TI
+	log_message("In TI Block Phase")
 	
 	if not GameController.interaction_phase:
-		if GameController.priority_player.is_dummy():
-			var command_dict := {}
-			
-			var formation_dict := {}
-			
-			var clumn_array = []
-			clumn_array.push_back(str(120))
-			formation_dict[str(142)] = clumn_array
-			print_debug("the thing is ", SteamController.network_items_by_id[str(142)])
-			command_dict.formation = formation_dict
-			
-			SteamController.receive_formation(str(DUMMY_PLAYER_ID), command_dict)
-		else:
-			yield(SteamController,"formation_accepted")
+#		if GameController.priority_player.is_dummy():
+#			log_message("Dummy Player making with the blocks")
+#
+#			var command_dict := {}
+#
+#			var formation_dict := {}
+#
+#			var clumn_array = []
+#			clumn_array.push_back(str(120))
+#			formation_dict[str(141)] = clumn_array
+##			print_debug("the thing is ", SteamController.network_items_by_id[str(142)])
+#			command_dict.formation = formation_dict
+#
+#			SteamController.receive_formation(str(DUMMY_PLAYER_ID), command_dict)
+#		else:
+#			yield(SteamController,"formation_accepted")
+		print_debug("here")
 		GameController.interaction_phase = true
 		current_player_passed = false
 	
+	log_message("Block TI interaction phase")
+	
+	GameController.priority_player = GameController.get_ti_player()
+
 #	TODO players should have a chance to do things in each interaction phase
 	while not current_player_passed and not GameController.action_cancelled:
+		print_debug("yielding...")
 		yield(self, "activated_or_passed_or_cancelled")
+		print_debug("done yielding")
 		
-		if not ability_stack.empty():
+		if GameController.action_cancelled:
+			print_debug("cancelled, quitting...")
+			return
+		
+		if current_player_passed and not ability_stack.empty():
+			print_debug("resolving")
 			var ability = ability_stack.pop_front()
 			ability.resolve()
 			remove_ability_from_stack_gui(ability)
+			current_player_passed = false
+			GameController.update_static_state()
 	
-	log_message("(skipping phase)")
-	
-	if not GameController.action_cancelled:
-		do_damage_ti_phase()
+	init_damage_ti_phase()
+	print_debug("returning...")
+	emit_signal("phase_completed")
+
+func init_damage_ti_phase():
+	log_message("Starting TI Damage Phase")
+	GameController.phase = GameController.GamePhase.DAMAGE_TI
+	print_debug("here ere")
 
 func do_damage_ti_phase():
-	log_message("starting ti dmg phase")
-	
-	GameController.phase = GameController.GamePhase.DAMAGE_TI
-	
+	log_message("In TI Damage Phase")
 	# Damage calculations go here
 	
 	log_message("(skipping phase)")
-	do_post_combat_ti()
+	init_post_combat_ti()
+	emit_signal("phase_completed")
+
+func init_post_combat_ti():
+	log_message("Starting TI Post Combat Phase")
+	GameController.phase = GameController.GamePhase.POST_COMBAT_TI
 
 func do_post_combat_ti():
-	log_message("starting ti post phase")
-	
-	GameController.phase = GameController.GamePhase.POST_COMBAT_TI
+	log_message("In TI Post Combat Phase")
 	
 	# Triggers should go here
 #	interaction_phase()
 
 	log_message("(skipping phase)")
-	do_attack_nti_phase()
-	
+	init_attack_nti_phase()
+	emit_signal("phase_completed")
+
+func init_attack_nti_phase():
+	log_message("Starting NIT Attack Phase")
+	GameController.phase = GameController.GamePhase.ATTACK_NTI
+
 func do_attack_nti_phase():
-	log_message("starting nti atk phase")
+	log_message("Do NIT Attack Phase")
 	
 	GameController.phase = GameController.GamePhase.ATTACK_NTI
 	
 	log_message("(skipping phase)")
-	do_block_nti_phase()
+	init_block_nti_phase()
+	emit_signal("phase_completed")
+
+func init_block_nti_phase():
+	log_message("Starting NTI Block Phase")
+	GameController.phase = GameController.GamePhase.BLOCK_NTI
 
 func do_block_nti_phase():
 	log_message("starting nti blk phase")
@@ -408,43 +470,56 @@ func do_block_nti_phase():
 	log_message("(skipping phase)")
 	GameController.phase = GameController.GamePhase.BLOCK_NTI
 	
-	do_damage_nti_phase()
-	
-func do_damage_nti_phase():
-	log_message("starting nti dmg phase")
-	
-	log_message("(skipping phase)")
+	init_damage_nti_phase()
+	emit_signal("phase_completed")
+
+func init_damage_nti_phase():
+	log_message("Starting NTI Damage Phase")
 	GameController.phase = GameController.GamePhase.DAMAGE_NTI
 	
-	do_post_combat_nti_phase()
+func do_damage_nti_phase():
+	log_message("In NTI Damage Phase")
+	
+	init_post_combat_nti_phase()
+	emit_signal("phase_completed")
+
+func init_post_combat_nti_phase():
+	log_message("Starting NTI Post Combat Phase")
+	GameController.phase = GameController.GamePhase.POST_COMBAT_NTI
 
 func do_post_combat_nti_phase():
-	log_message("starting nti post phase")
+	log_message("In NTI Post Combat Phase")
 	
 	log_message("(skipping phase)")
 	GameController.phase = GameController.GamePhase.POST_COMBAT_NTI
-	do_regroup()
+	init_regroup()
+	emit_signal("phase_completed")
 	
-func do_regroup():
-	log_message("starting regroup phase")
+func init_regroup():
+	log_message("Starting Regroup Phase")
 	GameController.phase = GameController.GamePhase.REGROUP
 	
+func do_regroup():
+	log_message("In Regroup Phase")
 	player_attack_formation.return_all_attacking_units()
-	
-	
 	player_attack_formation.hide()
-
-	do_main_ti()
+	init_main_ti()
+	emit_signal("phase_completed")
 	
-func do_main_ti():
-	log_message("starting ti main phase")
-	
+func init_main_ti():
+	log_message("Starting TI Main Phase")
 	GameController.phase = GameController.GamePhase.MAIN_TI
 	GameController.priority_player = GameController.get_ti_player()
 	
+func do_main_ti():
+	print_debug("main 1")
+	log_message("In TI Main Phase")
+	
 	current_player_passed = false
 	while not current_player_passed and not GameController.action_cancelled:
+		print_debug("yielding to player action...")
 		yield(self, "activated_or_passed_or_cancelled")
+		print_debug("done yielding to player action")
 		
 		if current_player_passed and not ability_stack.empty():
 			var ability = ability_stack.pop_front()
@@ -453,15 +528,18 @@ func do_main_ti():
 			current_player_passed = false
 			GameController.update_static_state()
 	
-	do_main_nti()
+	init_main_nti()
+	emit_signal("phase_completed")
 	
-func do_main_nti():
-	log_message("starting nti main phase")
-	
-	first_turn = false
+func init_main_nti():
+	log_message("Starting NTI Main Phase")
 	GameController.phase = GameController.GamePhase.MAIN_NTI
 	GameController.priority_player = GameController.get_nti_player()
 	
+func do_main_nti():
+	log_message("In NTI Main Phase")
+	
+	first_turn = false
 	if GameController.priority_player.is_dummy():
 		var command_dict = {}
 		command_dict.type = "ability"
@@ -476,7 +554,7 @@ func do_main_nti():
 		command_dict.index = 0
 		
 		print_debug("doing command?")
-		SteamController.receive_ability_or_pass(DUMMY_PLAYER_ID, command_dict)
+#		SteamController.receive_ability_or_pass(DUMMY_PLAYER_ID, command_dict)
 		
 		# Clear the stack
 		if not ability_stack.empty():
@@ -500,8 +578,10 @@ func do_main_nti():
 #
 		SteamController.receive_ability_or_pass(DUMMY_PLAYER_ID, second_command_dict)
 		
-		do_untap_phase()
+		init_untap_phase()
+		emit_signal("phase_completed")
 		return
+	
 	
 	current_player_passed = false
 	while not current_player_passed and not GameController.action_cancelled:
@@ -514,7 +594,8 @@ func do_main_nti():
 			current_player_passed = false
 			GameController.update_static_state()
 	
-	do_untap_phase()
+	init_untap_phase()
+	emit_signal("phase_completed")
 
 func interaction_phase():
 	var all_passed = false
@@ -608,34 +689,60 @@ func deserialize_and_load(serialized_state):
 	if GameController.is_in_battle():
 		var host_attack_columns = loaded_dict.host_attack_formation
 		player_attack_formation.load_data(host_attack_columns)
+		player_attack_formation.show()
 		
 		if not GameController.interaction_phase:
 			accept_attack_formation_button.show()
 		else:
 			accept_attack_formation_button.hide()
 		
-	resume_phase()
+	run_game()
+
+
+func run_game():
+	while not GameController.game_over and not GameController.action_cancelled:
+		var current_phase = GameController.phase
+		resume_phase()
+		if GameController.should_yield_for_phase(current_phase):
+			print_debug("yielding? ", GameController.phase)
+			yield(self, "phase_completed")
+			print_debug("done yielding")
 
 func resume_phase() -> void:
-	if GameController.phase == GameController.GamePhase.DRAFT:
+	print_debug("Starting Phase ", GameController.phase)
+	if GameController.phase == GameController.GamePhase.UNTAP:
+		do_untap_phase()
+	elif GameController.phase == GameController.GamePhase.DRAW:
+		do_draw_phase()
+	elif GameController.phase == GameController.GamePhase.DRAFT:
 		do_draft_phase()
-		return
-		
-	if GameController.phase == GameController.GamePhase.MANA_TI:
+	elif GameController.phase == GameController.GamePhase.MANA_TI:
 		do_mana_ti_phase()
-		return
-	
-	if GameController.phase == GameController.GamePhase.MANA_NTI:
-		do_mana_nti_phase()
-		return
-	
-	if GameController.phase == GameController.GamePhase.ATTACK_TI:
+	elif GameController.phase == GameController.GamePhase.MANA_NTI:
+		do_mana_nti_phase() 
+	elif GameController.phase == GameController.GamePhase.ATTACK_TI:
 		do_attack_ti_phase()
-		return
-	
-	if GameController.phase == GameController.GamePhase.MAIN_TI:
+	elif GameController.phase == GameController.GamePhase.BLOCK_TI:
+		do_block_ti_phase()
+	elif GameController.phase == GameController.GamePhase.DAMAGE_TI:
+		do_damage_ti_phase()
+	elif GameController.phase == GameController.GamePhase.POST_COMBAT_TI:
+		do_post_combat_ti()
+	elif GameController.phase == GameController.GamePhase.ATTACK_NTI:
+		do_attack_nti_phase()
+	elif GameController.phase == GameController.GamePhase.BLOCK_NTI:
+		do_block_nti_phase()
+	elif GameController.phase == GameController.GamePhase.DAMAGE_NTI:
+		do_damage_nti_phase()
+	elif GameController.phase == GameController.GamePhase.POST_COMBAT_NTI:
+		do_post_combat_nti_phase()
+	elif GameController.phase == GameController.GamePhase.REGROUP:
+		do_regroup()
+	elif GameController.phase == GameController.GamePhase.MAIN_TI:
 		do_main_ti()
-		return
+	elif GameController.phase == GameController.GamePhase.MAIN_NTI:
+		do_main_nti()
+	print_debug("Finished Phase, next: ", GameController.phase)
 
 func add_to_ability_stack(ability) -> void:
 	ability_stack.push_front(ability)
@@ -652,7 +759,12 @@ func on_activated_ability_or_passed(has_passed):
 	current_player_passed = has_passed
 	emit_signal("activated_or_passed_or_cancelled")
 
+func on_cancelled():
+	emit_signal("activated_or_passed_or_cancelled")
+
 func _on_PassButton_pressed():
+	print_debug("pressed pass")
+	
 	var command_dict = {}
 	command_dict.type = "pass"
 	SteamController.submit_ability_or_passed(command_dict)
@@ -672,15 +784,18 @@ func reset_all_visuals() -> void:
 	set_up_battlefields()
 	clear_hand_container()
 	clear_stack_container()
-	clear_discard_container()
+	clear_discard_containers()
 
 func clear_hand_container():
 	for child in hand_container.get_children():
 		hand_container.remove_child(child)
 
-func clear_discard_container():
-	for child in discard_container.get_children():
-		discard_container.remove_child(child)
+func clear_discard_containers():
+	for child in player_discard_container.get_children():
+		player_discard_container.remove_child(child)
+		
+	for child in opponent_discard_container.get_children():
+		opponent_discard_container.remove_child(child)
 
 func set_up_battlefields():
 	for child in player_field.get_children():

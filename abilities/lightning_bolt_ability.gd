@@ -8,8 +8,7 @@ func _init(f_card, f_player_owner).(f_card, f_player_owner):
 	effects.push_back(DamageAnyTargetEffect.new(LIGHTNING_BOLT_DAMAGE, self, f_player_owner))
 
 func can_trigger() -> bool:
-	# Check for different timings
-	if not GameController.is_in_main_phase():
+	if not GameController.is_in_battle_interactions():
 		return false
 	
 	if not player_owner.meets_mana_cost(card):

@@ -24,8 +24,6 @@ func init(f_network_id = -1):
 	
 	SteamController.network_items_by_id[str(network_id)] = self
 	
-	print_debug("network id ", network_id, " ", self)
-		
 	for child in player_units.get_children():
 		player_units.remove_child(child)
 	
@@ -74,13 +72,10 @@ func add_to_back_of_player_column(unit_permanent, is_command = false) -> void:
 			formation.create_new_columns()
 
 func add_to_back_of_opponent_column(unit_permanent) -> void:
-	print_debug("adding opp unit")
 	unit_permanent.erase_no_trigger()
 	unit_permanent.is_in_formation = true
 	
 	opponent_units.add_child(unit_permanent)
-	print_debug("opp unit count ", opponent_units.get_child_count())
-	print_debug("my unit count ", player_units.get_child_count(), " ", player_units.get_children()[0].is_formation_placeholder)
 	unit_permanent.tree_container = opponent_units
 	
 	units_in_formation += 1
@@ -162,17 +157,34 @@ func serialize() -> Dictionary:
 
 func load_data(column_dict:Dictionary) -> void:
 	var desrialized_network_id = column_dict.network_id
-	print_debug("load init")
 	init(desrialized_network_id)
-	print_debug("start loading")
 	
-	for perm_dict in column_dict[SteamController.self_peer_id]:
-		var my_player = GameController.get_self_player()
+	var other_player = GameController.get_opponent_player()
+	var my_player = GameController.get_self_player()
+	
+	for perm_dict in column_dict[my_player.player_id]:
 		var permanent_to_add = CardLibrary.permanent_for_owner(my_player, perm_dict.network_id)
 		permanent_to_add.player_owner = my_player
 		permanent_to_add.load_data(perm_dict)
 		
-		# TODO add to correct side of column
 		add_to_back_of_player_column(permanent_to_add)
+	
+	for perm_dict in column_dict[other_player.player_id]:
+		var permanent_to_add = CardLibrary.permanent_for_owner(other_player, perm_dict.network_id)
+		permanent_to_add.player_owner = other_player
+		permanent_to_add.load_data(perm_dict)
 		
-	print_debug("done loading ", self, " ", player_units.get_children()[0].is_formation_placeholder)
+		add_to_back_of_opponent_column(permanent_to_add)
+
+func get_all_units() -> Array:
+	var result := []
+	
+	for unit in player_units.get_children():
+		if not unit.is_formation_placeholder:
+			result.push_back(unit)
+	
+	for unit in opponent_units.get_children():
+		if not unit.is_formation_placeholder:
+			result.push_back(unit)
+	
+	return result
