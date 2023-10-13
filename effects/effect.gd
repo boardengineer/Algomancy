@@ -25,7 +25,7 @@ func serialize() -> Dictionary:
 	
 	var target_ids = []
 	for target in targets:
-		target_ids.push_back(target.network_id)
+		target_ids.push_back(target.get_id())
 	
 	result_dict.targets = target_ids
 	result_dict.effect_id = effect_id

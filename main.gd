@@ -654,6 +654,8 @@ func deserialize_and_load(serialized_state):
 	GameController.interaction_phase = loaded_dict.interaction_phase
 	first_turn = loaded_dict.first_turn
 	
+	SteamController.network_players_by_id.clear()
+	
 	reset_all_visuals()
 	
 	for player_child in player_list.get_children():
@@ -665,7 +667,6 @@ func deserialize_and_load(serialized_state):
 	players.clear()
 	
 	var player_data_map = {}
-	SteamController.network_players_by_id.clear()
 	
 	# Players have to first be initiated, then all their battlefields created
 	# And then finally all their properties and permanents can be assigned
@@ -789,6 +790,7 @@ func reset_all_visuals() -> void:
 	clear_hand_container()
 	clear_stack_container()
 	clear_discard_containers()
+	set_up_basic_resource_container()
 
 func clear_hand_container():
 	for child in hand_container.get_children():

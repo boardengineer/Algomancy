@@ -35,6 +35,9 @@ func draft():
 	
 	hand.clear()
 	clear_hand_container()
+	
+	for card in draft_pack:
+		SteamController.network_items_by_id[str(card.network_id)] = card
 
 func do_mana_phase():
 	pass
@@ -212,3 +215,6 @@ func meets_card_threshold(card) -> bool:
 
 func is_dummy() -> bool:
 	return player_id == str(-1)
+
+func get_id():
+	return player_id

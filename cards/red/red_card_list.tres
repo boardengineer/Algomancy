@@ -1,0 +1,8 @@
+[gd_resource type="Resource" load_steps=3 format=2]
+
+[ext_resource path="res://cards/red/twin_flame/twin_flame.gd" type="Script" id=1]
+[ext_resource path="res://cards/lists/card_list.gd" type="Script" id=2]
+
+[resource]
+script = ExtResource( 2 )
+cards = [ ExtResource( 1 ) ]

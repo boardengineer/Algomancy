@@ -77,10 +77,10 @@ func activate(ability_index = 0) -> void:
 		
 			var targets = []
 			for target in targeted_effect.targets:
-				targets.push_back(target.network_id)
+				targets.push_back(target.get_id())
 		
-				effect_dict.targets = targets
-				targeted_effects.push_back(effect_dict)
+			effect_dict.targets = targets
+			targeted_effects.push_back(effect_dict)
 		
 		command_dict.effects = targeted_effects
 		

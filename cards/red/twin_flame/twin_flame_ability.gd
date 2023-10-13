@@ -1,14 +1,15 @@
 extends Ability
-class_name LightningBoltAbility
+class_name TwinFlameAbility
 
-var LIGHTNING_BOLT_DAMAGE = 3
+var TWIN_FLAME_DAMAGE = 3
 
 func _init(f_card, f_player_owner).(f_card, f_player_owner):
 	card = f_card
 	
 	var effect_dict := {}
-	effect_dict.damage_amount = LIGHTNING_BOLT_DAMAGE
-	effect_dict.num_targets = 1
+	
+	effect_dict.damage_amount = TWIN_FLAME_DAMAGE
+	effect_dict.num_targets = 2
 	effect_dict.source_id = network_id
 	
 	effects.push_back(DamageAnyNTargetsEffect.new(f_player_owner, effect_dict))

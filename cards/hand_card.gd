@@ -45,14 +45,11 @@ func _ready():
 
 func on_card_input(event):
 	if event.is_pressed():
-		print_debug("card clicked")
-	
 #		print_debug("pressed on card in hand, priority match? ", player_owner.player_id, " ", GameController.priority_player.player_id)
 
 		if player_owner != GameController.priority_player:
 			return
 		
-		print_debug("card clicked 2")	
 		var is_resource = false
 		for type in card.types:
 			if type == Card.CardType.RESOURCE:
@@ -68,10 +65,8 @@ func on_card_input(event):
 					if ability.can_trigger():
 						ability.activate()
 		else:
-			print_debug("card clicked 3")
 			var possible_abilities = []
 			if not GameController.is_targeting:
-				print_debug("card clicked 4")
 				if GameController.is_in_mana_phase():
 					var ability = ManaTradeAbility.new(null, player_owner)
 					ability.source = card
@@ -80,15 +75,11 @@ func on_card_input(event):
 					if ability.can_trigger():
 						possible_abilities.push_back(ability)
 				
-				print_debug("card clicked 5 ", possible_abilities.size())
 				if card.ability_scripts.size() == 1:
-					print_debug("creating new card?")
 					var ability = card.ability_scripts[0].new(card, player_owner)
-					print_debug("card clicked 6 ", possible_abilities.size(), " ", ability)
 					if ability.can_trigger():
 						possible_abilities.push_back(ability)
 				
-				print_debug("card clicked 7 ", possible_abilities.size())
 				if possible_abilities.size() == 1:
 					var to_activate = possible_abilities[0]
 					to_activate.source = self
@@ -134,7 +125,11 @@ func activate_ability(ability_index:int, serialized_effects:Array) -> void:
 			
 			var deserialized_targets = []
 			for serialized_target in effect_dict.targets:
-				deserialized_targets.push_back(SteamController.network_items_by_id[str(serialized_target)])
+				var target_id = str(serialized_target)
+				if SteamController.network_items_by_id.has(target_id):
+					deserialized_targets.push_back(SteamController.network_items_by_id[str(serialized_target)])
+				else:
+					deserialized_targets.push_back(GameController.get_player_for_id(target_id))
 				
 			ability_effect.targets = deserialized_targets
 		

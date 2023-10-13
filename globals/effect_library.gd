@@ -5,7 +5,7 @@ var effect_script_by_id = {}
 func _ready():
 	# TODO better than this, its just a placeholder
 	effect_script_by_id["card_permanent_into_play"] = CardPermanentIntoPlayEffect
-	effect_script_by_id["damage_any_target"] = DamageAnyTargetEffect
+	effect_script_by_id["damage_any_n_targets"] = DamageAnyNTargetsEffect
 
 func load_effect(effect_dict):
 	var player_owner = GameController.get_player_for_id(effect_dict.player_owner_id)

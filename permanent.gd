@@ -50,9 +50,7 @@ func _ready():
 
 func on_gui_input(event):
 	if event.is_pressed():
-		
 		if GameController.is_targeting:
-			print_debug("trying to target")
 			emit_signal("targeted", self)
 		else:
 			if player_owner != GameController.priority_player:
@@ -71,14 +69,8 @@ func on_gui_input(event):
 			if player_owner.player_id != SteamController.self_peer_id:
 				return
 				
-			if GameController.interaction_phase:
-				
-				# TODO Check for normal abilities that can trigger
-				
-				pass
-			else:
-				if abilities.size() == 1 and abilities[0].can_trigger():
-					abilities[0].activate()
+			if abilities.size() == 1 and abilities[0].can_trigger():
+				abilities[0].activate()
 
 func process_activation_signal() -> void:
 	pass
@@ -173,3 +165,6 @@ func update_name_label() -> void:
 		
 	if tapped:
 		name_label.text += "\n(T)"
+
+func get_id():
+	return network_id

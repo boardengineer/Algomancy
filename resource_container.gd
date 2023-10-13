@@ -10,14 +10,15 @@ var resource_card
 var network_id
 
 func _init():
-	network_id = SteamController.get_next_network_id()
+	network_id = str(SteamController.get_next_network_id())
 	SteamController.network_items_by_id[network_id] = self
 
 # has to be called on load
 func set_network_id(f_network_id):
 	SteamController.network_items_by_id.erase(network_id)
-	network_id = f_network_id
+	network_id = str(f_network_id)
 	SteamController.network_items_by_id[network_id] = self
+#	print_debug("setting ", net)
 
 func _ready():
 	var _unused = clickable_container.connect("gui_input", self, "on_gui_input")
@@ -35,3 +36,6 @@ func on_gui_input(event):
 		
 		if GameController.is_targeting:
 			emit_signal("targeted", self)
+			
+func get_id():
+	return network_id
