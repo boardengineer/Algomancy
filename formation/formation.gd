@@ -128,7 +128,9 @@ func apply_attack_formation_command(command_dict:Dictionary, my_attack:bool) -> 
 		return_all_player_units()
 	else:
 		return_all_opponent_units()
-	init_empty_formation() 
+	
+	for column_child in battle_columns.get_children():
+		battle_columns.remove_child(column_child)
 	
 	var command_formation = command_dict.formation
 	
@@ -189,8 +191,8 @@ func load_data(battle_column_dicts:Array) -> void:
 		column.formation = self
 
 		battle_columns.add_child(column)
-		column.call_deferred("init")
-		column.call_deferred("load_data", column_dict)
+		column.init()
+		column.load_data(column_dict)
 
 func get_all_units() -> Array:
 	var result := []

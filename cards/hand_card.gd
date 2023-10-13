@@ -12,9 +12,6 @@ var network_id
 func _init(source_card, f_player_owner, f_network_id = -1):
 	network_id = source_card.network_id
 	
-	if network_id == 67:
-		print_debug("we found our card! (hand card)")
-	
 	SteamController.network_items_by_id[str(network_id)] = self
 	
 	rect_min_size.x = 50
@@ -22,6 +19,9 @@ func _init(source_card, f_player_owner, f_network_id = -1):
 	
 	card = source_card
 	player_owner = f_player_owner
+	
+	if int(network_id) == 76:
+		print_debug("created hand card 76 ", f_network_id)
 	
 func _ready():
 	var _unused = connect("gui_input", self, "on_card_input")
@@ -82,6 +82,7 @@ func on_card_input(event):
 				
 				print_debug("card clicked 5 ", possible_abilities.size())
 				if card.ability_scripts.size() == 1:
+					print_debug("creating new card?")
 					var ability = card.ability_scripts[0].new(card, player_owner)
 					print_debug("card clicked 6 ", possible_abilities.size(), " ", ability)
 					if ability.can_trigger():

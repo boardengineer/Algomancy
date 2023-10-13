@@ -5,6 +5,7 @@ class_name Ability
 var effects = []
 var card
 var main
+var network_id
 
 var source
 var player_owner
@@ -12,9 +13,19 @@ var player_owner
 var is_static = false
 var goes_on_stack = true
 
-func _init(f_card, f_player_owner):
+func _init(f_card, f_player_owner, f_network_id = -1):
+	if SteamController.latest_network_id <= f_network_id:
+		SteamController.latest_network_id = f_network_id + 1
+	
 	card = f_card
 	player_owner = f_player_owner
+	
+	if f_network_id == -1:
+		network_id = SteamController.get_next_network_id()
+	else:
+		network_id = f_network_id
+	
+	SteamController.network_items_by_id[str(network_id)] = self
 
 func pay_cost() -> bool:
 	return true
@@ -81,3 +92,21 @@ func activate(ability_index = 0) -> void:
 func resolve():
 	for effect in effects:
 		effect.resolve()
+
+func serialize() -> Dictionary:
+	var result_dict := {}
+	
+	result_dict.network_id = network_id
+	
+	if card:
+		result_dict.card = card.serialize()
+	
+	var serialized_effects = []
+	
+	for effect in effects:
+		serialized_effects.push_back(effect.serialize())
+	
+	result_dict.effects = serialized_effects
+	result_dict.player_owner_id = player_owner.player_id
+	
+	return result_dict

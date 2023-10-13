@@ -29,6 +29,9 @@ var is_in_formation = false
 onready var name_label = $Label
 
 func init(f_player_owner, f_network_id = -1):
+	if SteamController.latest_network_id <= f_network_id:
+		SteamController.latest_network_id = f_network_id + 1
+	
 	if f_network_id == -1:
 		network_id = SteamController.get_next_network_id()
 	else:

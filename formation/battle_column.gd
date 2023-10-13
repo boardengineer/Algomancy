@@ -9,7 +9,7 @@ var should_spam = false
 onready var player_units = $PlayerUnits
 onready var opponent_units = $OpponentUnits
 
-func _process(delta):
+func _process(_delta):
 	if should_spam:
 		print_debug(opponent_units.get_child_count())
 

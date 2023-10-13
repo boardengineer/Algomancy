@@ -4,9 +4,11 @@ class_name DamageAnyTargetEffect
 var damage_amount
 var source
 
-func _init(f_damage_amount, f_source, f_player_owner).(f_player_owner):
-	damage_amount = f_damage_amount
-	source = f_source
+func _init(f_player_owner, effect_dict = {}).(f_player_owner):
+	if not effect_dict.empty():
+		damage_amount = effect_dict.damage_amount
+		source = SteamController.network_items_by_id[str(effect_dict.source_id)]
+	effect_id = "damage_any_target"
 
 func needs_more_targets(current_targets = []) -> bool:
 	return current_targets.empty()
@@ -28,4 +30,19 @@ func can_trigger() -> bool:
 	return not get_valid_targets().empty()
 
 func resolve() -> void:
+	print_debug("resolving damage?")
 	DamageHelper.deal_damage(targets[0], source, damage_amount)
+
+func serialize() -> Dictionary:
+	var result_dict = .serialize()
+	
+	result_dict.damage_amount = damage_amount
+	result_dict.source_id = source.network_id
+	
+	return result_dict
+
+func load_data(effect_dict) -> void:
+	.load_data(effect_dict)
+	
+	damage_amount = effect_dict.damage_amount
+	source = SteamController.network_items_by_id[str(effect_dict.source_id)]

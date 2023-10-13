@@ -97,14 +97,11 @@ func load_data(player_dict) -> void:
 		
 	for card in hand:
 		hand_container.add_child(HandCard.new(card, self))
-	print_debug("done adding cards to hand")
 	
 	discard = deserialized_card_array_json(player_dict.discard)
 	exile = deserialized_card_array_json(player_dict.exile)
 	
 	draft_pack = deserialized_card_array_json(player_dict.draft_pack)
-	print_debug("adding cards to other places")
-	
 	for battlefield_player_id in player_dict.battlefields:
 		var player
 		for q_player in main.players:
@@ -116,7 +113,6 @@ func load_data(player_dict) -> void:
 			permanent_to_add.load_data(permanent_json)
 			
 			add_permanent(permanent_to_add, battlefields[player])
-	print_debug("done loading player")
 
 static func serialize_card_array(card_array):
 	var result = []

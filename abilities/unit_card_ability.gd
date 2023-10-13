@@ -2,8 +2,11 @@ extends Ability
 class_name UnitCardAbility 
 
 func _init(f_card, f_player_owner).(f_card, f_player_owner):
+	var effect_dict := {}
+	effect_dict.card = card.serialize()
 	card = f_card
-	effects.push_back(CardPermanentIntoPlayEffect.new(f_card, f_player_owner))
+	print_debug("creating card 1?")
+	effects.push_back(CardPermanentIntoPlayEffect.new(f_player_owner, effect_dict))
 
 func can_trigger() -> bool:
 	# Check for different timings

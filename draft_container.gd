@@ -33,17 +33,13 @@ func remove_all_cards() -> void:
 		card_container.remove_child(child)
 
 func _on_AcceptButton_pressed():
-	print_debug("works?")
 	var selected = []
 	
 	for draft_card in card_container.get_children():
 		if draft_card.selected:
 			selected.push_back(draft_card.card)
 	
-#	emit_signal("draft_selection_complete", selected)
-	print_debug("works?")
 	SteamController.submit_draft_selection(selected)
-#	hide()
 
 func on_card_toggled():
 	check_accept_button()

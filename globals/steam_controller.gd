@@ -1,8 +1,8 @@
 extends Node
 
 signal draft_complete_or_cancelled
-signal activated_ability_or_passed_or_cancelled
 signal formation_accepted
+signal activated_ability_or_passed
 
 enum LobbyAvailability {PRIVATE, FRIENDS, PUBLIC, INVISIBLE}
 var lobby_id = 0
@@ -129,7 +129,6 @@ func submit_ability_or_passed(command) -> void:
 		send_ability_or_passed(command)
 	
 func send_ability_or_passed(command) -> void:
-	var state = GameController.main.serialize()
 	var send_data = {}
 	send_data["type"] = "command"
 	send_data["command"] = command
@@ -141,7 +140,7 @@ func receive_ability_or_pass(player_id, command) -> void:
 	
 	var is_pass = command.type != "ability"
 	
-	GameController.emit_signal("activated_ability_or_passed", is_pass)
+	emit_signal("activated_ability_or_passed", is_pass)
 	
 	print_debug("player doing command ", player_id, " " , command)
 	if not is_pass and not GameController.action_cancelled:
@@ -158,7 +157,6 @@ func submit_draft_selection(draft_selection) -> void:
 		send_draft_selection(selected_card_ids)
 
 func send_draft_selection(selected_card_ids) -> void:
-	var state = GameController.main.serialize()
 	var send_data = {}
 	send_data["type"] = "draft_selection"
 	send_data["draft_selection"] = selected_card_ids
@@ -189,7 +187,7 @@ func receive_formation(player_id, formation_dict:Dictionary) -> void:
 		if not my_attack:
 			pass
 		
-		GameController.main.player_attack_formation.apply_attack_formation_command(formation_dict, my_attack)
+		attack_formation.apply_attack_formation_command(formation_dict, my_attack)
 	elif GameController.phase == GameController.GamePhase.ATTACK_NTI:
 		print_debug("nit attack goes here")
 		pass
@@ -202,8 +200,7 @@ func receive_formation(player_id, formation_dict:Dictionary) -> void:
 		if not my_block:
 			block_formation = GameController.main.player_attack_formation
 		
-		print_debug("block ti goes here")
-		GameController.main.player_attack_formation.apply_block_formation_command(formation_dict, my_block)
+		block_formation.apply_block_formation_command(formation_dict, my_block)
 		pass
 	elif GameController.phase == GameController.GamePhase.BLOCK_NTI:
 		print_debug("block nit goes here")
@@ -297,6 +294,5 @@ func _on_Lobby_Joined(joined_lobby_id: int, _permissions: int, _locked: bool, re
 #		if not parent.is_host:
 #			request_lobby_update()
 
-func _on_Lobby_Chat_Update(_update_lobby_id: int, change_id: int, _making_change_id: int, chat_state: int) -> void:
-	var username = Steam.getFriendPersonaName(change_id)
+func _on_Lobby_Chat_Update(_update_lobby_id: int, _change_id: int, _making_change_id: int, _chat_state: int) -> void:
 	update_tracked_players()

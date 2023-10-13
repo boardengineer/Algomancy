@@ -41,8 +41,8 @@ onready var pass_button = $Controls/PassButton
 onready var player_attack_formation = $Formations/PlayerAttackFormationPanelContainer/PlayerAttackFormation
 onready var accept_attack_formation_button = $Formations/PlayerAttackFormationPanelContainer/AcceptFormation
 
-onready var player_block_formation = $Formations/PlayerBlockFormationPanelContainer/PlayerBlockFormation
-onready var accept_block_formation_button = $Formations/PlayerBlockFormationPanelContainer/AcceptFormation
+#onready var player_block_formation = $Formations/PlayerBlockFormationPanelContainer/PlayerBlockFormation
+#onready var accept_block_formation_button = $Formations/PlayerBlockFormationPanelContainer/AcceptFormation
 
 #onready var opponent_attack_formation = $Formations/OpponentAttackFormationPanelContainer/OpponentAttackFormation
 #onready var opponent_block_formation = $Formations/OpponentBlockFormationPanelContainer/OpponentBlockFormation
@@ -61,7 +61,7 @@ func _ready():
 	TargetHelper.set_up_references(self)
 	GameController.set_up_references(self)
 	
-	var _unused = GameController.connect("activated_ability_or_passed", self, "on_activated_ability_or_passed")
+	var _unused = SteamController.connect("activated_ability_or_passed", self, "on_activated_ability_or_passed")
 	
 	_unused = player_target_self.connect("gui_input", self, "player_self_gui_event")
 	_unused = player_target_opponent.connect("gui_input", self, "player_opponent_gui_event")
@@ -229,7 +229,6 @@ func do_draft_phase():
 
 func init_mana_ti_phase():
 	log_message("Starting Mana TI phase")
-	print_debug("Starting Mana TI phase")
 	GameController.phase = GameController.GamePhase.MANA_TI
 
 func do_mana_ti_phase():
@@ -356,8 +355,11 @@ func do_attack_ti_phase():
 		
 		if not ability_stack.empty():
 			var ability = ability_stack.pop_front()
+			print_debug("resolving ability ", ability.serialize())
 			ability.resolve()
 			remove_ability_from_stack_gui(ability)
+			current_player_passed = false
+			GameController.update_static_state()
 	
 	GameController.interaction_phase = false
 	
@@ -512,14 +514,11 @@ func init_main_ti():
 	GameController.priority_player = GameController.get_ti_player()
 	
 func do_main_ti():
-	print_debug("main 1")
 	log_message("In TI Main Phase")
 	
 	current_player_passed = false
 	while not current_player_passed and not GameController.action_cancelled:
-		print_debug("yielding to player action...")
 		yield(self, "activated_or_passed_or_cancelled")
-		print_debug("done yielding to player action")
 		
 		if current_player_passed and not ability_stack.empty():
 			var ability = ability_stack.pop_front()
@@ -641,6 +640,11 @@ func serialize():
 	if GameController.is_in_battle():
 		state_dict.host_attack_formation = player_attack_formation.serialize()
 	
+	var serialized_stack = []
+	for stacked_ability in ability_stack:
+		serialized_stack.push_back(stacked_ability.serialize())
+	state_dict.stack = serialized_stack
+	
 	return JSON.print(state_dict)
 
 func deserialize_and_load(serialized_state):
@@ -695,7 +699,14 @@ func deserialize_and_load(serialized_state):
 			accept_attack_formation_button.show()
 		else:
 			accept_attack_formation_button.hide()
-		
+	
+	clear_stack_container()
+	ability_stack.clear()
+	
+	if loaded_dict.has("stack"):
+		for serialized_ability in loaded_dict.stack:
+			call_deferred("add_to_ability_stack", EffectLibrary.load_ability(serialized_ability))
+	
 	run_game()
 
 
@@ -704,12 +715,9 @@ func run_game():
 		var current_phase = GameController.phase
 		resume_phase()
 		if GameController.should_yield_for_phase(current_phase):
-			print_debug("yielding? ", GameController.phase)
 			yield(self, "phase_completed")
-			print_debug("done yielding")
 
 func resume_phase() -> void:
-	print_debug("Starting Phase ", GameController.phase)
 	if GameController.phase == GameController.GamePhase.UNTAP:
 		do_untap_phase()
 	elif GameController.phase == GameController.GamePhase.DRAW:
@@ -742,7 +750,6 @@ func resume_phase() -> void:
 		do_main_ti()
 	elif GameController.phase == GameController.GamePhase.MAIN_NTI:
 		do_main_nti()
-	print_debug("Finished Phase, next: ", GameController.phase)
 
 func add_to_ability_stack(ability) -> void:
 	ability_stack.push_front(ability)
@@ -753,7 +760,6 @@ func remove_ability_from_stack_gui(ability) -> void:
 	for stack_ability in stack_container.get_children():
 		if stack_ability.ability == ability:
 			stack_container.remove_child(stack_ability)
-			break
 
 func on_activated_ability_or_passed(has_passed):
 	current_player_passed = has_passed
@@ -763,8 +769,6 @@ func on_cancelled():
 	emit_signal("activated_or_passed_or_cancelled")
 
 func _on_PassButton_pressed():
-	print_debug("pressed pass")
-	
 	var command_dict = {}
 	command_dict.type = "pass"
 	SteamController.submit_ability_or_passed(command_dict)
@@ -842,4 +846,5 @@ func _on_AcceptFormation_pressed():
 	
 	if player_attack_formation.is_formation_valid():
 		var command_dict = player_attack_formation.get_formation_command_dict()
+		print_debug("submit formation")
 		SteamController.submit_formation(command_dict)

@@ -27,11 +27,13 @@ func _init(f_network_id = -1):
 		network_id = SteamController.get_next_network_id()
 	else:
 		network_id = f_network_id
-		
-	if network_id == 67:
-		print_debug("we found our card! (card)")
-		
-	SteamController.network_items_by_id[str(network_id)] = self
+	
+	var network_key = str(network_id)
+	
+	# Don't override the network ID if there's already a hand card etc since
+	# that's the interactable version of this card.
+	if not SteamController.network_items_by_id.has(network_key):
+		SteamController.network_items_by_id[str(network_id)] = self
 
 func activate(for_player) -> void:
 	for ability_script in ability_scripts:

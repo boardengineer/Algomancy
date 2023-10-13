@@ -5,7 +5,12 @@ var LIGHTNING_BOLT_DAMAGE = 3
 
 func _init(f_card, f_player_owner).(f_card, f_player_owner):
 	card = f_card
-	effects.push_back(DamageAnyTargetEffect.new(LIGHTNING_BOLT_DAMAGE, self, f_player_owner))
+	
+	var effect_dict := {}
+	effect_dict.damage_amount = LIGHTNING_BOLT_DAMAGE
+	effect_dict.source_id = network_id
+	
+	effects.push_back(DamageAnyTargetEffect.new(f_player_owner, effect_dict))
 
 func can_trigger() -> bool:
 	if not GameController.is_in_battle_interactions():

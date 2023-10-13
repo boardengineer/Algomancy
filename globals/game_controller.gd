@@ -1,7 +1,5 @@
 extends Node
 
-signal activated_ability_or_passed
-
 # All yields should also yield to this to allow the game to be properly disconnected
 signal cancel
 
