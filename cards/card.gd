@@ -21,6 +21,7 @@ var power = -1
 var toughness = -1
 
 var network_id
+var is_token = false
 
 func _init(f_network_id = -1):
 	if f_network_id == -1:

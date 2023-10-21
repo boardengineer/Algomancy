@@ -23,8 +23,7 @@ func get_possible_positions_for_unit(_unit_to_place):
 func create_column():
 	var column = column_scene.instance()
 	
-	column.call_deferred("init")
-	
+	column.call_deferred("init_deferred")
 	column.formation = self
 	
 	return column
@@ -115,7 +114,7 @@ func get_formation_command_dict() -> Dictionary:
 			continue
 			
 		for permanent_index in num_units:
-			var permanent = column_child.player_units.get_children()[permanent_index]
+			var permanent = column_child.player_units_node.get_children()[permanent_index]
 			column_array.push_back(permanent.network_id)
 		
 		formation_array.push_back(column_array)
@@ -141,11 +140,13 @@ func apply_attack_formation_command(command_dict:Dictionary, my_attack:bool) -> 
 			var perm = SteamController.network_items_by_id[str(perm_id)]
 			
 			if my_attack:
-				column.call_deferred("add_to_back_of_player_column", perm)
+				column.add_to_back_of_player_column(perm)
 			else:
-				column.call_deferred("add_to_back_of_opponent_column", perm)
+				column.add_to_back_of_opponent_column(perm)
+	
+	GameController.peform_on_attack_triggers()
 
-#func apply_block_formation_command(command_dict)
+#func apply_block_formation_command(command_dict)d
 
 func apply_block_formation_command(command_dict:Dictionary, my_block:bool) -> void:
 	if my_block:
@@ -159,10 +160,11 @@ func apply_block_formation_command(command_dict:Dictionary, my_block:bool) -> vo
 		for perm_id in command_dict.formation[column_network_id]:
 			var perm = SteamController.network_items_by_id[str(perm_id)]
 			if my_block:
-				column.call_deferred("add_to_back_of_player_column", perm)
+				column.add_to_back_of_player_column(perm)
 			else:
-				column.call_deferred("add_to_back_of_opponent_column", perm)
+				column.add_to_back_of_opponent_column(perm)
 	
+	GameController.peform_on_block_triggers()
 
 func serialize() -> Array:
 	var result_arr = []
@@ -191,7 +193,7 @@ func load_data(battle_column_dicts:Array) -> void:
 		column.formation = self
 
 		battle_columns.add_child(column)
-		column.init()
+#		column.init()
 		column.load_data(column_dict)
 
 func get_all_units() -> Array:

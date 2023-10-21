@@ -30,6 +30,9 @@ func _init(f_card, f_player_owner, f_network_id = -1):
 func pay_cost() -> bool:
 	return true
 
+func can_activate() -> bool:
+	return can_trigger()
+
 func can_trigger() -> bool:
 	if is_static:
 		return false
@@ -88,7 +91,19 @@ func activate(ability_index = 0) -> void:
 			SteamController.submit_ability_or_passed(command_dict)
 	
 #	GameController.emit_signal("activated_ability_or_passed", false)
-	
+
+func on_attack(_ability_index = -1):
+	pass
+
+func on_block(_ability_index = -1):
+	pass
+
+func on_end_of_combat(_ability_index = -1):
+	pass
+
+func on_unit_death(_unit_permanent, _ability_index = -1):
+	pass
+
 func resolve():
 	for effect in effects:
 		effect.resolve()

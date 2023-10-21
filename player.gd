@@ -151,7 +151,11 @@ func add_permanent(permanent_to_add, battlefield) -> void:
 	var field
 	
 	if player_id == SteamController.self_peer_id:
-		field = main.player_field
+		if battlefield == battlefields[self]:
+			field = main.player_field
+		else:
+			# TODO, this is a placeholder for "away field"
+			field = main.player_away_field
 	else:
 		field = main.opponent_field
 	

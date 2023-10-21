@@ -6,14 +6,17 @@ var network_id
 
 var should_spam = false
 
-onready var player_units = $PlayerUnits
-onready var opponent_units = $OpponentUnits
+onready var player_units_node = $PlayerUnits
+onready var opponent_units_node = $OpponentUnits
+
+var player_units = []
+var opponent_units = []
 
 func _process(_delta):
 	if should_spam:
-		print_debug(opponent_units.get_child_count())
+		print_debug(opponent_units_node.get_child_count())
 
-func init(f_network_id = -1):
+func _init(f_network_id = -1):
 	if SteamController.latest_network_id <= f_network_id:
 		SteamController.latest_network_id = f_network_id + 1
 	
@@ -24,20 +27,23 @@ func init(f_network_id = -1):
 	
 	SteamController.network_items_by_id[str(network_id)] = self
 	
-	for child in player_units.get_children():
-		player_units.remove_child(child)
+	player_units.clear()
+	opponent_units.clear()
 	
-	for child in opponent_units.get_children():
-		opponent_units.remove_child(child)
+func init_deferred():
+	for child in player_units_node.get_children():
+		player_units_node.remove_child(child)
+	
+	for child in opponent_units_node.get_children():
+		opponent_units_node.remove_child(child)
 		
-	player_units.add_child(create_placeholder_permanent())
-	
+	player_units_node.add_child(create_placeholder_permanent())
 
 func get_available_positions() -> Array:
 	if units_in_formation >= 2:
 		return []
 		
-	return [player_units.get_child(player_units.get_child_count() - 1)]
+	return [player_units_node.get_child(player_units_node.get_child_count() - 1)]
 
 func create_placeholder_permanent():
 	var result = CardLibrary.permanent_for_owner(TargetHelper.get_player_for_id(SteamController.self_peer_id))
@@ -53,38 +59,43 @@ func add_to_back_of_player_column(unit_permanent, is_command = false) -> void:
 	
 	var should_add_column_after = units_in_formation == 0
 	
-	var last_child = player_units.get_child(player_units.get_child_count() - 1)
-#	print_debug(last_child.network_id)
-	player_units.remove_child(last_child)
-	
-	player_units.add_child(unit_permanent)
-	
-	unit_permanent.tree_container = player_units
-#	unit_permanent.is_formation_placeholder = true
+	player_units.push_back(unit_permanent)
+	unit_permanent.tree_container = player_units_node
+	unit_permanent.logic_container = player_units
 	
 	units_in_formation += 1
 	
+	call_deferred("add_to_back_of_player_column_deferred", unit_permanent, is_command, should_add_column_after)
+
+func add_to_back_of_player_column_deferred(unit_permanent, is_command = false, should_add_column_after = false) -> void:
+	var last_child = player_units_node.get_child(player_units_node.get_child_count() - 1)
+	
+	player_units_node.remove_child(last_child)
+	player_units_node.add_child(unit_permanent)
+	
+	# Maybe add a new location to add units and/or new columns
 	if not is_command and not GameController.interaction_phase:
 		if units_in_formation < 2:
-			player_units.add_child(create_placeholder_permanent())
+			player_units_node.add_child(create_placeholder_permanent())
 	
 		if should_add_column_after:
 			formation.create_new_columns()
+	pass
 
 func add_to_back_of_opponent_column(unit_permanent) -> void:
 	unit_permanent.erase_no_trigger()
 	unit_permanent.is_in_formation = true
 	
-	opponent_units.add_child(unit_permanent)
-	unit_permanent.tree_container = opponent_units
-	
-	units_in_formation += 1
+	opponent_units_node.add_child(unit_permanent)
+	opponent_units.push_back(unit_permanent)
+	unit_permanent.tree_container = opponent_units_node
+	unit_permanent.logic_container = opponent_units
 
 func remove_from_column(unit_permanent) -> void:
 	var start_removing = false
 	var nodes_to_erase = []
 	
-	for child in player_units.get_children():
+	for child in player_units_node.get_children():
 		if child == unit_permanent:
 			start_removing = true
 		
@@ -110,7 +121,7 @@ func remove_from_column(unit_permanent) -> void:
 func get_player_units_to_return() -> Array:
 	var all_units = []
 	
-	for child in player_units.get_children():
+	for child in player_units:
 		if not child.is_formation_placeholder:
 			all_units.push_back(child)
 	
@@ -119,12 +130,11 @@ func get_player_units_to_return() -> Array:
 func get_opponent_units_to_return() -> Array:
 	var all_units = []
 	
-	for child in opponent_units.get_children():
+	for child in opponent_units:
 		if not child.is_formation_placeholder:
 			all_units.push_back(child)
 	
 	return all_units
-
 
 func serialize() -> Dictionary:
 	var result_dict = {}
@@ -132,32 +142,26 @@ func serialize() -> Dictionary:
 	result_dict.network_id = network_id
 	
 	var player_units_dict := []
-	for perm_child in player_units.get_children():
+	for perm_child in player_units:
 		if not perm_child.is_formation_placeholder:
 			player_units_dict.push_back(perm_child.serialize())
 	result_dict[str(SteamController.self_peer_id)] = player_units_dict
 	
 	var opp_units_dict := []
-	for perm_child in opponent_units.get_children():
+	for perm_child in opponent_units:
 		if not perm_child.is_formation_placeholder:
 			opp_units_dict.push_back(perm_child.serialize())
 	var other_player_id = GameController.get_opponent_player().player_id
 	result_dict[str(other_player_id)] = opp_units_dict
 	
-	
-	
-	# TODO other side
-#	var opponent_player_dict = {}
-#	opponent_player_dict.player_id = 
-		
-		
-#	result_dict.
-	
 	return result_dict
 
 func load_data(column_dict:Dictionary) -> void:
 	var desrialized_network_id = column_dict.network_id
-	init(desrialized_network_id)
+	var formation_before = formation
+	_init(desrialized_network_id)
+	call_deferred("init_deferred")
+	formation = formation_before
 	
 	var other_player = GameController.get_opponent_player()
 	var my_player = GameController.get_self_player()
@@ -179,12 +183,7 @@ func load_data(column_dict:Dictionary) -> void:
 func get_all_units() -> Array:
 	var result := []
 	
-	for unit in player_units.get_children():
-		if not unit.is_formation_placeholder:
-			result.push_back(unit)
-	
-	for unit in opponent_units.get_children():
-		if not unit.is_formation_placeholder:
-			result.push_back(unit)
+	result.append_array(player_units)
+	result.append_array(opponent_units)
 	
 	return result

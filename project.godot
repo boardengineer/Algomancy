@@ -9,10 +9,15 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Ability",
+"class": "AberrantPopulaceAbility",
+"language": "GDScript",
+"path": "res://cards/red/aberrant_populace/aberrant_populace_ability.gd"
+}, {
 "base": "Card",
 "class": "AberrantPopulaceCard",
 "language": "GDScript",
-"path": "res://cards/red/aberrant_populace.gd"
+"path": "res://cards/red/aberrant_populace/aberrant_populace.gd"
 }, {
 "base": "Node",
 "class": "Ability",
@@ -77,7 +82,7 @@ _global_script_classes=[ {
 "base": "Effect",
 "class": "CardPermanentIntoPlayEffect",
 "language": "GDScript",
-"path": "res://effects/card_permanent_into_play_effect.gd"
+"path": "res://effects/common/card_permanent_into_play_effect.gd"
 }, {
 "base": "Card",
 "class": "ChanneledBoonCard",
@@ -92,7 +97,7 @@ _global_script_classes=[ {
 "base": "Effect",
 "class": "DamageAnyNTargetsEffect",
 "language": "GDScript",
-"path": "res://effects/damage_any_n_targets_effect.gd"
+"path": "res://effects/common/damage_any_n_targets_effect.gd"
 }, {
 "base": "Card",
 "class": "DelverOfMysteries",
@@ -112,7 +117,7 @@ _global_script_classes=[ {
 "base": "Effect",
 "class": "ElectricDamageEffect",
 "language": "GDScript",
-"path": "res://effects/electric_damage_effect.gd"
+"path": "res://effects/common/electric_damage_effect.gd"
 }, {
 "base": "Card",
 "class": "ElementalDominanceCard",
@@ -344,6 +349,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://cards/red/rune_channeler.gd"
 }, {
+"base": "Ability",
+"class": "SacrificeOnEndOfCombatAbility",
+"language": "GDScript",
+"path": "res://abilities/sacrifice_on_end_of_combat_ability.gd"
+}, {
+"base": "Effect",
+"class": "SacrificeSelfEffect",
+"language": "GDScript",
+"path": "res://effects/common/sacrifice_self_effect.gd"
+}, {
 "base": "Card",
 "class": "SacrificialBurstCard",
 "language": "GDScript",
@@ -430,11 +445,17 @@ _global_script_classes=[ {
 "path": "res://cards/test/wind_drake.gd"
 }, {
 "base": "Card",
+"class": "WispCard",
+"language": "GDScript",
+"path": "res://cards/tokens/wisp.gd"
+}, {
+"base": "Card",
 "class": "Wood",
 "language": "GDScript",
 "path": "res://cards/resources/wood.gd"
 } ]
 _global_script_class_icons={
+"AberrantPopulaceAbility": "",
 "AberrantPopulaceCard": "",
 "Ability": "",
 "AggressiveOne": "",
@@ -502,6 +523,8 @@ _global_script_class_icons={
 "ResurrectCard": "",
 "RousingSpiritCard": "",
 "RuneChannelerCard": "",
+"SacrificeOnEndOfCombatAbility": "",
+"SacrificeSelfEffect": "",
 "SacrificialBurstCard": "",
 "SmoulderingInfernoCard": "",
 "SoulSwallowerCard": "",
@@ -519,6 +542,7 @@ _global_script_class_icons={
 "VoltwrathBehemothCard": "",
 "WildfireCard": "",
 "WindDrakeCard": "",
+"WispCard": "",
 "Wood": ""
 }
 

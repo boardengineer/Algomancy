@@ -39,7 +39,7 @@ enum GamePhase {
 var initiative_battle_phases = [GamePhase.ATTACK_TI, GamePhase.BLOCK_TI, GamePhase.DAMAGE_TI, GamePhase.POST_COMBAT_TI]
 var non_init_battle_phases = [GamePhase.ATTACK_NTI, GamePhase.BLOCK_NTI, GamePhase.DAMAGE_NTI, GamePhase.POST_COMBAT_NTI]
 
-var yielding_phases := [GamePhase.DRAFT, GamePhase.MANA_TI, GamePhase.ATTACK_TI, GamePhase.BLOCK_TI, GamePhase.MAIN_TI]
+var yielding_phases := [GamePhase.DRAFT, GamePhase.MANA_TI, GamePhase.ATTACK_TI, GamePhase.BLOCK_TI, GamePhase.MAIN_TI, GamePhase.POST_COMBAT_TI]
 
 func should_yield_for_phase(the_phase) -> bool:
 	return yielding_phases.has(the_phase)
@@ -47,26 +47,41 @@ func should_yield_for_phase(the_phase) -> bool:
 func should_yield_for_current_phase() -> bool:
 	return should_yield_for_phase(phase)
 
-func get_current_battlefield():
+func get_current_battlefield_for_player(player):
+	if phase == GamePhase.MAIN_TI:
+		return player.battlefields[player]
+		
+	if phase == GamePhase.MAIN_NTI:
+		return player.battlefields[player]
+		
+	if initiative_battle_phases.has(phase):
+		return player.battlefields[get_nti_player()]
+			
+	if non_init_battle_phases.has(phase):
+		return player.battlefields[get_ti_player()]
+	
+	return null
+
+func get_current_battlefields() -> Array:
 	if phase == GamePhase.MAIN_TI:
 		var current_player = get_ti_player()
-		return current_player.battlefields[current_player]
+		return [current_player.battlefields[current_player]]
 	
 	if phase == GamePhase.MAIN_NTI:
 		var current_player = get_nti_player()
-		return current_player.battlefields[current_player]
+		return [current_player.battlefields[current_player]]
 	
 	if initiative_battle_phases.has(phase):
-		var home_player = get_ti_player()
-		var other_player = get_nti_player()
+		var home_player = get_nti_player()
+		var other_player = get_ti_player()
 		var results = []
 		results.push_back(home_player.battlefields[home_player])
 		results.push_back(other_player.battlefields[home_player])
 		return results
 	
 	if non_init_battle_phases.has(phase):
-		var home_player = get_nti_player()
-		var other_player = get_ti_player()
+		var home_player = get_ti_player()
+		var other_player = get_nti_player()
 		var results = []
 		results.push_back(home_player.battlefields[home_player])
 		results.push_back(other_player.battlefields[home_player])
@@ -134,6 +149,38 @@ func load_game():
 func cancel_all_yields() -> void:
 	action_cancelled = true
 	emit_signal("cancel")
+
+# return all the abilities that might trigger
+func get_all_triggerable_abilities() -> Array:
+	var result := []
+	
+	for battlefield in get_current_battlefields():
+		for permanent in battlefield:
+			print_debug("adding abilities for perm in battlefield ", permanent.abilities.size())
+			result.append_array(permanent.abilities)
+	
+	if is_in_battle():
+		for unit in get_active_formation().get_all_units():
+			print_debug("adding abilities for perm in formation ", unit.abilities.size())
+			result.append_array(unit.abilities)
+	
+	return result
+
+func peform_on_block_triggers() -> void:
+	for ability in get_all_triggerable_abilities():
+		ability.on_block()
+
+func peform_on_attack_triggers() -> void:
+	print_debug("attack triggers?")
+	for ability in get_all_triggerable_abilities():
+		print_debug("found ability ", ability)
+		ability.on_attack()
+
+func perform_on_end_of_combat_triggers() -> void:
+	print_debug("end of combat triggers?")
+	for ability in get_all_triggerable_abilities():
+		print_debug("found ability? ", ability)
+		ability.on_end_of_combat()
 
 func update_static_state() -> void:
 	# Reset all Stats

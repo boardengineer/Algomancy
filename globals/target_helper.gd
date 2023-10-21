@@ -82,9 +82,9 @@ func get_all_targets() -> Array:
 	for player in main.players:
 		all_targets.push_back(player)
 		
-	for battlefield in GameController.get_current_battlefield():
+	for battlefield in GameController.get_current_battlefields():
 		for unit in battlefield:
-			if unit.toughness:
+			if unit.toughness:    
 				all_targets.push_back(unit)
 	
 	if GameController.is_in_battle():
@@ -92,10 +92,6 @@ func get_all_targets() -> Array:
 	
 	return all_targets
 
-func get_current_battlefields() -> Array:
-	# TODO, make this return battlefields based on phase
-	return [main.players[0].battlefields[main.players[0]]]
-		
 func get_targetable_players() -> Array:
 	# TODO proper targetable logic
 	var res_players = []

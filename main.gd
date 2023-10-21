@@ -24,6 +24,7 @@ onready var player_list = $Players
 
 onready var opponent_field = $GameFields/OpponentField
 onready var player_field = $GameFields/PlayerField
+onready var player_away_field = $GameFields/PlayerAwayField
 
 onready var hand_container = $GameFields/HandContainer
 
@@ -392,7 +393,6 @@ func do_block_ti_phase():
 #			SteamController.receive_formation(str(DUMMY_PLAYER_ID), command_dict)
 #		else:
 #			yield(SteamController,"formation_accepted")
-		print_debug("here")
 		GameController.interaction_phase = true
 		current_player_passed = false
 	
@@ -402,16 +402,12 @@ func do_block_ti_phase():
 
 #	TODO players should have a chance to do things in each interaction phase
 	while not current_player_passed and not GameController.action_cancelled:
-		print_debug("yielding...")
 		yield(self, "activated_or_passed_or_cancelled")
-		print_debug("done yielding")
 		
 		if GameController.action_cancelled:
-			print_debug("cancelled, quitting...")
 			return
 		
 		if current_player_passed and not ability_stack.empty():
-			print_debug("resolving")
 			var ability = ability_stack.pop_front()
 			ability.resolve()
 			remove_ability_from_stack_gui(ability)
@@ -419,13 +415,11 @@ func do_block_ti_phase():
 			GameController.update_static_state()
 	
 	init_damage_ti_phase()
-	print_debug("returning...")
 	emit_signal("phase_completed")
 
 func init_damage_ti_phase():
 	log_message("Starting TI Damage Phase")
 	GameController.phase = GameController.GamePhase.DAMAGE_TI
-	print_debug("here ere")
 
 func do_damage_ti_phase():
 	log_message("In TI Damage Phase")
@@ -437,15 +431,35 @@ func do_damage_ti_phase():
 
 func init_post_combat_ti():
 	log_message("Starting TI Post Combat Phase")
+	GameController.perform_on_end_of_combat_triggers()
 	GameController.phase = GameController.GamePhase.POST_COMBAT_TI
 
 func do_post_combat_ti():
 	log_message("In TI Post Combat Phase")
 	
 	# Triggers should go here
+	GameController.priority_player = GameController.get_ti_player()
+	GameController.interaction_phase = true
+	current_player_passed = false
+
+	while not current_player_passed and not GameController.action_cancelled:
+		yield(self, "activated_or_passed_or_cancelled")
+		
+		if GameController.action_cancelled:
+			print_debug("cancelled, quitting...")
+			return
+
+		if current_player_passed and not ability_stack.empty():
+			print_debug("resolving")
+			var ability = ability_stack.pop_front()
+			ability.resolve()
+			remove_ability_from_stack_gui(ability)
+			current_player_passed = false
+			GameController.update_static_state()
+	
 #	interaction_phase()
 
-	log_message("(skipping phase)")
+#	log_message("(skipping phase)")
 	init_attack_nti_phase()
 	emit_signal("phase_completed")
 
@@ -809,6 +823,9 @@ func set_up_battlefields():
 	
 	for child in opponent_field.get_children():
 		opponent_field.remove_child(child)
+	
+	for child in player_away_field.get_children():
+		player_away_field.remove_child(child)
 
 func _on_SaveButton_pressed():
 	GameController.save_game()

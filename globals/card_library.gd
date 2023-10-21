@@ -2,6 +2,7 @@ extends Node
 
 const RED_CARD_SCRIPTS = preload("res://cards/red/red_card_list.tres")
 const TEST_CARD_SCRIPTS = preload("res://cards/lists/test_cards.tres")
+const TOKEN_CARD_SCRIPTS = preload("res://cards/lists/token_cards.tres")
 
 var permanent_scene = load("res://permanent.tscn")
 
@@ -21,6 +22,9 @@ func _ready():
 		for card_script in TEST_CARD_SCRIPTS.cards:
 			card_script_by_id[card_script.new().card_id] = card_script
 			all_card_scripts.push_back(card_script)
+	
+	for card_script in TOKEN_CARD_SCRIPTS.cards:
+		card_script_by_id[card_script.new().card_id] = card_script
 	
 	card_script_by_id["base_mana_converter"] = ManaConverterCard
 	card_script_by_id["base_fire"] = Fire

@@ -58,11 +58,11 @@ func on_card_input(event):
 		if is_resource:
 			if GameController.is_in_mana_phase():
 				var ability = resource_from_hand_ability.new(card, player_owner)
-				if ability.can_trigger():
+				if ability.can_activate():
 					ability.source = self
 					ability.main = player_owner.main
 					ability.card = card
-					if ability.can_trigger():
+					if ability.can_activate():
 						ability.activate()
 		else:
 			var possible_abilities = []
@@ -72,12 +72,12 @@ func on_card_input(event):
 					ability.source = card
 					ability.main = player_owner.main
 					ability.card = card
-					if ability.can_trigger():
+					if ability.can_activate():
 						possible_abilities.push_back(ability)
 				
 				if card.ability_scripts.size() == 1:
 					var ability = card.ability_scripts[0].new(card, player_owner)
-					if ability.can_trigger():
+					if ability.can_activate():
 						possible_abilities.push_back(ability)
 				
 				if possible_abilities.size() == 1:
@@ -109,7 +109,7 @@ func activate_ability(ability_index:int, serialized_effects:Array) -> void:
 			ability.source = card
 			ability.main = player_owner.main
 			ability.card = card
-			if ability.can_trigger():
+			if ability.can_activate():
 				possible_abilities.push_back(ability)
 			
 		if card.ability_scripts.size() == 1:

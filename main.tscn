@@ -19,7 +19,7 @@ script = ExtResource( 1 )
 
 [node name="GameLog" type="VBoxContainer" parent="."]
 margin_right = 168.0
-margin_bottom = 779.0
+margin_bottom = 783.0
 grow_horizontal = 2
 rect_min_size = Vector2( 100, 0 )
 rect_pivot_offset = Vector2( -1071, 87 )
@@ -39,7 +39,7 @@ clip_text = true
 [node name="GameFields" type="VBoxContainer" parent="."]
 margin_left = 172.0
 margin_right = 1180.0
-margin_bottom = 779.0
+margin_bottom = 783.0
 rect_min_size = Vector2( 553, 0 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -58,9 +58,9 @@ margin_right = 104.0
 
 [node name="PlayerField" type="GridContainer" parent="GameFields"]
 margin_top = 204.0
-margin_right = 1008.0
-margin_bottom = 626.0
-rect_min_size = Vector2( 0, 422 )
+margin_right = 500.0
+margin_bottom = 415.0
+rect_min_size = Vector2( 0, 211 )
 columns = 10
 
 [node name="Permanent" parent="GameFields/PlayerField" instance=ExtResource( 4 )]
@@ -69,10 +69,23 @@ columns = 10
 margin_left = 54.0
 margin_right = 104.0
 
+[node name="PlayerAwayField" type="GridContainer" parent="GameFields"]
+margin_top = 419.0
+margin_right = 500.0
+margin_bottom = 630.0
+rect_min_size = Vector2( 0, 211 )
+columns = 10
+
+[node name="Permanent" parent="GameFields/PlayerAwayField" instance=ExtResource( 4 )]
+
+[node name="Permanent2" parent="GameFields/PlayerAwayField" instance=ExtResource( 4 )]
+margin_left = 54.0
+margin_right = 104.0
+
 [node name="HandContainer" type="HBoxContainer" parent="GameFields"]
-margin_top = 630.0
+margin_top = 634.0
 margin_right = 1008.0
-margin_bottom = 779.0
+margin_bottom = 783.0
 rect_min_size = Vector2( 0, 149 )
 size_flags_horizontal = 3
 
@@ -93,7 +106,7 @@ margin_bottom = 783.0
 [node name="Stack" type="VBoxContainer" parent="."]
 margin_left = 1184.0
 margin_right = 1284.0
-margin_bottom = 779.0
+margin_bottom = 783.0
 grow_horizontal = 2
 rect_min_size = Vector2( 100, 0 )
 rect_pivot_offset = Vector2( -1071, 87 )

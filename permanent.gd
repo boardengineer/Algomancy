@@ -101,6 +101,11 @@ func activate_ability(ability_index:int, serialized_effects:Array) -> void:
 			else:
 				to_activate.resolve()
 
+func sacrifice() -> void:
+	# TODO sacrifice triggers go here
+	
+	die()
+
 func die() -> void:
 	erase_no_trigger()
 	
