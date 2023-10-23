@@ -1,19 +1,15 @@
 extends Effect
-class_name DamageAnyNTargetsEffect
+class_name AllConsumingBlazeEffect
 
-var damage_amount
-var num_targets
 var source
 
 func _init(f_player_owner, effect_dict = {}).(f_player_owner):
 	if not effect_dict.empty():
-		damage_amount = effect_dict.damage_amount
-		num_targets = effect_dict.num_targets
 		source = SteamController.network_items_by_id[str(effect_dict.source_id)]
-	effect_id = "damage_any_n_targets"
+	effect_id = "alpha_all_confusming_blaze_effect"
 
 func needs_more_targets(current_targets = []) -> bool:
-	return current_targets.size() < num_targets
+	return current_targets.empty()
 
 func get_valid_targets(current_targets = []) -> Array:
 	var valid_targets = []
@@ -32,17 +28,17 @@ func get_valid_targets(current_targets = []) -> Array:
 	return valid_targets
 
 func can_trigger() -> bool:
-	return get_valid_targets().size() >= num_targets 
+	return get_valid_targets().size() >= 1 
 
 func resolve() -> void:
+	var damage_amount = player_owner.get_threshold()[0]
+	
 	for target in targets:
 		DamageHelper.deal_damage(target, source, damage_amount)
 
 func serialize() -> Dictionary:
 	var result_dict = .serialize()
 	
-	result_dict.damage_amount = damage_amount
-	result_dict.num_targets = num_targets
 	result_dict.source_id = source.network_id
 	
 	return result_dict
@@ -50,6 +46,4 @@ func serialize() -> Dictionary:
 func load_data(effect_dict) -> void:
 	.load_data(effect_dict)
 	
-	damage_amount = effect_dict.damage_amount
-	num_targets = effect_dict.num_targets
 	source = SteamController.network_items_by_id[str(effect_dict.source_id)]
