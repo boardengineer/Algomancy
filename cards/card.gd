@@ -59,6 +59,9 @@ func serialize():
 	result_dict.network_id = network_id
 	result_dict.card_id = card_id
 	
+	result_dict.power = power
+	result_dict.toughness = toughness
+	
 	# TODO might not be needed in a future where this is looked up from ID
 	result_dict.card_name = card_name
 	
@@ -67,3 +70,6 @@ func serialize():
 func load_data(data) -> void:
 	card_id = data.card_id
 	card_name = data.card_name
+	
+	power = data.power
+	toughness = data.toughness

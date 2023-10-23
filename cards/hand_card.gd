@@ -90,8 +90,12 @@ func activate_ability(ability_index:int, serialized_effects:Array) -> void:
 	var possible_abilities = []
 	
 	var is_resource = false
+	var is_spell = false
+	
 	for type in card.types:
 		if type == Card.CardType.RESOURCE:
+			is_resource = true
+		if type == Card.CardType.SPELL:
 			is_resource = true
 	
 	if is_resource:
