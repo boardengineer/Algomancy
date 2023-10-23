@@ -64,25 +64,35 @@ func maybe_remove_column(column_to_remove) -> void:
 	if column_index == 1 and battle_columns.get_child_count() == 2:
 		battle_columns.remove_child(battle_columns.get_children()[0])
 
-func return_all_attacking_units() -> void:
-	var to_remove = []
+func get_attacking_units():
+	if not GameController.is_in_battle():
+		return []
 	
+	var my_attack = false
+	var ti_attack = GameController.initiative_battle_phases.has(GameController.phase)
+	var my_ti = GameController.initiative_player == GameController.get_self_player()
+	
+	if my_ti and ti_attack:
+		my_attack = true
+	if not my_ti and not ti_attack:
+		my_attack = true
+	
+	var result = []
 	for column in battle_columns.get_children():
-		for unit in column.get_player_units_to_return():
-			to_remove.push_back(unit)
+		if my_attack:
+			for unit in column.get_player_units():
+				result.push_back(unit)
+		else:
+			for unit in column.get_opponent_units():
+				result.push_back(unit)
 	
-	for unit in to_remove:
-		unit.erase()
-		unit.is_in_formation = false
-		unit.player_owner.add_permanent(unit, unit.player_owner.battlefields[unit.player_owner])
-		
-	init_empty_formation()
+	return result
 
 func return_all_player_units() -> void:
 	var to_remove = []
 	
 	for column in battle_columns.get_children():
-		for unit in column.get_player_units_to_return():
+		for unit in column.get_player_units():
 			to_remove.push_back(unit)
 	
 	for unit in to_remove:
@@ -94,7 +104,7 @@ func return_all_opponent_units() -> void:
 	var to_remove = []
 	
 	for column in battle_columns.get_children():
-		for unit in column.get_opponent_units_to_return():
+		for unit in column.get_opponent_units():
 			to_remove.push_back(unit)
 	
 	for unit in to_remove:
@@ -145,8 +155,6 @@ func apply_attack_formation_command(command_dict:Dictionary, my_attack:bool) -> 
 				column.add_to_back_of_opponent_column(perm)
 	
 	GameController.peform_on_attack_triggers()
-
-#func apply_block_formation_command(command_dict)d
 
 func apply_block_formation_command(command_dict:Dictionary, my_block:bool) -> void:
 	if my_block:

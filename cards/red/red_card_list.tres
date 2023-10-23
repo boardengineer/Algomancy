@@ -1,9 +1,10 @@
-[gd_resource type="Resource" load_steps=4 format=2]
+[gd_resource type="Resource" load_steps=5 format=2]
 
 [ext_resource path="res://cards/red/twin_flame/twin_flame.gd" type="Script" id=1]
 [ext_resource path="res://cards/lists/card_list.gd" type="Script" id=2]
 [ext_resource path="res://cards/red/aberrant_populace/aberrant_populace.gd" type="Script" id=3]
+[ext_resource path="res://cards/red/aggressive_one/aggressive_one.gd" type="Script" id=4]
 
 [resource]
 script = ExtResource( 2 )
-cards = [ ExtResource( 1 ), ExtResource( 3 ) ]
+cards = [ ExtResource( 1 ), ExtResource( 3 ), ExtResource( 4 ) ]

@@ -118,7 +118,7 @@ func remove_from_column(unit_permanent) -> void:
 	else:
 		add_child(create_placeholder_permanent())
 
-func get_player_units_to_return() -> Array:
+func get_player_units() -> Array:
 	var all_units = []
 	
 	for child in player_units:
@@ -127,7 +127,7 @@ func get_player_units_to_return() -> Array:
 	
 	return all_units
 
-func get_opponent_units_to_return() -> Array:
+func get_opponent_units() -> Array:
 	var all_units = []
 	
 	for child in opponent_units:

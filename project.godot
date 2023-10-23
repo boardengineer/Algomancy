@@ -27,7 +27,17 @@ _global_script_classes=[ {
 "base": "Card",
 "class": "AggressiveOne",
 "language": "GDScript",
-"path": "res://cards/red/aggressive_one.gd"
+"path": "res://cards/red/aggressive_one/aggressive_one.gd"
+}, {
+"base": "Ability",
+"class": "AggressiveOneAbility",
+"language": "GDScript",
+"path": "res://cards/red/aggressive_one/aggressive_one_ability.gd"
+}, {
+"base": "Effect",
+"class": "AggressiveOneEffect",
+"language": "GDScript",
+"path": "res://cards/red/aggressive_one/aggressive_one_effect.gd"
 }, {
 "base": "Card",
 "class": "AllConsumingBlazeCard",
@@ -173,6 +183,11 @@ _global_script_classes=[ {
 "class": "GeneralSmofCard",
 "language": "GDScript",
 "path": "res://cards/red/general_smof.gd"
+}, {
+"base": "Card",
+"class": "GenericUnitCard",
+"language": "GDScript",
+"path": "res://cards/tokens/generic_unit.gd"
 }, {
 "base": "Card",
 "class": "GhordCard",
@@ -459,6 +474,8 @@ _global_script_class_icons={
 "AberrantPopulaceCard": "",
 "Ability": "",
 "AggressiveOne": "",
+"AggressiveOneAbility": "",
+"AggressiveOneEffect": "",
 "AllConsumingBlazeCard": "",
 "AnimatedSparkCard": "",
 "AnthemOfInspirationCard": "",
@@ -488,6 +505,7 @@ _global_script_class_icons={
 "FlamebreathInitiatveCard": "",
 "FlyingAbility": "",
 "GeneralSmofCard": "",
+"GenericUnitCard": "",
 "GhordCard": "",
 "GromlinCard": "",
 "GroundBreakerCard": "",

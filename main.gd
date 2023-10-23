@@ -517,7 +517,8 @@ func init_regroup():
 	
 func do_regroup():
 	log_message("In Regroup Phase")
-	player_attack_formation.return_all_attacking_units()
+	player_attack_formation.return_all_player_units()
+	player_attack_formation.return_all_opponent_units()
 	player_attack_formation.hide()
 	init_main_ti()
 	emit_signal("phase_completed")
