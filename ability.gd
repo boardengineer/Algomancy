@@ -104,6 +104,9 @@ func on_end_of_combat(_ability_index = -1):
 func on_unit_death(_unit_permanent, _ability_index = -1):
 	pass
 
+func apply_static_effect(_ability_index = -1):
+	pass
+
 func resolve():
 	for effect in effects:
 		effect.resolve()

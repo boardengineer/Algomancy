@@ -18,7 +18,7 @@ func can_trigger() -> bool:
 	return true
 
 func pay_cost() -> bool:
-	player_owner.pay_mana(card.cost)	
+	player_owner.pay_mana(card.cost)
 	player_owner.remove_from_hand(card)
 
 	return true

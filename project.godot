@@ -54,10 +54,15 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://cards/red/all_consuming_blaze/all_consuming_blaze_effect.gd"
 }, {
+"base": "Ability",
+"class": "AnimatedSparkAbility",
+"language": "GDScript",
+"path": "res://cards/red/animated_spark/animated_spark_ability.gd"
+}, {
 "base": "Card",
 "class": "AnimatedSparkCard",
 "language": "GDScript",
-"path": "res://cards/red/animated_spark.gd"
+"path": "res://cards/red/animated_spark/animated_spark.gd"
 }, {
 "base": "Card",
 "class": "AnthemOfInspirationCard",
@@ -489,6 +494,7 @@ _global_script_class_icons={
 "AllConsumingBlazeAbility": "",
 "AllConsumingBlazeCard": "",
 "AllConsumingBlazeEffect": "",
+"AnimatedSparkAbility": "",
 "AnimatedSparkCard": "",
 "AnthemOfInspirationCard": "",
 "ArcLightningCard": "",

@@ -15,6 +15,8 @@ var game_over = false
 # The player the game is waiting on unless both players are drafting
 var priority_player
 
+var num_nontoken_spells_this_skrimish
+
 var interaction_phase = false
 var phase = GamePhase.UNTAP
 enum GamePhase {
@@ -171,15 +173,11 @@ func peform_on_block_triggers() -> void:
 		ability.on_block()
 
 func peform_on_attack_triggers() -> void:
-	print_debug("attack triggers?")
 	for ability in get_all_triggerable_abilities():
-		print_debug("found ability ", ability)
 		ability.on_attack()
 
 func perform_on_end_of_combat_triggers() -> void:
-	print_debug("end of combat triggers?")
 	for ability in get_all_triggerable_abilities():
-		print_debug("found ability? ", ability)
 		ability.on_end_of_combat()
 
 func update_static_state() -> void:
@@ -196,6 +194,17 @@ func update_static_state() -> void:
 			
 	
 	# Apply active effects Effects
+	for battlefield in GameController.get_current_battlefields():
+		for unit in battlefield:
+			for ability in unit.abilities:
+				if ability.is_static:
+					ability.apply_static_effect()
+	
+	if is_in_battle():
+		for unit in GameController.get_active_formation().get_all_units():
+			for ability in unit.abilities:
+				if ability.is_static:
+					ability.apply_static_effect()
 	
 	# Check for death
 	for player in main.players:

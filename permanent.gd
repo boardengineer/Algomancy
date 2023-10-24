@@ -160,6 +160,12 @@ func load_data(permanent_data) -> void:
 	
 	tapped = permanent_data.tapped
 
+func update_power_toughness(f_power,f_toughness) -> void:
+	power = f_power
+	toughness = f_toughness
+	
+	update_name_label()
+
 # stat fields should be effective stat fields
 func update_name_label() -> void:
 	if card:

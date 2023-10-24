@@ -96,7 +96,7 @@ func activate_ability(ability_index:int, serialized_effects:Array) -> void:
 		if type == Card.CardType.RESOURCE:
 			is_resource = true
 		if type == Card.CardType.SPELL:
-			is_resource = true
+			is_spell = true
 	
 	if is_resource:
 			if GameController.is_in_mana_phase():
@@ -138,6 +138,10 @@ func activate_ability(ability_index:int, serialized_effects:Array) -> void:
 			ability_effect.targets = deserialized_targets
 		
 		if to_activate.pay_cost():
+			print_debug("payed cost ", is_spell)
+			if is_spell:
+				GameController.num_nontoken_spells_this_skrimish += 1
+			
 			if to_activate.goes_on_stack:
 				player_owner.main.add_to_ability_stack(to_activate)
 			else:
