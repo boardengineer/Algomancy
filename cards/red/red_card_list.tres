@@ -1,4 +1,4 @@
-[gd_resource type="Resource" load_steps=10 format=2]
+[gd_resource type="Resource" load_steps=11 format=2]
 
 [ext_resource path="res://cards/red/twin_flame/twin_flame.gd" type="Script" id=1]
 [ext_resource path="res://cards/lists/card_list.gd" type="Script" id=2]
@@ -9,7 +9,8 @@
 [ext_resource path="res://cards/red/burning_vengeance/burning_vengeance.gd" type="Script" id=7]
 [ext_resource path="res://cards/red/emberflame_enlightener/emberflame_enlightener.gd" type="Script" id=8]
 [ext_resource path="res://cards/red/molten_birth/molten_birth.gd" type="Script" id=9]
+[ext_resource path="res://cards/red/infernal_wispweaver/infernal_wispweaver.gd" type="Script" id=10]
 
 [resource]
 script = ExtResource( 2 )
-cards = [ ExtResource( 1 ), ExtResource( 3 ), ExtResource( 4 ), ExtResource( 5 ), ExtResource( 6 ), ExtResource( 7 ), ExtResource( 8 ), ExtResource( 9 ) ]
+cards = [ ExtResource( 1 ), ExtResource( 3 ), ExtResource( 4 ), ExtResource( 5 ), ExtResource( 6 ), ExtResource( 7 ), ExtResource( 8 ), ExtResource( 9 ), ExtResource( 10 ) ]

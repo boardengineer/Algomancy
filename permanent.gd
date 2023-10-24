@@ -79,8 +79,16 @@ func activate_ability(ability_index:int, serialized_effects:Array) -> void:
 	var possible_abilities = []
 	
 	# TODO check for invalid timings and indeces
-	if abilities.size() == 1 and abilities[0].can_trigger():
-		possible_abilities.push_back(abilities[0])
+	for ability in abilities:
+		if ability.can_trigger():
+			possible_abilities.push_back(ability)
+	
+	print_debug("trying to activate?? ", possible_abilities.size(), " ",  ability_index)
+	
+	# TODO placeholder for two abilities that can activate at the same time
+	# and the player must make a choice
+	if possible_abilities.size() == 1:
+		ability_index = 0 
 	
 	if possible_abilities.size() > ability_index:
 		var to_activate = possible_abilities[ability_index]
@@ -102,9 +110,14 @@ func activate_ability(ability_index:int, serialized_effects:Array) -> void:
 				to_activate.resolve()
 
 func sacrifice() -> void:
-	# TODO sacrifice triggers go here
+	var should_die = true
 	
-	die()
+	for ability in GameController.get_all_triggerable_abilities():
+		should_die = ability.maybe_prevent_sacrifice(self, should_die)
+	
+	if should_die:
+		# TODO sacrifice triggers go here
+		die()
 
 func die() -> void:
 	erase_no_trigger()
@@ -140,8 +153,8 @@ func serialize() -> Dictionary:
 	result_dict.card = card.serialize()
 	
 	result_dict.damage = damage
-	result_dict.toughness = toughness
-	result_dict.power = power
+	result_dict.toughness = card.toughness
+	result_dict.power = card.power
 	result_dict.tapped = tapped
 	
 	return result_dict

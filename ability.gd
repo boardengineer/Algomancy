@@ -101,6 +101,9 @@ func on_block(_ability_index = -1):
 func on_end_of_combat(_ability_index = -1):
 	pass
 
+func on_end_of_turn(_ability_index = -1):
+	pass
+
 func on_unit_death(_unit_permanent, _ability_index = -1):
 	pass
 
@@ -109,6 +112,9 @@ func apply_static_effect(_ability_index = -1):
 
 func modify_damage(damage_before, _ability_index = -1):
 	return damage_before
+
+func maybe_prevent_sacrifice(_unit_permanent, is_sacrificing, _ability_index = -1):
+	return is_sacrificing
 
 func resolve():
 	for effect in effects:

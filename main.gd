@@ -349,6 +349,7 @@ func do_attack_ti_phase():
 	log_message("In TI Attack Interaction Phase")
 	
 	accept_attack_formation_button.hide()
+	GameController.update_static_state()
 	
 	GameController.interaction_phase = true
 	current_player_passed = false
@@ -536,6 +537,21 @@ func do_main_ti():
 	log_message("In TI Main Phase")
 	
 	current_player_passed = false
+	while not current_player_passed and not GameController.action_cancelled:
+		yield(self, "activated_or_passed_or_cancelled")
+		
+		if current_player_passed and not ability_stack.empty():
+			var ability = ability_stack.pop_front()
+			ability.resolve()
+			remove_ability_from_stack_gui(ability)
+			current_player_passed = false
+			GameController.update_static_state()
+	
+	# TODO this is a placeholder for EOT triggers
+	GameController.perform_on_end_of_turn_triggers()
+	log_message("EOT triggers performed (still in main phase)")
+	current_player_passed = false
+	
 	while not current_player_passed and not GameController.action_cancelled:
 		yield(self, "activated_or_passed_or_cancelled")
 		

@@ -173,38 +173,45 @@ func perform_on_end_of_combat_triggers() -> void:
 	for ability in get_all_triggerable_abilities():
 		ability.on_end_of_combat()
 
+func perform_on_end_of_turn_triggers() -> void: 
+	for battlefield in get_current_battlefields():
+		var index = 0
+		for permanent in battlefield:
+			for ability in permanent.abilities:
+				ability.on_end_of_turn(index)
+				index += 1
+	
+	if is_in_battle():
+		for unit in get_active_formation().get_all_units():
+			var index = 0
+			for ability in unit.abilities:
+				ability.on_end_of_turn(index)
+				index += 1
+
 func update_static_state() -> void:
-	# Reset all Stats
+	var all_units := []
 	for player in main.players:
-		# TODO update formation 
-		
 		for battlefield_player in player.battlefields:
 			var battlefield = player.battlefields[battlefield_player]
 			for permanent in battlefield:
 				if permanent.toughness:
-					permanent.power = permanent.card.power
-					permanent.toughness = permanent.card.toughness
+					all_units.push_back(permanent)
+	
+	if is_in_battle():
+		for formation_unit in get_active_formation().get_all_units():
+			if formation_unit.toughness:
+					all_units.push_back(formation_unit)
+	
+	for unit in all_units:
+		unit.update_power_toughness(unit.card.power, unit.card.toughness)
 	
 	for maybe_static_ability in get_all_triggerable_abilities():
 		if maybe_static_ability.is_static:
 			maybe_static_ability.apply_static_effect()
 	
-	# Check for death
-	for player in main.players:
-		# TODO update formation 
-		
-		for battlefield_player in player.battlefields:
-			var battlefield = player.battlefields[battlefield_player]
-			for permanent in battlefield:
-				if permanent.toughness:
-					if permanent.damage >= permanent.toughness:
-						permanent.die()
-	
-	if is_in_battle():
-		for formation_unit in get_active_formation().get_all_units():
-			if formation_unit.toughness:
-					if formation_unit.damage >= formation_unit.toughness:
-						formation_unit.die()
+	for unit in all_units:
+		if unit.damage >= unit.toughness:
+			unit.die()
 	
 
 func get_player_for_id(player_id):

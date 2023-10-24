@@ -267,7 +267,17 @@ _global_script_classes=[ {
 "base": "Card",
 "class": "InfernalWispwaverCard",
 "language": "GDScript",
-"path": "res://cards/red/infernal_wispweaver.gd"
+"path": "res://cards/red/infernal_wispweaver/infernal_wispweaver.gd"
+}, {
+"base": "Ability",
+"class": "InfernalWispwaverEOTAbility",
+"language": "GDScript",
+"path": "res://cards/red/infernal_wispweaver/infernal_wispweaver_eot_ability.gd"
+}, {
+"base": "Ability",
+"class": "InfernalWispwaverWispBuffAbility",
+"language": "GDScript",
+"path": "res://cards/red/infernal_wispweaver/infernal_wispweaver_wisp_buff_ability.gd"
 }, {
 "base": "Ability",
 "class": "LightningBoltAbility",
@@ -557,6 +567,8 @@ _global_script_class_icons={
 "ImmolateCard": "",
 "InfernalCultivatorCard": "",
 "InfernalWispwaverCard": "",
+"InfernalWispwaverEOTAbility": "",
+"InfernalWispwaverWispBuffAbility": "",
 "LightningBoltAbility": "",
 "LightningBoltCard": "",
 "LuminousArc": "",
