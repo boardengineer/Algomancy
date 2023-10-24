@@ -185,7 +185,7 @@ func update_name_label() -> void:
 	if card:
 		name_label.text = card.card_name
 	
-	if toughness:
+	if toughness and toughness > 0:
 		 name_label.text = card.card_name + str("\n", power, "/", toughness)
 		
 	if tapped:
