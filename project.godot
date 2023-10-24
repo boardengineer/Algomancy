@@ -292,7 +292,17 @@ _global_script_classes=[ {
 "base": "Card",
 "class": "LuminousArc",
 "language": "GDScript",
-"path": "res://cards/red/luminous_arc.gd"
+"path": "res://cards/red/luminous_arc/luminous_arc.gd"
+}, {
+"base": "Ability",
+"class": "LuminousArcAbility",
+"language": "GDScript",
+"path": "res://cards/red/luminous_arc/luminous_arc_ability.gd"
+}, {
+"base": "Effect",
+"class": "LuminousArcEffect",
+"language": "GDScript",
+"path": "res://cards/red/luminous_arc/luminous_arc_effect.gd"
 }, {
 "base": "Ability",
 "class": "ManaConverterAbility",
@@ -572,6 +582,8 @@ _global_script_class_icons={
 "LightningBoltAbility": "",
 "LightningBoltCard": "",
 "LuminousArc": "",
+"LuminousArcAbility": "",
+"LuminousArcEffect": "",
 "ManaConverterAbility": "",
 "ManaConverterCard": "",
 "ManaConverterPermanent": "",
