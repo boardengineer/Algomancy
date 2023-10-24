@@ -159,10 +159,15 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://cards/red/elemental_dominance.gd"
 }, {
+"base": "Ability",
+"class": "EmberflameEnlightenerAbility",
+"language": "GDScript",
+"path": "res://cards/red/emberflame_enlightener/emberflame_enlightener_ability.gd"
+}, {
 "base": "Card",
 "class": "EmberflameEnlightenerCard",
 "language": "GDScript",
-"path": "res://cards/red/emberflame_enlightener.gd"
+"path": "res://cards/red/emberflame_enlightener/emberflame_enlightener.gd"
 }, {
 "base": "Card",
 "class": "EnvoyOfLightningCard",
@@ -525,6 +530,7 @@ _global_script_class_icons={
 "Effect": "",
 "ElectricDamageEffect": "",
 "ElementalDominanceCard": "",
+"EmberflameEnlightenerAbility": "",
 "EmberflameEnlightenerCard": "",
 "EnvoyOfLightningCard": "",
 "EphemeralSkywalkerCard": "",

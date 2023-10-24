@@ -7,7 +7,6 @@ func _init(f_card, f_player_owner).(f_card, f_player_owner):
 	var effect_dict := {}
 	effect_dict.source_id = network_id
 	is_static = true
-	effects.push_back(AllConsumingBlazeEffect.new(f_player_owner, effect_dict))
 
 func can_trigger() -> bool:
 	return false

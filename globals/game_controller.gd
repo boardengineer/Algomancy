@@ -51,19 +51,13 @@ func should_yield_for_current_phase() -> bool:
 	return should_yield_for_phase(phase)
 
 func get_current_battlefield_for_player(player):
-	if phase == GamePhase.MAIN_TI:
-		return player.battlefields[player]
-		
-	if phase == GamePhase.MAIN_NTI:
-		return player.battlefields[player]
-		
 	if initiative_battle_phases.has(phase):
 		return player.battlefields[get_nti_player()]
 			
 	if non_init_battle_phases.has(phase):
 		return player.battlefields[get_ti_player()]
 	
-	return null
+	return player.battlefields[player]
 
 func get_current_battlefields() -> Array:
 	if phase == GamePhase.MAIN_TI:
@@ -159,12 +153,10 @@ func get_all_triggerable_abilities() -> Array:
 	
 	for battlefield in get_current_battlefields():
 		for permanent in battlefield:
-			print_debug("adding abilities for perm in battlefield ", permanent.abilities.size())
 			result.append_array(permanent.abilities)
 	
 	if is_in_battle():
 		for unit in get_active_formation().get_all_units():
-			print_debug("adding abilities for perm in formation ", unit.abilities.size())
 			result.append_array(unit.abilities)
 	
 	return result
@@ -192,20 +184,10 @@ func update_static_state() -> void:
 				if permanent.toughness:
 					permanent.power = permanent.card.power
 					permanent.toughness = permanent.card.toughness
-			
 	
-	# Apply active effects Effects
-	for battlefield in GameController.get_current_battlefields():
-		for unit in battlefield:
-			for ability in unit.abilities:
-				if ability.is_static:
-					ability.apply_static_effect()
-	
-	if is_in_battle():
-		for unit in GameController.get_active_formation().get_all_units():
-			for ability in unit.abilities:
-				if ability.is_static:
-					ability.apply_static_effect()
+	for maybe_static_ability in get_all_triggerable_abilities():
+		if maybe_static_ability.is_static:
+			maybe_static_ability.apply_static_effect()
 	
 	# Check for death
 	for player in main.players:

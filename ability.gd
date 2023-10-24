@@ -107,6 +107,9 @@ func on_unit_death(_unit_permanent, _ability_index = -1):
 func apply_static_effect(_ability_index = -1):
 	pass
 
+func modify_damage(damage_before, _ability_index = -1):
+	return damage_before
+
 func resolve():
 	for effect in effects:
 		effect.resolve()
