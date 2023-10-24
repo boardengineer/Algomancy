@@ -16,9 +16,7 @@ func pay_cost() -> bool:
 	return false
 
 func apply_static_effect(_ability_index = -1):
-	print_debug("applying static effect")
 	var power_bump = GameController.num_nontoken_spells_this_skrimish
-	print_debug("power bump ", power_bump)
 	
 	for battlefield in GameController.get_current_battlefields():
 		for unit in battlefield:

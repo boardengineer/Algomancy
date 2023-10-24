@@ -330,7 +330,9 @@ func init_attack_ti_phase():
 	
 	player_attack_formation.init_empty_formation()
 	accept_attack_formation_button.show()
+	
 	GameController.num_nontoken_spells_this_skrimish = 0
+	GameController.num_units_died_this_skrimish = 0
 	
 	GameController.phase = GameController.GamePhase.ATTACK_TI
 	GameController.priority_player = GameController.get_ti_player()
@@ -649,7 +651,9 @@ func serialize():
 	state_dict.first_turn = first_turn
 	state_dict.phase = GameController.phase
 	state_dict.interaction_phase = GameController.interaction_phase
+	
 	state_dict.num_nontoken_spells_this_skrimish = GameController.num_nontoken_spells_this_skrimish
+	state_dict.num_units_died_this_skrimish = GameController.num_units_died_this_skrimish
 	
 	state_dict.initiative_player_id = GameController.initiative_player.player_id
 	if GameController.priority_player:
@@ -670,7 +674,9 @@ func deserialize_and_load(serialized_state):
 	
 	GameController.phase = int(loaded_dict.phase)
 	GameController.interaction_phase = loaded_dict.interaction_phase
+	
 	GameController.num_nontoken_spells_this_skrimish = loaded_dict.num_nontoken_spells_this_skrimish
+	GameController.num_units_died_this_skrimish = loaded_dict.num_units_died_this_skrimish
 	
 	first_turn = loaded_dict.first_turn
 	

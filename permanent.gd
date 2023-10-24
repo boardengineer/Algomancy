@@ -109,7 +109,8 @@ func sacrifice() -> void:
 func die() -> void:
 	erase_no_trigger()
 	
-	# TODO on death triggers
+	GameController.num_units_died_this_skrimish += 1
+	
 	if card:
 		player_owner.add_to_discard(card)
 

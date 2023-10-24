@@ -16,6 +16,7 @@ var game_over = false
 var priority_player
 
 var num_nontoken_spells_this_skrimish
+var num_units_died_this_skrimish
 
 var interaction_phase = false
 var phase = GamePhase.UNTAP
