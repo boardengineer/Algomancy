@@ -309,6 +309,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://cards/red/mischiveous_reclaimer.gd"
 }, {
+"base": "Ability",
+"class": "MoltenBirthAbility",
+"language": "GDScript",
+"path": "res://cards/red/molten_birth/molten_birth_ability.gd"
+}, {
 "base": "Card",
 "class": "MoltenRiftbreakerCard",
 "language": "GDScript",
@@ -322,7 +327,7 @@ _global_script_classes=[ {
 "base": "Card",
 "class": "MoltenbirthCard",
 "language": "GDScript",
-"path": "res://cards/red/molten_birth.gd"
+"path": "res://cards/red/molten_birth/molten_birth.gd"
 }, {
 "base": "Card",
 "class": "MonssGoblinRaidersCard",
@@ -560,6 +565,7 @@ _global_script_class_icons={
 "ManaConverterPermanent": "",
 "ManaTradeAbility": "",
 "MischeviousReclaimerCard": "",
+"MoltenBirthAbility": "",
 "MoltenRiftbreakerCard": "",
 "MoltenUpheavelCard": "",
 "MoltenbirthCard": "",
